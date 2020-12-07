@@ -1,0 +1,831 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="KCSE Gender Grade Distribution" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="BlankPage" columnWidth="814" leftMargin="14" rightMargin="14" topMargin="14" bottomMargin="14" whenResourceMissingType="Empty" uuid="31e3a7d3-0410-41b9-b280-40db0b81e192">
+	<property name="ireport.zoom" value="0.75"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#FFFFFF"/>
+		</conditionalStyle>
+	</style>
+	<subDataset name="Table Dataset 1" uuid="31ee8623-079b-4e4f-a9b9-683d7966aa27">
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+	</subDataset>
+	<parameter name="project_title" class="java.lang.String">
+		<defaultValueExpression><![CDATA["2019 KCSE ANALYSIS"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT tblschool.*,
+	/*Total Boys*/
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male')) As 'b_total',
+	/*Total Girls*/
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female')) As 'g_total',
+	/*Total Overall*/
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title})) As 'o_total',
+
+	/*Boys grade distribution*/
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male' AND mean_G='A')) As 'b_A',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male' AND mean_G='A-')) As 'b_A-',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male' AND mean_G='B+')) As 'b_B+',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male' AND mean_G='B')) As 'b_B',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male' AND mean_G='B-')) As 'b_B-',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male' AND mean_G='C+')) As 'b_C+',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male' AND mean_G='C')) As 'b_C',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male' AND mean_G='C-')) As 'b_C-',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male' AND mean_G='D+')) As 'b_D+',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male' AND mean_G='D')) As 'b_D',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male' AND mean_G='D-')) As 'b_D-',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male' AND mean_G='E')) As 'b_E',
+
+	/*Girls grade distribution*/
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female' AND mean_G='A')) As 'g_A',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female' AND mean_G='A-')) As 'g_A-',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female' AND mean_G='B+')) As 'g_B+',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female' AND mean_G='B')) As 'g_B',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female' AND mean_G='B-')) As 'g_B-',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female' AND mean_G='C+')) As 'g_C+',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female' AND mean_G='C')) As 'g_C',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female' AND mean_G='C-')) As 'g_C-',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female' AND mean_G='D+')) As 'g_D+',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female' AND mean_G='D')) As 'g_D',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female' AND mean_G='D-')) As 'g_D-',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female' AND mean_G='E')) As 'g_E',
+
+	/*Overall grade distribution*/
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND mean_G='A')) As 'o_A',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND mean_G='A-')) As 'o_A-',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND mean_G='B+')) As 'o_B+',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND mean_G='B')) As 'o_B',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND mean_G='B-')) As 'o_B-',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND mean_G='C+')) As 'o_C+',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND mean_G='C')) As 'o_C',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND mean_G='C-')) As 'o_C-',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND mean_G='D+')) As 'o_D+',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND mean_G='D')) As 'o_D',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND mean_G='D-')) As 'o_D-',
+	(SELECT count(*) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND mean_G='E')) As 'o_E',
+
+	/*Boys Mean Points*/
+	(SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male')) As 'b_MP',
+	/*Girls Mean Points*/
+	(SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female')) As 'g_MP',
+	/*Overall Mean Points*/
+	(SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title})) As 'o_MP',
+
+
+	/*Boys Mean Grade*/
+	(CASE 
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male')) >11.43 THEN 'A'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male')) >10.43 THEN 'A-'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male')) >9.43 THEN 'B+'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male')) >8.43 THEN 'B'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male')) >7.43 THEN 'B-'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male')) >6.43 THEN 'C+'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male')) >5.43 THEN 'C'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male')) >4.43 THEN 'C-'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male')) >3.43 THEN 'D+'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male')) >2.43 THEN 'D'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male')) >1.43 THEN 'D-'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Male')) >0 THEN 'E'
+		ELSE 'Y' END
+		) As b_MG,
+	/*Girls Mean Grade*/
+	(CASE 
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female')) >11.43 THEN 'A'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female')) >10.43 THEN 'A-'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female')) >9.43 THEN 'B+'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female')) >8.43 THEN 'B'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female')) >7.43 THEN 'B-'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female')) >6.43 THEN 'C+'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female')) >5.43 THEN 'C'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female')) >4.43 THEN 'C-'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female')) >3.43 THEN 'D+'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female')) >2.43 THEN 'D'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female')) >1.43 THEN 'D-'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title} AND  Sex='Female')) >0 THEN 'E'
+		ELSE 'Y' END
+		) As g_MG,
+	/*Overall Mean Grade*/
+	(CASE 
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title})) >11.43 THEN 'A'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title})) >10.43 THEN 'A-'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title})) >9.43 THEN 'B+'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title})) >8.43 THEN 'B'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title})) >7.43 THEN 'B-'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title})) >6.43 THEN 'C+'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title})) >5.43 THEN 'C'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title})) >4.43 THEN 'C-'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title})) >3.43 THEN 'D+'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title})) >2.43 THEN 'D'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title})) >1.43 THEN 'D-'
+		WHEN (SELECT (sum(mean_P)/(count(*)*1.0)) from tbl_kcse_marks WHERE (project_title=$P{project_title})) >0 THEN 'E'
+		ELSE 'Y' END
+		) As o_MG
+FROM tblschool,tbl_kcse_marks WHERE project_title=$P{project_title} LIMIT 1;]]>
+	</queryString>
+	<field name="School_Code" class="java.lang.Object"/>
+	<field name="School_id" class="java.lang.Object"/>
+	<field name="School_name" class="java.lang.Object"/>
+	<field name="School_Posta" class="java.lang.Object"/>
+	<field name="School_logo" class="java.lang.Object"/>
+	<field name="School_Motto" class="java.lang.Object"/>
+	<field name="School_Email" class="java.lang.Object"/>
+	<field name="School_Contact" class="java.lang.Object"/>
+	<field name="Principal_name" class="java.lang.Object"/>
+	<field name="Principal_Signature" class="java.lang.Object"/>
+	<field name="ClosingDate" class="java.lang.Object"/>
+	<field name="OpeningDate" class="java.lang.Object"/>
+	<field name="Full_Purchase" class="java.lang.Object"/>
+	<field name="TrialDeadline" class="java.lang.Object"/>
+	<field name="b_total" class="java.lang.Object"/>
+	<field name="g_total" class="java.lang.Object"/>
+	<field name="o_total" class="java.lang.Object"/>
+	<field name="b_A" class="java.lang.Object"/>
+	<field name="b_A-" class="java.lang.Object"/>
+	<field name="b_B+" class="java.lang.Object"/>
+	<field name="b_B" class="java.lang.Object"/>
+	<field name="b_B-" class="java.lang.Object"/>
+	<field name="b_C+" class="java.lang.Object"/>
+	<field name="b_C" class="java.lang.Object"/>
+	<field name="b_C-" class="java.lang.Object"/>
+	<field name="b_D+" class="java.lang.Object"/>
+	<field name="b_D" class="java.lang.Object"/>
+	<field name="b_D-" class="java.lang.Object"/>
+	<field name="b_E" class="java.lang.Object"/>
+	<field name="g_A" class="java.lang.Object"/>
+	<field name="g_A-" class="java.lang.Object"/>
+	<field name="g_B+" class="java.lang.Object"/>
+	<field name="g_B" class="java.lang.Object"/>
+	<field name="g_B-" class="java.lang.Object"/>
+	<field name="g_C+" class="java.lang.Object"/>
+	<field name="g_C" class="java.lang.Object"/>
+	<field name="g_C-" class="java.lang.Object"/>
+	<field name="g_D+" class="java.lang.Object"/>
+	<field name="g_D" class="java.lang.Object"/>
+	<field name="g_D-" class="java.lang.Object"/>
+	<field name="g_E" class="java.lang.Object"/>
+	<field name="o_A" class="java.lang.Object"/>
+	<field name="o_A-" class="java.lang.Object"/>
+	<field name="o_B+" class="java.lang.Object"/>
+	<field name="o_B" class="java.lang.Object"/>
+	<field name="o_B-" class="java.lang.Object"/>
+	<field name="o_C+" class="java.lang.Object"/>
+	<field name="o_C" class="java.lang.Object"/>
+	<field name="o_C-" class="java.lang.Object"/>
+	<field name="o_D+" class="java.lang.Object"/>
+	<field name="o_D" class="java.lang.Object"/>
+	<field name="o_D-" class="java.lang.Object"/>
+	<field name="o_E" class="java.lang.Object"/>
+	<field name="b_MP" class="java.lang.Object"/>
+	<field name="g_MP" class="java.lang.Object"/>
+	<field name="o_MP" class="java.lang.Object"/>
+	<field name="b_MG" class="java.lang.Object"/>
+	<field name="g_MG" class="java.lang.Object"/>
+	<field name="o_MG" class="java.lang.Object"/>
+	<title>
+		<band height="115">
+			<image scaleImage="FillFrame" isUsingCache="true" onErrorType="Blank">
+				<reportElement mode="Transparent" x="0" y="1" width="68" height="68" forecolor="#CCCCCC" uuid="8851a243-1eb9-4889-bd27-c98f6a634bef"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<imageExpression><![CDATA[$F{School_logo}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement mode="Transparent" x="68" y="46" width="678" height="15" uuid="51845e25-4b55-4418-9027-a510e51c3f5b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="10" isBold="false" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{School_Motto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="68" y="27" width="678" height="19" uuid="d7554a2c-c68c-41ad-9973-61cf87da855e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="13" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{School_Posta}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="68" y="1" width="678" height="26" uuid="441824ce-724d-48f0-9ae9-0653aef0c840"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="20" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{School_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="0" y="61" width="814" height="26" uuid="ee202877-1f45-438c-aa36-69a0896cf337"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="16" isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{project_title}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="0" y="87" width="814" height="19" uuid="34b3a4a8-81e9-492b-ac31-87be4b02ce77"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Grade Distribution and School Mean"]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame" isUsingCache="true" onErrorType="Blank">
+				<reportElement mode="Transparent" x="746" y="0" width="68" height="68" forecolor="#CCCCCC" uuid="596ccc7a-0234-4ffc-bce6-dd090357dacd"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<imageExpression><![CDATA[$F{School_logo}]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="117">
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="42" y="10" width="84" height="20" backcolor="#CCCCCC" uuid="95569d0b-b3d3-481c-bf19-8e98cb257b25"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="677" y="10" width="61" height="20" backcolor="#CCCCCC" uuid="7836282f-6356-47fa-8d3b-55ba7a8a1b16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[M.P]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="186" y="10" width="35" height="20" backcolor="#CCCCCC" uuid="7b85df25-9966-45ea-ac70-84b3c42ad0dd"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[A]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="221" y="10" width="35" height="20" backcolor="#CCCCCC" uuid="f802235e-a4d6-4996-9b86-03b2a58496b2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[A-]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="256" y="10" width="35" height="20" backcolor="#CCCCCC" uuid="ae92c47a-6ece-4b72-93aa-fce687c8e941"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[B+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="291" y="10" width="35" height="20" backcolor="#CCCCCC" uuid="c5d0aee0-3310-4f4b-b4ed-8a7ded3cf598"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[B]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="396" y="10" width="35" height="20" backcolor="#CCCCCC" uuid="cfdeda83-d2dd-4efb-aa43-1b0bdf74804a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[C]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="431" y="10" width="35" height="20" backcolor="#CCCCCC" uuid="7568c96b-e8e9-4422-8642-e326d192d175"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[C-]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="326" y="10" width="35" height="20" backcolor="#CCCCCC" uuid="157ca3fa-a31c-4b35-bbbd-e8e3e0ade0fa"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[B-]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="361" y="10" width="35" height="20" backcolor="#CCCCCC" uuid="81db8f44-e381-4110-9e5f-3ee6b2d97865"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[C+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="501" y="10" width="35" height="20" backcolor="#CCCCCC" uuid="4afa0f54-3756-4dd5-8ee7-d5d0ba615e46"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[D]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="536" y="10" width="35" height="20" backcolor="#CCCCCC" uuid="84c820e0-61cb-4ff5-a7f7-2b7780368817"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[D-]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="466" y="10" width="35" height="20" backcolor="#CCCCCC" uuid="becdcd95-cb3b-4e26-ae38-ef427d414ccd"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[D+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="571" y="10" width="35" height="20" backcolor="#CCCCCC" uuid="868fe440-5472-468e-8649-c40ddce008b8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[E]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="126" y="10" width="60" height="20" backcolor="#CCCCCC" uuid="059c26e8-093c-41e2-8ed6-8cc64ae81321"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[ENTRY]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="738" y="10" width="36" height="20" backcolor="#CCCCCC" uuid="e042fdff-2b28-479f-b761-fb017278b8d2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[M.G]]></text>
+			</staticText>
+			<textField pattern="###0.0000" isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="738" y="30" width="36" height="20" uuid="708ce3d7-45b2-42bd-ba33-6787fd50a5c5"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5" rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{b_MG}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="186" y="30" width="35" height="20" uuid="df96767a-a18a-46f6-80ac-38a029f315d7"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{b_A}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="221" y="30" width="35" height="20" uuid="f1dedd37-982f-47cd-934e-b65f6f1fb75c"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{b_A-}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="256" y="30" width="35" height="20" uuid="fb9e8679-d9e7-451b-a3e1-668b5c4fe739"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{b_B+}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="291" y="30" width="35" height="20" uuid="808d113f-bfc6-4709-9dd6-a09f1b9e27c8"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{b_B}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="431" y="30" width="35" height="20" uuid="e5bdc32f-a1df-417c-b3a3-f2a7a01496d7"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{b_C-}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="326" y="30" width="35" height="20" uuid="e3f6f28f-d392-46df-b510-f367f177298a"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{b_B-}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="396" y="30" width="35" height="20" uuid="5b800a35-50bd-47b4-8185-c7679ee4471b"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{b_C}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="361" y="30" width="35" height="20" uuid="a0582ac7-32d4-4428-9d11-0a5a9d63894e"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{b_C+}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="536" y="30" width="35" height="20" uuid="8d0a9a79-8454-4c7f-acfb-935bac3c10d9"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{b_D-}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="466" y="30" width="35" height="20" uuid="4b5c1016-9b32-4ae9-b6a3-eecf3167f6b8"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{b_D+}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="571" y="30" width="35" height="20" uuid="3212f58e-98a6-4ab3-9531-7b8bea6d5a67"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{b_E}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="126" y="30" width="60" height="20" uuid="c34893c7-c074-479a-88dd-a7007587d980"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{b_total}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.0000" isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="677" y="30" width="61" height="20" uuid="7a45dfd5-67f2-4352-86ff-87ddbbccc195"/>
+				<textElement textAlignment="Right">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5" rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{b_MP}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="42" y="30" width="84" height="20" uuid="24839370-0bb0-4217-b109-a0638a7929a7"/>
+				<textElement>
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Boys"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="42" y="50" width="84" height="20" uuid="87a012bd-b461-4ae9-957e-1ce36c1efdcf"/>
+				<textElement>
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Girls"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="126" y="50" width="60" height="20" uuid="866e9bde-9234-491f-9dcc-7353c0bac3f5"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{g_total}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="126" y="70" width="60" height="20" uuid="d1a88902-b832-43e8-8d36-4c02c2f2eec7"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{o_total}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="42" y="70" width="84" height="20" uuid="47fe9f88-5a88-4189-995a-e5849ea2367a"/>
+				<textElement>
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Overall"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="501" y="30" width="35" height="20" uuid="f6299263-4c0b-42d6-ba3a-04994ec5b6dd"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{b_D}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="186" y="50" width="35" height="20" uuid="e8bf8f0d-2fcc-4361-8558-dbe5f012307b"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{g_A}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="536" y="50" width="35" height="20" uuid="af6d7d25-9a6b-4957-85da-d040688389b9"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{g_D-}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="361" y="50" width="35" height="20" uuid="f835afc3-59b8-4c4c-b450-1e5e885a50f7"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{g_C+}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="466" y="50" width="35" height="20" uuid="cfe31086-32c5-4cd2-aa22-4210dce161e6"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{g_D+}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.0000" isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="738" y="50" width="36" height="20" uuid="377a27a2-a949-4a07-aa30-91ad67d3544f"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5" rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{g_MG}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.0000" isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="677" y="50" width="61" height="20" uuid="30604752-96e7-4def-9c37-569e7de4e07f"/>
+				<textElement textAlignment="Right">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5" rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{g_MP}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="431" y="50" width="35" height="20" uuid="9ea25b18-bcbe-4def-8766-f5e21e9342bf"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{g_C-}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="221" y="50" width="35" height="20" uuid="ab3e257c-38e9-4ed2-bc44-9774a30e3319"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{g_A-}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="326" y="50" width="35" height="20" uuid="a3c12823-a3aa-45d8-8b62-5868f3b1bedc"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{g_B-}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="396" y="50" width="35" height="20" uuid="46dfc6a4-d4aa-4d24-a7d8-767290c43c81"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{g_C}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="571" y="50" width="35" height="20" uuid="773cd9e8-41e0-4322-85bd-86ce373fcaf7"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{g_E}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="291" y="50" width="35" height="20" uuid="8c397a1f-1342-4a65-8a82-969dd717baec"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{g_B}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="501" y="50" width="35" height="20" uuid="a280288c-29d9-4885-89fd-136a67217c25"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{g_D}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="256" y="50" width="35" height="20" uuid="4ccb90f2-b58f-4c4c-84bf-b27e87dc083a"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{g_B+}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="361" y="70" width="35" height="20" uuid="6472a4ed-a01e-47d2-9d61-ccf0075d88fe"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{o_C+}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="501" y="70" width="35" height="20" uuid="c0f5c6da-d40d-452e-bbba-d81d8bc5f999"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{g_D}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="431" y="70" width="35" height="20" uuid="4d62510d-67dc-41d6-a851-d0cbb6da3e18"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{o_C-}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.0000" isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="738" y="70" width="36" height="20" uuid="50059555-3d6a-4c35-814f-5990f3b08595"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5" rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{o_MG}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="186" y="70" width="35" height="20" uuid="a0dca8ef-9ab2-465f-b56b-5ae1300af45a"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{o_A}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="291" y="70" width="35" height="20" uuid="8dea6c73-ffb4-4e18-bab2-6417c6ddef1d"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{o_B}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="571" y="70" width="35" height="20" uuid="3f377e66-2dfc-46b6-aef0-0183a4de1b8e"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{o_E}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="221" y="70" width="35" height="20" uuid="aacdfa25-c699-48c2-aa2b-c3b0a414fd4d"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{o_A-}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="536" y="70" width="35" height="20" uuid="da688a93-7f86-46be-964e-8560cd29305a"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{o_D-}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="326" y="70" width="35" height="20" uuid="e31d8f89-1e3e-4087-9cce-c56062976d06"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{o_B-}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="396" y="70" width="35" height="20" uuid="7f5fdbc0-242c-421b-9a2c-0b4a6b74cffe"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{o_C}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="256" y="70" width="35" height="20" uuid="217ee3be-d7b8-4996-8fdd-f3168dd56a34"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{o_B+}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="466" y="70" width="35" height="20" uuid="f36c979a-d138-4e7e-b469-42b55734c1a3"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{o_D+}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.0000" isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="677" y="70" width="61" height="20" uuid="06072a11-e4af-4400-a43c-82a8fa2fdf50"/>
+				<textElement textAlignment="Right">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5" rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{o_MP}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="641" y="70" width="35" height="20" uuid="e1ea9fc9-6fb1-436e-ae2d-48bfc5ea47df"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="641" y="10" width="35" height="20" backcolor="#CCCCCC" uuid="d1b859b3-f09e-4e97-9a6c-e8cdd9d0285b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Y]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="641" y="50" width="35" height="20" uuid="000e124d-4c6a-4fd9-b772-19328d4f9c86"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="641" y="30" width="35" height="20" uuid="b1a79d42-d524-4cda-9129-e3e507c00c30"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Opaque" x="606" y="10" width="35" height="20" backcolor="#CCCCCC" uuid="e4a08151-d576-4157-8f12-b2a5974ea9f2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[X]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="606" y="50" width="35" height="20" uuid="a4e99a8e-d320-4228-8c7d-ff51cfdf7283"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="606" y="30" width="35" height="20" uuid="41283d27-74d9-4ead-9e31-ea59b5b2e572"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="606" y="70" width="35" height="20" uuid="f0439b41-bc63-40a7-b327-9b2b67fb43f9"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<pageFooter>
+		<band height="25" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement mode="Transparent" x="676" y="0" width="90" height="20" uuid="5f82eff1-4733-4acd-8efc-f1a5d0d819d9"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="3" width="446" height="20" forecolor="#999999" uuid="23cefa60-fdf9-4b68-b9ca-364baac1d525"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[acme developed and supported by lySOFTS Call: +254797969142 Email:woramaslysofts@gmail.com
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="645" y="0" width="28" height="20" forecolor="#000000" uuid="a9299088-25e5-43fd-8754-c32c1757e6db"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="false" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Print:]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

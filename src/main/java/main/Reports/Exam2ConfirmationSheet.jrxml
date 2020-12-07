@@ -1,0 +1,824 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="814" leftMargin="14" rightMargin="14" topMargin="14" bottomMargin="14" uuid="10e48243-39ce-4080-890f-d2ae5ea3a7d2">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#EFF7FF"/>
+		</conditionalStyle>
+	</style>
+	<subDataset name="Table Dataset 1" uuid="20071fce-a6f9-4d51-8843-705ef0b4b725"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\RD\\Documents\\NetBeansProjects\\RD-SMS\\src\\main\\Reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ExamForm" class="java.lang.String"/>
+	<parameter name="ExamYear" class="java.lang.String"/>
+	<parameter name="ExamTerm" class="java.lang.String"/>
+	<parameter name="bgImage" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT Basic_SubjectNumbers.S1CODE as CODE1,Basic_SubjectNumbers.S2CODE as CODE2,Basic_SubjectNumbers.S3CODE as CODE3,Basic_SubjectNumbers.S4CODE as CODE4,Basic_SubjectNumbers.S5CODE as CODE5 ,Basic_SubjectNumbers.S6CODE as CODE6,Basic_SubjectNumbers.S7CODE as CODE7,Basic_SubjectNumbers.S8CODE as CODE8,Basic_SubjectNumbers.S9CODE as CODE9,Basic_SubjectNumbers.S10CODE as CODE10,Basic_SubjectNumbers.S11CODE as CODE11,Basic_SubjectNumbers.S12CODE as CODE12,Basic_SubjectNumbers.S13CODE as CODE13,Basic_SubjectNumbers.S14CODE as CODE14,tblschool.*,student_details.*,students_exams.* FROM Basic_SubjectNumbers inner join (tblschool inner join((student_details)inner join students_exams on student_details.student_id=students_exams.SE_student_id))  WHERE (students_exams.SE_StudentClass=$P{ExamForm} AND students_exams.Year=$P{ExamYear} AND students_exams.Term=$P{ExamTerm} ) ORDER BY (Students_exams.SE_Student_id +0) ASC]]>
+	</queryString>
+	<field name="CODE1" class="java.lang.Object"/>
+	<field name="CODE2" class="java.lang.Object"/>
+	<field name="CODE3" class="java.lang.Object"/>
+	<field name="CODE4" class="java.lang.Object"/>
+	<field name="CODE5" class="java.lang.Object"/>
+	<field name="CODE6" class="java.lang.Object"/>
+	<field name="CODE7" class="java.lang.Object"/>
+	<field name="CODE8" class="java.lang.Object"/>
+	<field name="CODE9" class="java.lang.Object"/>
+	<field name="CODE10" class="java.lang.Object"/>
+	<field name="CODE11" class="java.lang.Object"/>
+	<field name="CODE12" class="java.lang.Object"/>
+	<field name="CODE13" class="java.lang.Object"/>
+	<field name="CODE14" class="java.lang.Object"/>
+	<field name="School_Code" class="java.lang.Object"/>
+	<field name="School_id" class="java.lang.Object"/>
+	<field name="School_name" class="java.lang.Object"/>
+	<field name="School_Posta" class="java.lang.Object"/>
+	<field name="School_logo" class="java.lang.Object"/>
+	<field name="School_Motto" class="java.lang.Object"/>
+	<field name="School_Email" class="java.lang.Object"/>
+	<field name="School_Contact" class="java.lang.Object"/>
+	<field name="Student_ID" class="java.lang.Object"/>
+	<field name="Student_name" class="java.lang.Object"/>
+	<field name="Student_Class" class="java.lang.Object"/>
+	<field name="kcpe_marks" class="java.lang.Object"/>
+	<field name="kcpe_grade" class="java.lang.Object"/>
+	<field name="Picture" class="java.lang.Object"/>
+	<field name="DOA" class="java.lang.Object"/>
+	<field name="DOB" class="java.lang.Object"/>
+	<field name="Gender" class="java.lang.Object"/>
+	<field name="Mode_of_study" class="java.lang.Object"/>
+	<field name="House" class="java.lang.Object"/>
+	<field name="Father" class="java.lang.Object"/>
+	<field name="Mother" class="java.lang.Object"/>
+	<field name="Phone1" class="java.lang.Object"/>
+	<field name="Phone2" class="java.lang.Object"/>
+	<field name="SubjectEntries" class="java.lang.Object"/>
+	<field name="F1T1M" class="java.lang.Object"/>
+	<field name="F1T1P" class="java.lang.Object"/>
+	<field name="F1T2M" class="java.lang.Object"/>
+	<field name="F1T2P" class="java.lang.Object"/>
+	<field name="F1T3M" class="java.lang.Object"/>
+	<field name="F1T3P" class="java.lang.Object"/>
+	<field name="F2T1M" class="java.lang.Object"/>
+	<field name="F2T1P" class="java.lang.Object"/>
+	<field name="F2T2M" class="java.lang.Object"/>
+	<field name="F2T2P" class="java.lang.Object"/>
+	<field name="F2T3M" class="java.lang.Object"/>
+	<field name="F2T3P" class="java.lang.Object"/>
+	<field name="F3T1M" class="java.lang.Object"/>
+	<field name="F3T1P" class="java.lang.Object"/>
+	<field name="F3T2M" class="java.lang.Object"/>
+	<field name="F3T2P" class="java.lang.Object"/>
+	<field name="F3T3M" class="java.lang.Object"/>
+	<field name="F3T3P" class="java.lang.Object"/>
+	<field name="F4T1M" class="java.lang.Object"/>
+	<field name="F4T1P" class="java.lang.Object"/>
+	<field name="F4T2M" class="java.lang.Object"/>
+	<field name="F4T2P" class="java.lang.Object"/>
+	<field name="F4T3M" class="java.lang.Object"/>
+	<field name="F4T3P" class="java.lang.Object"/>
+	<field name="School_code:1" class="java.lang.Object"/>
+	<field name="SE_Student_id" class="java.lang.Object"/>
+	<field name="SE_StudentClass" class="java.lang.Object"/>
+	<field name="Year" class="java.lang.Object"/>
+	<field name="Term" class="java.lang.Object"/>
+	<field name="S1CODE" class="java.lang.Object"/>
+	<field name="S1NAME" class="java.lang.Object"/>
+	<field name="S1E1Marks" class="java.lang.Object"/>
+	<field name="S1E1Points" class="java.lang.Object"/>
+	<field name="S1E1Grade" class="java.lang.Object"/>
+	<field name="S1E2Marks" class="java.lang.Object"/>
+	<field name="S1E2Points" class="java.lang.Object"/>
+	<field name="S1E2Grade" class="java.lang.Object"/>
+	<field name="S1E3Marks" class="java.lang.Object"/>
+	<field name="S1E3Points" class="java.lang.Object"/>
+	<field name="S1E3Grade" class="java.lang.Object"/>
+	<field name="S1AVGMarks" class="java.lang.Object"/>
+	<field name="S1AVGPoints" class="java.lang.Object"/>
+	<field name="S1AVGGrade" class="java.lang.Object"/>
+	<field name="S1AVGPosition" class="java.lang.Object"/>
+	<field name="S1Remarks" class="java.lang.Object"/>
+	<field name="S1Teacher" class="java.lang.Object"/>
+	<field name="S2CODE" class="java.lang.Object"/>
+	<field name="S2NAME" class="java.lang.Object"/>
+	<field name="S2E1Marks" class="java.lang.Object"/>
+	<field name="S2E1Points" class="java.lang.Object"/>
+	<field name="S2E1Grade" class="java.lang.Object"/>
+	<field name="S2E2Marks" class="java.lang.Object"/>
+	<field name="S2E2Points" class="java.lang.Object"/>
+	<field name="S2E2Grade" class="java.lang.Object"/>
+	<field name="S2E3Marks" class="java.lang.Object"/>
+	<field name="S2E3Points" class="java.lang.Object"/>
+	<field name="S2E3Grade" class="java.lang.Object"/>
+	<field name="S2AVGMarks" class="java.lang.Object"/>
+	<field name="S2AVGPoints" class="java.lang.Object"/>
+	<field name="S2AVGGrade" class="java.lang.Object"/>
+	<field name="S2AVGPosition" class="java.lang.Object"/>
+	<field name="S2Remarks" class="java.lang.Object"/>
+	<field name="S2Teacher" class="java.lang.Object"/>
+	<field name="S3CODE" class="java.lang.Object"/>
+	<field name="S3NAME" class="java.lang.Object"/>
+	<field name="S3E1Marks" class="java.lang.Object"/>
+	<field name="S3E1Points" class="java.lang.Object"/>
+	<field name="S3E1Grade" class="java.lang.Object"/>
+	<field name="S3E2Marks" class="java.lang.Object"/>
+	<field name="S3E2Points" class="java.lang.Object"/>
+	<field name="S3E2Grade" class="java.lang.Object"/>
+	<field name="S3E3Marks" class="java.lang.Object"/>
+	<field name="S3E3Points" class="java.lang.Object"/>
+	<field name="S3E3Grade" class="java.lang.Object"/>
+	<field name="S3AVGMarks" class="java.lang.Object"/>
+	<field name="S3AVGPoints" class="java.lang.Object"/>
+	<field name="S3AVGGrade" class="java.lang.Object"/>
+	<field name="S3AVGPosition" class="java.lang.Object"/>
+	<field name="S3Remarks" class="java.lang.Object"/>
+	<field name="S3Teacher" class="java.lang.Object"/>
+	<field name="S4CODE" class="java.lang.Object"/>
+	<field name="S4NAME" class="java.lang.Object"/>
+	<field name="S4E1Marks" class="java.lang.Object"/>
+	<field name="S4E1Points" class="java.lang.Object"/>
+	<field name="S4E1Grade" class="java.lang.Object"/>
+	<field name="S4E2Marks" class="java.lang.Object"/>
+	<field name="S4E2Points" class="java.lang.Object"/>
+	<field name="S4E2Grade" class="java.lang.Object"/>
+	<field name="S4E3Marks" class="java.lang.Object"/>
+	<field name="S4E3Points" class="java.lang.Object"/>
+	<field name="S4E3Grade" class="java.lang.Object"/>
+	<field name="S4AVGMarks" class="java.lang.Object"/>
+	<field name="S4AVGPoints" class="java.lang.Object"/>
+	<field name="S4AVGGrade" class="java.lang.Object"/>
+	<field name="S4AVGPosition" class="java.lang.Object"/>
+	<field name="S4Remarks" class="java.lang.Object"/>
+	<field name="S4Teacher" class="java.lang.Object"/>
+	<field name="S5CODE" class="java.lang.Object"/>
+	<field name="S5NAME" class="java.lang.Object"/>
+	<field name="S5E1Marks" class="java.lang.Object"/>
+	<field name="S5E1Points" class="java.lang.Object"/>
+	<field name="S5E1Grade" class="java.lang.Object"/>
+	<field name="S5E2Marks" class="java.lang.Object"/>
+	<field name="S5E2Points" class="java.lang.Object"/>
+	<field name="S5E2Grade" class="java.lang.Object"/>
+	<field name="S5E3Marks" class="java.lang.Object"/>
+	<field name="S5E3Points" class="java.lang.Object"/>
+	<field name="S5E3Grade" class="java.lang.Object"/>
+	<field name="S5AVGMarks" class="java.lang.Object"/>
+	<field name="S5AVGPoints" class="java.lang.Object"/>
+	<field name="S5AVGGrade" class="java.lang.Object"/>
+	<field name="S5AVGPosition" class="java.lang.Object"/>
+	<field name="S5Remarks" class="java.lang.Object"/>
+	<field name="S5Teacher" class="java.lang.Object"/>
+	<field name="S6CODE" class="java.lang.Object"/>
+	<field name="S6NAME" class="java.lang.Object"/>
+	<field name="S6E1Marks" class="java.lang.Object"/>
+	<field name="S6E1Points" class="java.lang.Object"/>
+	<field name="S6E1Grade" class="java.lang.Object"/>
+	<field name="S6E2Marks" class="java.lang.Object"/>
+	<field name="S6E2Points" class="java.lang.Object"/>
+	<field name="S6E2Grade" class="java.lang.Object"/>
+	<field name="S6E3Marks" class="java.lang.Object"/>
+	<field name="S6E3Points" class="java.lang.Object"/>
+	<field name="S6E3Grade" class="java.lang.Object"/>
+	<field name="S6AVGMarks" class="java.lang.Object"/>
+	<field name="S6AVGPoints" class="java.lang.Object"/>
+	<field name="S6AVGGrade" class="java.lang.Object"/>
+	<field name="S6AVGPosition" class="java.lang.Object"/>
+	<field name="S6Remarks" class="java.lang.Object"/>
+	<field name="S6Teacher" class="java.lang.Object"/>
+	<field name="S7CODE" class="java.lang.Object"/>
+	<field name="S7NAME" class="java.lang.Object"/>
+	<field name="S7E1Marks" class="java.lang.Object"/>
+	<field name="S7E1Points" class="java.lang.Object"/>
+	<field name="S7E1Grade" class="java.lang.Object"/>
+	<field name="S7E2Marks" class="java.lang.Object"/>
+	<field name="S7E2Points" class="java.lang.Object"/>
+	<field name="S7E2Grade" class="java.lang.Object"/>
+	<field name="S7E3Marks" class="java.lang.Object"/>
+	<field name="S7E3Points" class="java.lang.Object"/>
+	<field name="S7E3Grade" class="java.lang.Object"/>
+	<field name="S7AVGMarks" class="java.lang.Object"/>
+	<field name="S7AVGPoints" class="java.lang.Object"/>
+	<field name="S7AVGGrade" class="java.lang.Object"/>
+	<field name="S7AVGPosition" class="java.lang.Object"/>
+	<field name="S7Remarks" class="java.lang.Object"/>
+	<field name="S7Teacher" class="java.lang.Object"/>
+	<field name="S8CODE" class="java.lang.Object"/>
+	<field name="S8NAME" class="java.lang.Object"/>
+	<field name="S8E1Marks" class="java.lang.Object"/>
+	<field name="S8E1Points" class="java.lang.Object"/>
+	<field name="S8E1Grade" class="java.lang.Object"/>
+	<field name="S8E2Marks" class="java.lang.Object"/>
+	<field name="S8E2Points" class="java.lang.Object"/>
+	<field name="S8E2Grade" class="java.lang.Object"/>
+	<field name="S8E3Marks" class="java.lang.Object"/>
+	<field name="S8E3Points" class="java.lang.Object"/>
+	<field name="S8E3Grade" class="java.lang.Object"/>
+	<field name="S8AVGMarks" class="java.lang.Object"/>
+	<field name="S8AVGPoints" class="java.lang.Object"/>
+	<field name="S8AVGGrade" class="java.lang.Object"/>
+	<field name="S8AVGPosition" class="java.lang.Object"/>
+	<field name="S8Remarks" class="java.lang.Object"/>
+	<field name="S8Teacher" class="java.lang.Object"/>
+	<field name="S9CODE" class="java.lang.Object"/>
+	<field name="S9NAME" class="java.lang.Object"/>
+	<field name="S9E1Marks" class="java.lang.Object"/>
+	<field name="S9E1Points" class="java.lang.Object"/>
+	<field name="S9E1Grade" class="java.lang.Object"/>
+	<field name="S9E2Marks" class="java.lang.Object"/>
+	<field name="S9E2Points" class="java.lang.Object"/>
+	<field name="S9E2Grade" class="java.lang.Object"/>
+	<field name="S9E3Marks" class="java.lang.Object"/>
+	<field name="S9E3Points" class="java.lang.Object"/>
+	<field name="S9E3Grade" class="java.lang.Object"/>
+	<field name="S9AVGMarks" class="java.lang.Object"/>
+	<field name="S9AVGPoints" class="java.lang.Object"/>
+	<field name="S9AVGGrade" class="java.lang.Object"/>
+	<field name="S9AVGPosition" class="java.lang.Object"/>
+	<field name="S9Remarks" class="java.lang.Object"/>
+	<field name="S9Teacher" class="java.lang.Object"/>
+	<field name="S10CODE" class="java.lang.Object"/>
+	<field name="S10NAME" class="java.lang.Object"/>
+	<field name="S10E1Marks" class="java.lang.Object"/>
+	<field name="S10E1Points" class="java.lang.Object"/>
+	<field name="S10E1Grade" class="java.lang.Object"/>
+	<field name="S10E2Marks" class="java.lang.Object"/>
+	<field name="S10E2Points" class="java.lang.Object"/>
+	<field name="S10E2Grade" class="java.lang.Object"/>
+	<field name="S10E3Marks" class="java.lang.Object"/>
+	<field name="S10E3Points" class="java.lang.Object"/>
+	<field name="S10E3Grade" class="java.lang.Object"/>
+	<field name="S10AVGMarks" class="java.lang.Object"/>
+	<field name="S10AVGPoints" class="java.lang.Object"/>
+	<field name="S10AVGGrade" class="java.lang.Object"/>
+	<field name="S10AVGPosition" class="java.lang.Object"/>
+	<field name="S10Remarks" class="java.lang.Object"/>
+	<field name="S10Teacher" class="java.lang.Object"/>
+	<field name="S11CODE" class="java.lang.Object"/>
+	<field name="S11NAME" class="java.lang.Object"/>
+	<field name="S11E1Marks" class="java.lang.Object"/>
+	<field name="S11E1Points" class="java.lang.Object"/>
+	<field name="S11E1Grade" class="java.lang.Object"/>
+	<field name="S11E2Marks" class="java.lang.Object"/>
+	<field name="S11E2Points" class="java.lang.Object"/>
+	<field name="S11E2Grade" class="java.lang.Object"/>
+	<field name="S11E3Marks" class="java.lang.Object"/>
+	<field name="S11E3Points" class="java.lang.Object"/>
+	<field name="S11E3Grade" class="java.lang.Object"/>
+	<field name="S11AVGMarks" class="java.lang.Object"/>
+	<field name="S11AVGPoints" class="java.lang.Object"/>
+	<field name="S11AVGGrade" class="java.lang.Object"/>
+	<field name="S11AVGPosition" class="java.lang.Object"/>
+	<field name="S11Remarks" class="java.lang.Object"/>
+	<field name="S11Teacher" class="java.lang.Object"/>
+	<field name="S12CODE" class="java.lang.Object"/>
+	<field name="S12NAME" class="java.lang.Object"/>
+	<field name="S12E1Marks" class="java.lang.Object"/>
+	<field name="S12E1Points" class="java.lang.Object"/>
+	<field name="S12E1Grade" class="java.lang.Object"/>
+	<field name="S12E2Marks" class="java.lang.Object"/>
+	<field name="S12E2Points" class="java.lang.Object"/>
+	<field name="S12E2Grade" class="java.lang.Object"/>
+	<field name="S12E3Marks" class="java.lang.Object"/>
+	<field name="S12E3Points" class="java.lang.Object"/>
+	<field name="S12E3Grade" class="java.lang.Object"/>
+	<field name="S12AVGMarks" class="java.lang.Object"/>
+	<field name="S12AVGPoints" class="java.lang.Object"/>
+	<field name="S12AVGGrade" class="java.lang.Object"/>
+	<field name="S12AVGPosition" class="java.lang.Object"/>
+	<field name="S12Remarks" class="java.lang.Object"/>
+	<field name="S12Teacher" class="java.lang.Object"/>
+	<field name="S13CODE" class="java.lang.Object"/>
+	<field name="S13NAME" class="java.lang.Object"/>
+	<field name="S13E1Marks" class="java.lang.Object"/>
+	<field name="S13E1Points" class="java.lang.Object"/>
+	<field name="S13E1Grade" class="java.lang.Object"/>
+	<field name="S13E2Marks" class="java.lang.Object"/>
+	<field name="S13E2Points" class="java.lang.Object"/>
+	<field name="S13E2Grade" class="java.lang.Object"/>
+	<field name="S13E3Marks" class="java.lang.Object"/>
+	<field name="S13E3Points" class="java.lang.Object"/>
+	<field name="S13E3Grade" class="java.lang.Object"/>
+	<field name="S13AVGMarks" class="java.lang.Object"/>
+	<field name="S13AVGPoints" class="java.lang.Object"/>
+	<field name="S13AVGGrade" class="java.lang.Object"/>
+	<field name="S13AVGPosition" class="java.lang.Object"/>
+	<field name="S13Remarks" class="java.lang.Object"/>
+	<field name="S13Teacher" class="java.lang.Object"/>
+	<field name="S14CODE" class="java.lang.Object"/>
+	<field name="S14NAME" class="java.lang.Object"/>
+	<field name="S14E1Marks" class="java.lang.Object"/>
+	<field name="S14E1Points" class="java.lang.Object"/>
+	<field name="S14E1Grade" class="java.lang.Object"/>
+	<field name="S14E2Marks" class="java.lang.Object"/>
+	<field name="S14E2Points" class="java.lang.Object"/>
+	<field name="S14E2Grade" class="java.lang.Object"/>
+	<field name="S14E3Marks" class="java.lang.Object"/>
+	<field name="S14E3Points" class="java.lang.Object"/>
+	<field name="S14E3Grade" class="java.lang.Object"/>
+	<field name="S14AVGMarks" class="java.lang.Object"/>
+	<field name="S14AVGPoints" class="java.lang.Object"/>
+	<field name="S14AVGGrade" class="java.lang.Object"/>
+	<field name="S14AVGPosition" class="java.lang.Object"/>
+	<field name="S14Remarks" class="java.lang.Object"/>
+	<field name="S14Teacher" class="java.lang.Object"/>
+	<field name="Exam1TotalMarks" class="java.lang.Object"/>
+	<field name="Exam1MeanPoints" class="java.lang.Object"/>
+	<field name="Exam1MeanGrade" class="java.lang.Object"/>
+	<field name="Exam1StreamPosition" class="java.lang.Object"/>
+	<field name="Exam1OverallPosition" class="java.lang.Object"/>
+	<field name="Exam2TotalMarks" class="java.lang.Object"/>
+	<field name="Exam2MeanPoints" class="java.lang.Object"/>
+	<field name="Exam2MeanGrade" class="java.lang.Object"/>
+	<field name="Exam2StreamPosition" class="java.lang.Object"/>
+	<field name="Exam2OverallPosition" class="java.lang.Object"/>
+	<field name="Exam3TotalMarks" class="java.lang.Object"/>
+	<field name="Exam3MeanPoints" class="java.lang.Object"/>
+	<field name="Exam3MeanGrade" class="java.lang.Object"/>
+	<field name="Exam3StreamPosition" class="java.lang.Object"/>
+	<field name="Exam3OverallPosition" class="java.lang.Object"/>
+	<field name="TOTALMarks" class="java.lang.Object"/>
+	<field name="MeanPoints" class="java.lang.Object"/>
+	<field name="MeanGrade" class="java.lang.Object"/>
+	<field name="StreamPosition" class="java.lang.Object"/>
+	<field name="OverallPosition" class="java.lang.Object"/>
+	<field name="OverallRemarks" class="java.lang.Object"/>
+	<background>
+		<band height="567" splitType="Stretch">
+			<image scaleImage="FillFrame">
+				<reportElement x="0" y="0" width="814" height="567" uuid="f9311a98-45b9-46a0-88be-c9b2e0bbb086"/>
+				<imageExpression><![CDATA[$P{bgImage}]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<title>
+		<band height="87" splitType="Stretch">
+			<textField>
+				<reportElement mode="Transparent" x="75" y="0" width="503" height="26" uuid="2dad189a-4ded-40ce-b9fe-89828bc02734"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Serif" size="20" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{School_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="75" y="26" width="501" height="23" uuid="1f47ba0a-c48b-4fe5-82d7-0a3c87152b12"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Serif" size="12" isBold="false"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{School_Posta}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="75" y="49" width="501" height="15" uuid="452cbab6-bd4a-4077-9698-72bad035c84b"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Serif" size="10" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{School_Motto}]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame" isUsingCache="true" onErrorType="Blank">
+				<reportElement mode="Transparent" x="0" y="2" width="75" height="79" uuid="283fbe4c-07b6-4de6-981c-f9d9ff1810d0"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<imageExpression><![CDATA[$F{School_logo}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement mode="Transparent" x="75" y="66" width="578" height="15" uuid="e473dc4e-ebfc-46d1-95a2-805468090c55"/>
+				<textElement>
+					<font fontName="Serif" size="10" isBold="true" isUnderline="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FORM "+$F{SE_StudentClass}+" "+$F{Term}+" "+$F{Year}+" CAT2 MARKS CONFIRMATION SHEET"]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="19">
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="5" y="5" width="40" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="5694e4c4-2f4c-4fbf-a3bd-d30f6b4ae1ab"/>
+				<textElement textAlignment="Right">
+					<font fontName="Serif" isBold="true"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<text><![CDATA[ADM NO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="45" y="5" width="108" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="ee033b7c-8c3d-4928-b7cd-7eec92dcd005"/>
+				<textElement>
+					<font fontName="Serif" isBold="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<text><![CDATA[NAME]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="153" y="5" width="43" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="6d3ac8d1-c3be-4c48-b398-844a5647c889"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[KCPE M]]></text>
+			</staticText>
+			<line>
+				<reportElement mode="Transparent" x="0" y="0" width="814" height="1" uuid="eb754398-29ef-4cf5-afcc-638d7fd041e7"/>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="240" y="5" width="24" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="ced3291f-797e-4e83-a02e-631e567dc426"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODE1}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="264" y="5" width="24" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="a42e5b25-fec4-42fb-bcc7-8686c82557ab"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODE2}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="288" y="5" width="24" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="9e9513d8-4469-4231-837a-571d98fb7a5c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODE3}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="312" y="5" width="24" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="8d413806-ab5e-4cf4-b9a3-e9d2fb78dae6"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODE4}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="336" y="5" width="24" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="7c20e1cb-8fbb-450e-b07f-d50ee102b087"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODE5}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="360" y="5" width="24" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="3c62400a-1c3b-43b9-8533-258a013e9ffa"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODE6}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="384" y="5" width="24" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="f144e7a8-dac6-4da1-98d2-5d19be44c95a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODE7}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="408" y="5" width="24" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="0cf5b0b0-a1ee-46e8-9885-58c747758896"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODE8}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="552" y="5" width="24" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="1d605347-f6cd-4249-bdc8-2860987b683d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODE14}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="504" y="5" width="24" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="cad62145-ca15-4d3d-b20f-a0b15bfbcb43"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODE12}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="528" y="5" width="24" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="463900e2-e3a6-4aed-ace7-ea3ab1aaa4b4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODE13}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="432" y="5" width="24" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="a1c8ba57-bb0b-4dea-9442-e2c21783731f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODE9}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="480" y="5" width="24" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="e80003c2-ceb9-4888-bf19-9e8ff447fbf1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODE11}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="456" y="5" width="24" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="bbde0c21-ad79-4688-aa65-82365ee4d9ec"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CODE10}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="196" y="5" width="44" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="deadfb5c-8545-4429-9b5d-c74e4f05f8b3"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[KCPE G]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="576" y="5" width="42" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="ee9a1a51-a4c8-45aa-b6a0-e116cd0fccdd"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ENTRY]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="618" y="5" width="35" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="2f810a96-9dd5-4b48-9872-8ab7ee8ff711"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="653" y="5" width="35" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="9376f8eb-f4aa-4c1a-a0e7-6a3e2c30aedf"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[M.PTS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="688" y="5" width="42" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="bde0df4b-adb9-4f6b-9d3d-881475de0b86"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[M.GRD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="730" y="5" width="42" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="a82e4cda-3d77-4bfc-8005-4b9336a5150e"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[S.POS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="772" y="5" width="40" height="13" forecolor="#000000" backcolor="#CCCCCC" uuid="5e65f311-023a-40cb-bb09-69a233bb2502"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[O.POS]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="12">
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="528" y="0" width="24" height="12" forecolor="#000000" uuid="943725fa-0d3c-4afe-9c4c-d4cae98e89c1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S13E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="153" y="0" width="43" height="12" forecolor="#000000" uuid="7753121e-f92f-4893-8b81-cb381989f527"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{kcpe_marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="288" y="0" width="24" height="12" forecolor="#000000" uuid="03b81638-ecf9-47f9-8036-84b716988822"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S3E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="576" y="0" width="42" height="12" forecolor="#000000" uuid="1bb7ccfb-427f-4abd-b789-ad7fdac3909f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SubjectEntries}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="653" y="0" width="35" height="12" forecolor="#000000" uuid="10b5a229-6c27-45af-ac11-184cb4991d1e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="264" y="0" width="24" height="12" forecolor="#000000" uuid="8230eb4d-228a-4beb-971d-69a5c705e566"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S2E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="336" y="0" width="24" height="12" forecolor="#000000" uuid="e88f2936-8657-434b-97c6-10f50014a971"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S5E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="480" y="0" width="24" height="12" forecolor="#000000" uuid="6b538e57-4e52-4bfc-9e1c-0fb9e46bd9b8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S11E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="196" y="0" width="44" height="12" forecolor="#000000" uuid="f316d6b7-bb33-40a9-9099-4b00df873f3a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{kcpe_grade}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="5" y="0" width="40" height="12" forecolor="#000000" uuid="8021666d-220a-442f-976d-460a1e9e077d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single" leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Student_ID}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="730" y="0" width="42" height="12" forecolor="#000000" uuid="853af1aa-4533-4d77-9e63-614834ba8919"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="504" y="0" width="24" height="12" forecolor="#000000" uuid="fb1d1759-bda1-4ef5-bdb3-6d66244d0e50"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S12E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="408" y="0" width="24" height="12" forecolor="#000000" uuid="d38aaf2b-985d-4ed2-8fa9-8b3236513bba"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S8E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="432" y="0" width="24" height="12" forecolor="#000000" uuid="df4729fb-6b57-408f-83c0-0c63d8915ee0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S9E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="618" y="0" width="35" height="12" forecolor="#000000" uuid="541879e1-86d4-4979-9c18-8845b31b4ac2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="240" y="0" width="24" height="12" forecolor="#000000" uuid="6533ccb5-65db-4feb-ac82-f616ecd153b7"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S1E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="772" y="0" width="40" height="12" forecolor="#000000" uuid="0b12fcd1-6bfd-428a-b4f6-dc320340e4fa"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="45" y="0" width="108" height="12" forecolor="#000000" uuid="43335d1d-d761-4305-8b59-cd0d5cf296b6"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single" leftIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""+$F{Student_name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="552" y="0" width="24" height="12" forecolor="#000000" uuid="1f41bb7d-4af4-428a-9e0f-81d94387dab4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S14E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="456" y="0" width="24" height="12" forecolor="#000000" uuid="dab33959-04ef-4f56-ab9d-565d3a13c198"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S10E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="688" y="0" width="42" height="12" forecolor="#000000" uuid="3937e42e-9cb2-4ff2-a4dd-c824d0314176"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="312" y="0" width="24" height="12" forecolor="#000000" uuid="d16b5a5c-b956-42aa-ab88-871ac1a67f85"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S4E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="384" y="0" width="24" height="12" forecolor="#000000" uuid="eb06f571-7060-438f-aecd-358aee18f826"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S7E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="360" y="0" width="24" height="12" forecolor="#000000" uuid="e1a7fb6c-d8e3-4387-8ca7-08cc0462e785"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S6E2Marks}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="34" width="812" height="20" forecolor="#999999" uuid="c51487a5-344f-4eb7-b082-8595400cca34"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[acme developed and supported by lySOFTS Call: +254797969142 Email:woramaslysofts@gmail.com
+]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

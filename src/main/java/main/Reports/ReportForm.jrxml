@@ -1,0 +1,2649 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Report Form" language="groovy" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="567" leftMargin="14" rightMargin="14" topMargin="14" bottomMargin="14" isTitleNewPage="true" whenResourceMissingType="Empty" uuid="31e3a7d3-0410-41b9-b280-40db0b81e192">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="830"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#FFFFFF"/>
+		</conditionalStyle>
+	</style>
+	<subDataset name="Table Dataset 1" uuid="31ee8623-079b-4e4f-a9b9-683d7966aa27">
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+	</subDataset>
+	<parameter name="ExamForm" class="java.lang.String"/>
+	<parameter name="ExamYear" class="java.lang.String"/>
+	<parameter name="ExamTerm" class="java.lang.String"/>
+	<parameter name="bgImage" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT tblschool.*,student_details.*,students_exams.*,tblClasses.* FROM tblschool inner join((student_details inner join students_exams on student_details.student_id=students_exams.SE_student_id)inner join tblClasses on tblClasses.class_name=student_details.Student_class) WHERE(students_exams.SE_StudentClass=$P{ExamForm} AND students_exams.Year=$P{ExamYear} AND students_exams.Term=$P{ExamTerm}) ORDER BY (Students_exams.TotalMarks +0) DESC]]>
+	</queryString>
+	<field name="School_Code" class="java.lang.Object"/>
+	<field name="School_id" class="java.lang.Object"/>
+	<field name="School_name" class="java.lang.Object"/>
+	<field name="School_Posta" class="java.lang.Object"/>
+	<field name="School_logo" class="java.lang.Object"/>
+	<field name="School_Motto" class="java.lang.Object"/>
+	<field name="School_Email" class="java.lang.Object"/>
+	<field name="School_Contact" class="java.lang.Object"/>
+	<field name="Principal_name" class="java.lang.Object"/>
+	<field name="Principal_Signature" class="java.lang.Object"/>
+	<field name="ClosingDate" class="java.lang.Object"/>
+	<field name="OpeningDate" class="java.lang.Object"/>
+	<field name="Full_Purchase" class="java.lang.Object"/>
+	<field name="TrialDeadline" class="java.lang.Object"/>
+	<field name="Student_ID" class="java.lang.Object"/>
+	<field name="Student_name" class="java.lang.Object"/>
+	<field name="Student_Class" class="java.lang.Object"/>
+	<field name="kcpe_marks" class="java.lang.Object"/>
+	<field name="kcpe_grade" class="java.lang.Object"/>
+	<field name="Picture" class="java.lang.Object"/>
+	<field name="DOA" class="java.lang.Object"/>
+	<field name="DOB" class="java.lang.Object"/>
+	<field name="Gender" class="java.lang.Object"/>
+	<field name="Mode_of_study" class="java.lang.Object"/>
+	<field name="House" class="java.lang.Object"/>
+	<field name="Father" class="java.lang.Object"/>
+	<field name="Mother" class="java.lang.Object"/>
+	<field name="Phone1" class="java.lang.Object"/>
+	<field name="Phone2" class="java.lang.Object"/>
+	<field name="SubjectEntries" class="java.lang.Object"/>
+	<field name="F1T1M" class="java.lang.Float"/>
+	<field name="F1T1P" class="java.lang.Object"/>
+	<field name="F1T2M" class="java.lang.Float"/>
+	<field name="F1T2P" class="java.lang.Object"/>
+	<field name="F1T3M" class="java.lang.Float"/>
+	<field name="F1T3P" class="java.lang.Object"/>
+	<field name="F2T1M" class="java.lang.Float"/>
+	<field name="F2T1P" class="java.lang.Object"/>
+	<field name="F2T2M" class="java.lang.Float"/>
+	<field name="F2T2P" class="java.lang.Object"/>
+	<field name="F2T3M" class="java.lang.Float"/>
+	<field name="F2T3P" class="java.lang.Object"/>
+	<field name="F3T1M" class="java.lang.Float"/>
+	<field name="F3T1P" class="java.lang.Object"/>
+	<field name="F3T2M" class="java.lang.Float"/>
+	<field name="F3T2P" class="java.lang.Object"/>
+	<field name="F3T3M" class="java.lang.Float"/>
+	<field name="F3T3P" class="java.lang.Object"/>
+	<field name="F4T1M" class="java.lang.Float"/>
+	<field name="F4T1P" class="java.lang.Object"/>
+	<field name="F4T2M" class="java.lang.Float"/>
+	<field name="F4T2P" class="java.lang.Object"/>
+	<field name="F4T3M" class="java.lang.Float"/>
+	<field name="F4T3P" class="java.lang.Object"/>
+	<field name="F1T1MG" class="java.lang.Object"/>
+	<field name="F1T1OP" class="java.lang.Object"/>
+	<field name="F1T2MG" class="java.lang.Object"/>
+	<field name="F1T2OP" class="java.lang.Object"/>
+	<field name="F1T3MG" class="java.lang.Object"/>
+	<field name="F1T3OP" class="java.lang.Object"/>
+	<field name="F2T1MG" class="java.lang.Object"/>
+	<field name="F2T1OP" class="java.lang.Object"/>
+	<field name="F2T2MG" class="java.lang.Object"/>
+	<field name="F2T2OP" class="java.lang.Object"/>
+	<field name="F2T3MG" class="java.lang.Object"/>
+	<field name="F2T3OP" class="java.lang.Object"/>
+	<field name="F3T1MG" class="java.lang.Object"/>
+	<field name="F3T1OP" class="java.lang.Object"/>
+	<field name="F3T2MG" class="java.lang.Object"/>
+	<field name="F3T2OP" class="java.lang.Object"/>
+	<field name="F3T3MG" class="java.lang.Object"/>
+	<field name="F3T3OP" class="java.lang.Object"/>
+	<field name="F4T1MG" class="java.lang.Object"/>
+	<field name="F4T1OP" class="java.lang.Object"/>
+	<field name="F4T2MG" class="java.lang.Object"/>
+	<field name="F4T2OP" class="java.lang.Object"/>
+	<field name="F4T3MG" class="java.lang.Object"/>
+	<field name="F4T3OP" class="java.lang.Object"/>
+	<field name="FeeRequired" class="java.lang.Object"/>
+	<field name="FeePaid" class="java.lang.Object"/>
+	<field name="FeeBalance" class="java.lang.Object"/>
+	<field name="SE_Student_id" class="java.lang.Object"/>
+	<field name="SE_StudentClass" class="java.lang.Object"/>
+	<field name="Year" class="java.lang.Object"/>
+	<field name="Term" class="java.lang.Object"/>
+	<field name="S1CODE" class="java.lang.Object"/>
+	<field name="S1NAME" class="java.lang.Object"/>
+	<field name="S1E1Marks" class="java.lang.Object"/>
+	<field name="S1E1Points" class="java.lang.Object"/>
+	<field name="S1E1Grade" class="java.lang.Object"/>
+	<field name="S1E2Marks" class="java.lang.Object"/>
+	<field name="S1E2Points" class="java.lang.Object"/>
+	<field name="S1E2Grade" class="java.lang.Object"/>
+	<field name="S1E3Marks" class="java.lang.Object"/>
+	<field name="S1E3Points" class="java.lang.Object"/>
+	<field name="S1E3Grade" class="java.lang.Object"/>
+	<field name="S1AVGMarks" class="java.lang.Object"/>
+	<field name="S1AVGPoints" class="java.lang.Object"/>
+	<field name="S1AVGGrade" class="java.lang.Object"/>
+	<field name="S1AVGPosition" class="java.lang.Object"/>
+	<field name="S1Remarks" class="java.lang.Object"/>
+	<field name="S1Teacher" class="java.lang.Object"/>
+	<field name="S2CODE" class="java.lang.Object"/>
+	<field name="S2NAME" class="java.lang.Object"/>
+	<field name="S2E1Marks" class="java.lang.Object"/>
+	<field name="S2E1Points" class="java.lang.Object"/>
+	<field name="S2E1Grade" class="java.lang.Object"/>
+	<field name="S2E2Marks" class="java.lang.Object"/>
+	<field name="S2E2Points" class="java.lang.Object"/>
+	<field name="S2E2Grade" class="java.lang.Object"/>
+	<field name="S2E3Marks" class="java.lang.Object"/>
+	<field name="S2E3Points" class="java.lang.Object"/>
+	<field name="S2E3Grade" class="java.lang.Object"/>
+	<field name="S2AVGMarks" class="java.lang.Object"/>
+	<field name="S2AVGPoints" class="java.lang.Object"/>
+	<field name="S2AVGGrade" class="java.lang.Object"/>
+	<field name="S2AVGPosition" class="java.lang.Object"/>
+	<field name="S2Remarks" class="java.lang.Object"/>
+	<field name="S2Teacher" class="java.lang.Object"/>
+	<field name="S3CODE" class="java.lang.Object"/>
+	<field name="S3NAME" class="java.lang.Object"/>
+	<field name="S3E1Marks" class="java.lang.Object"/>
+	<field name="S3E1Points" class="java.lang.Object"/>
+	<field name="S3E1Grade" class="java.lang.Object"/>
+	<field name="S3E2Marks" class="java.lang.Object"/>
+	<field name="S3E2Points" class="java.lang.Object"/>
+	<field name="S3E2Grade" class="java.lang.Object"/>
+	<field name="S3E3Marks" class="java.lang.Object"/>
+	<field name="S3E3Points" class="java.lang.Object"/>
+	<field name="S3E3Grade" class="java.lang.Object"/>
+	<field name="S3AVGMarks" class="java.lang.Object"/>
+	<field name="S3AVGPoints" class="java.lang.Object"/>
+	<field name="S3AVGGrade" class="java.lang.Object"/>
+	<field name="S3AVGPosition" class="java.lang.Object"/>
+	<field name="S3Remarks" class="java.lang.Object"/>
+	<field name="S3Teacher" class="java.lang.Object"/>
+	<field name="S4CODE" class="java.lang.Object"/>
+	<field name="S4NAME" class="java.lang.Object"/>
+	<field name="S4E1Marks" class="java.lang.Object"/>
+	<field name="S4E1Points" class="java.lang.Object"/>
+	<field name="S4E1Grade" class="java.lang.Object"/>
+	<field name="S4E2Marks" class="java.lang.Object"/>
+	<field name="S4E2Points" class="java.lang.Object"/>
+	<field name="S4E2Grade" class="java.lang.Object"/>
+	<field name="S4E3Marks" class="java.lang.Object"/>
+	<field name="S4E3Points" class="java.lang.Object"/>
+	<field name="S4E3Grade" class="java.lang.Object"/>
+	<field name="S4AVGMarks" class="java.lang.Object"/>
+	<field name="S4AVGPoints" class="java.lang.Object"/>
+	<field name="S4AVGGrade" class="java.lang.Object"/>
+	<field name="S4AVGPosition" class="java.lang.Object"/>
+	<field name="S4Remarks" class="java.lang.Object"/>
+	<field name="S4Teacher" class="java.lang.Object"/>
+	<field name="S5CODE" class="java.lang.Object"/>
+	<field name="S5NAME" class="java.lang.Object"/>
+	<field name="S5E1Marks" class="java.lang.Object"/>
+	<field name="S5E1Points" class="java.lang.Object"/>
+	<field name="S5E1Grade" class="java.lang.Object"/>
+	<field name="S5E2Marks" class="java.lang.Object"/>
+	<field name="S5E2Points" class="java.lang.Object"/>
+	<field name="S5E2Grade" class="java.lang.Object"/>
+	<field name="S5E3Marks" class="java.lang.Object"/>
+	<field name="S5E3Points" class="java.lang.Object"/>
+	<field name="S5E3Grade" class="java.lang.Object"/>
+	<field name="S5AVGMarks" class="java.lang.Object"/>
+	<field name="S5AVGPoints" class="java.lang.Object"/>
+	<field name="S5AVGGrade" class="java.lang.Object"/>
+	<field name="S5AVGPosition" class="java.lang.Object"/>
+	<field name="S5Remarks" class="java.lang.Object"/>
+	<field name="S5Teacher" class="java.lang.Object"/>
+	<field name="S6CODE" class="java.lang.Object"/>
+	<field name="S6NAME" class="java.lang.Object"/>
+	<field name="S6E1Marks" class="java.lang.Object"/>
+	<field name="S6E1Points" class="java.lang.Object"/>
+	<field name="S6E1Grade" class="java.lang.Object"/>
+	<field name="S6E2Marks" class="java.lang.Object"/>
+	<field name="S6E2Points" class="java.lang.Object"/>
+	<field name="S6E2Grade" class="java.lang.Object"/>
+	<field name="S6E3Marks" class="java.lang.Object"/>
+	<field name="S6E3Points" class="java.lang.Object"/>
+	<field name="S6E3Grade" class="java.lang.Object"/>
+	<field name="S6AVGMarks" class="java.lang.Object"/>
+	<field name="S6AVGPoints" class="java.lang.Object"/>
+	<field name="S6AVGGrade" class="java.lang.Object"/>
+	<field name="S6AVGPosition" class="java.lang.Object"/>
+	<field name="S6Remarks" class="java.lang.Object"/>
+	<field name="S6Teacher" class="java.lang.Object"/>
+	<field name="S7CODE" class="java.lang.Object"/>
+	<field name="S7NAME" class="java.lang.Object"/>
+	<field name="S7E1Marks" class="java.lang.Object"/>
+	<field name="S7E1Points" class="java.lang.Object"/>
+	<field name="S7E1Grade" class="java.lang.Object"/>
+	<field name="S7E2Marks" class="java.lang.Object"/>
+	<field name="S7E2Points" class="java.lang.Object"/>
+	<field name="S7E2Grade" class="java.lang.Object"/>
+	<field name="S7E3Marks" class="java.lang.Object"/>
+	<field name="S7E3Points" class="java.lang.Object"/>
+	<field name="S7E3Grade" class="java.lang.Object"/>
+	<field name="S7AVGMarks" class="java.lang.Object"/>
+	<field name="S7AVGPoints" class="java.lang.Object"/>
+	<field name="S7AVGGrade" class="java.lang.Object"/>
+	<field name="S7AVGPosition" class="java.lang.Object"/>
+	<field name="S7Remarks" class="java.lang.Object"/>
+	<field name="S7Teacher" class="java.lang.Object"/>
+	<field name="S8CODE" class="java.lang.Object"/>
+	<field name="S8NAME" class="java.lang.Object"/>
+	<field name="S8E1Marks" class="java.lang.Object"/>
+	<field name="S8E1Points" class="java.lang.Object"/>
+	<field name="S8E1Grade" class="java.lang.Object"/>
+	<field name="S8E2Marks" class="java.lang.Object"/>
+	<field name="S8E2Points" class="java.lang.Object"/>
+	<field name="S8E2Grade" class="java.lang.Object"/>
+	<field name="S8E3Marks" class="java.lang.Object"/>
+	<field name="S8E3Points" class="java.lang.Object"/>
+	<field name="S8E3Grade" class="java.lang.Object"/>
+	<field name="S8AVGMarks" class="java.lang.Object"/>
+	<field name="S8AVGPoints" class="java.lang.Object"/>
+	<field name="S8AVGGrade" class="java.lang.Object"/>
+	<field name="S8AVGPosition" class="java.lang.Object"/>
+	<field name="S8Remarks" class="java.lang.Object"/>
+	<field name="S8Teacher" class="java.lang.Object"/>
+	<field name="S9CODE" class="java.lang.Object"/>
+	<field name="S9NAME" class="java.lang.Object"/>
+	<field name="S9E1Marks" class="java.lang.Object"/>
+	<field name="S9E1Points" class="java.lang.Object"/>
+	<field name="S9E1Grade" class="java.lang.Object"/>
+	<field name="S9E2Marks" class="java.lang.Object"/>
+	<field name="S9E2Points" class="java.lang.Object"/>
+	<field name="S9E2Grade" class="java.lang.Object"/>
+	<field name="S9E3Marks" class="java.lang.Object"/>
+	<field name="S9E3Points" class="java.lang.Object"/>
+	<field name="S9E3Grade" class="java.lang.Object"/>
+	<field name="S9AVGMarks" class="java.lang.Object"/>
+	<field name="S9AVGPoints" class="java.lang.Object"/>
+	<field name="S9AVGGrade" class="java.lang.Object"/>
+	<field name="S9AVGPosition" class="java.lang.Object"/>
+	<field name="S9Remarks" class="java.lang.Object"/>
+	<field name="S9Teacher" class="java.lang.Object"/>
+	<field name="S10CODE" class="java.lang.Object"/>
+	<field name="S10NAME" class="java.lang.Object"/>
+	<field name="S10E1Marks" class="java.lang.Object"/>
+	<field name="S10E1Points" class="java.lang.Object"/>
+	<field name="S10E1Grade" class="java.lang.Object"/>
+	<field name="S10E2Marks" class="java.lang.Object"/>
+	<field name="S10E2Points" class="java.lang.Object"/>
+	<field name="S10E2Grade" class="java.lang.Object"/>
+	<field name="S10E3Marks" class="java.lang.Object"/>
+	<field name="S10E3Points" class="java.lang.Object"/>
+	<field name="S10E3Grade" class="java.lang.Object"/>
+	<field name="S10AVGMarks" class="java.lang.Object"/>
+	<field name="S10AVGPoints" class="java.lang.Object"/>
+	<field name="S10AVGGrade" class="java.lang.Object"/>
+	<field name="S10AVGPosition" class="java.lang.Object"/>
+	<field name="S10Remarks" class="java.lang.Object"/>
+	<field name="S10Teacher" class="java.lang.Object"/>
+	<field name="S11CODE" class="java.lang.Object"/>
+	<field name="S11NAME" class="java.lang.Object"/>
+	<field name="S11E1Marks" class="java.lang.Object"/>
+	<field name="S11E1Points" class="java.lang.Object"/>
+	<field name="S11E1Grade" class="java.lang.Object"/>
+	<field name="S11E2Marks" class="java.lang.Object"/>
+	<field name="S11E2Points" class="java.lang.Object"/>
+	<field name="S11E2Grade" class="java.lang.Object"/>
+	<field name="S11E3Marks" class="java.lang.Object"/>
+	<field name="S11E3Points" class="java.lang.Object"/>
+	<field name="S11E3Grade" class="java.lang.Object"/>
+	<field name="S11AVGMarks" class="java.lang.Object"/>
+	<field name="S11AVGPoints" class="java.lang.Object"/>
+	<field name="S11AVGGrade" class="java.lang.Object"/>
+	<field name="S11AVGPosition" class="java.lang.Object"/>
+	<field name="S11Remarks" class="java.lang.Object"/>
+	<field name="S11Teacher" class="java.lang.Object"/>
+	<field name="S12CODE" class="java.lang.Object"/>
+	<field name="S12NAME" class="java.lang.Object"/>
+	<field name="S12E1Marks" class="java.lang.Object"/>
+	<field name="S12E1Points" class="java.lang.Object"/>
+	<field name="S12E1Grade" class="java.lang.Object"/>
+	<field name="S12E2Marks" class="java.lang.Object"/>
+	<field name="S12E2Points" class="java.lang.Object"/>
+	<field name="S12E2Grade" class="java.lang.Object"/>
+	<field name="S12E3Marks" class="java.lang.Object"/>
+	<field name="S12E3Points" class="java.lang.Object"/>
+	<field name="S12E3Grade" class="java.lang.Object"/>
+	<field name="S12AVGMarks" class="java.lang.Object"/>
+	<field name="S12AVGPoints" class="java.lang.Object"/>
+	<field name="S12AVGGrade" class="java.lang.Object"/>
+	<field name="S12AVGPosition" class="java.lang.Object"/>
+	<field name="S12Remarks" class="java.lang.Object"/>
+	<field name="S12Teacher" class="java.lang.Object"/>
+	<field name="S13CODE" class="java.lang.Object"/>
+	<field name="S13NAME" class="java.lang.Object"/>
+	<field name="S13E1Marks" class="java.lang.Object"/>
+	<field name="S13E1Points" class="java.lang.Object"/>
+	<field name="S13E1Grade" class="java.lang.Object"/>
+	<field name="S13E2Marks" class="java.lang.Object"/>
+	<field name="S13E2Points" class="java.lang.Object"/>
+	<field name="S13E2Grade" class="java.lang.Object"/>
+	<field name="S13E3Marks" class="java.lang.Object"/>
+	<field name="S13E3Points" class="java.lang.Object"/>
+	<field name="S13E3Grade" class="java.lang.Object"/>
+	<field name="S13AVGMarks" class="java.lang.Object"/>
+	<field name="S13AVGPoints" class="java.lang.Object"/>
+	<field name="S13AVGGrade" class="java.lang.Object"/>
+	<field name="S13AVGPosition" class="java.lang.Object"/>
+	<field name="S13Remarks" class="java.lang.Object"/>
+	<field name="S13Teacher" class="java.lang.Object"/>
+	<field name="S14CODE" class="java.lang.Object"/>
+	<field name="S14NAME" class="java.lang.Object"/>
+	<field name="S14E1Marks" class="java.lang.Object"/>
+	<field name="S14E1Points" class="java.lang.Object"/>
+	<field name="S14E1Grade" class="java.lang.Object"/>
+	<field name="S14E2Marks" class="java.lang.Object"/>
+	<field name="S14E2Points" class="java.lang.Object"/>
+	<field name="S14E2Grade" class="java.lang.Object"/>
+	<field name="S14E3Marks" class="java.lang.Object"/>
+	<field name="S14E3Points" class="java.lang.Object"/>
+	<field name="S14E3Grade" class="java.lang.Object"/>
+	<field name="S14AVGMarks" class="java.lang.Object"/>
+	<field name="S14AVGPoints" class="java.lang.Object"/>
+	<field name="S14AVGGrade" class="java.lang.Object"/>
+	<field name="S14AVGPosition" class="java.lang.Object"/>
+	<field name="S14Remarks" class="java.lang.Object"/>
+	<field name="S14Teacher" class="java.lang.Object"/>
+	<field name="Exam1TotalMarks" class="java.lang.Object"/>
+	<field name="Exam1MeanPoints" class="java.lang.Object"/>
+	<field name="Exam1MeanGrade" class="java.lang.Object"/>
+	<field name="Exam1StreamPosition" class="java.lang.Object"/>
+	<field name="Exam1OverallPosition" class="java.lang.Object"/>
+	<field name="Exam2TotalMarks" class="java.lang.Object"/>
+	<field name="Exam2MeanPoints" class="java.lang.Object"/>
+	<field name="Exam2MeanGrade" class="java.lang.Object"/>
+	<field name="Exam2StreamPosition" class="java.lang.Object"/>
+	<field name="Exam2OverallPosition" class="java.lang.Object"/>
+	<field name="Exam3TotalMarks" class="java.lang.Object"/>
+	<field name="Exam3MeanPoints" class="java.lang.Object"/>
+	<field name="Exam3MeanGrade" class="java.lang.Object"/>
+	<field name="Exam3StreamPosition" class="java.lang.Object"/>
+	<field name="Exam3OverallPosition" class="java.lang.Object"/>
+	<field name="TOTALMarks" class="java.lang.Float"/>
+	<field name="TotalOutOf" class="java.lang.Object"/>
+	<field name="MeanPoints" class="java.lang.Float"/>
+	<field name="MeanGrade" class="java.lang.Object"/>
+	<field name="StreamPosition" class="java.lang.Object"/>
+	<field name="OverallPosition" class="java.lang.Object"/>
+	<field name="OverallRemarks" class="java.lang.Object"/>
+	<field name="StreamOutOf" class="java.lang.Object"/>
+	<field name="OverallOutOf" class="java.lang.Object"/>
+	<field name="Class_name" class="java.lang.Object"/>
+	<field name="Class_Teacher" class="java.lang.Object"/>
+	<field name="ClassTeacher_Signature" class="java.lang.Object"/>
+	<field name="Entry" class="java.lang.Object"/>
+	<field name="AverageMarks" class="java.lang.Object"/>
+	<field name="MeanPoints:1" class="java.lang.Object"/>
+	<field name="Position" class="java.lang.Object"/>
+	<field name="Ap" class="java.lang.Object"/>
+	<field name="Amns" class="java.lang.Object"/>
+	<field name="Bpls" class="java.lang.Object"/>
+	<field name="Bp" class="java.lang.Object"/>
+	<field name="Bmns" class="java.lang.Object"/>
+	<field name="Cpls" class="java.lang.Object"/>
+	<field name="Cp" class="java.lang.Object"/>
+	<field name="Cmns" class="java.lang.Object"/>
+	<field name="Dpls" class="java.lang.Object"/>
+	<field name="Dp" class="java.lang.Object"/>
+	<field name="Dmns" class="java.lang.Object"/>
+	<field name="Ep" class="java.lang.Object"/>
+	<background>
+		<band height="814" splitType="Stretch">
+			<image scaleImage="FillFrame">
+				<reportElement x="0" y="0" width="567" height="814" uuid="8e30bbd2-afc5-40f2-91b7-6ed38fa5ec7d"/>
+				<imageExpression><![CDATA[$P{bgImage}]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<title>
+		<band height="814">
+			<image scaleImage="FillFrame" isUsingCache="true" onErrorType="Blank">
+				<reportElement x="195" y="69" width="183" height="189" uuid="b3e93c69-f5a9-423f-a84c-26f35375e12c"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<imageExpression><![CDATA[$F{School_logo}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="13" y="274" width="543" height="43" uuid="3bb63945-1bb0-4968-abde-f41f0aae4170"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="22" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{School_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="13" y="317" width="543" height="36" uuid="28687c40-af3f-4505-b772-c5deea81db4a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="15" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{School_Posta}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="13" y="416" width="543" height="204" forecolor="#00CC33" uuid="d50c5a2e-39ff-437f-bfc8-79da63d816e6"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="34" isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FORM "+$F{Student_Class}+" "+ $F{Term}+" "+$F{Year}+" REPORT FORM"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="13" y="351" width="543" height="32" uuid="cc3cc4e1-a70f-450d-93d2-205f6f094a67"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="16" isBold="true" isItalic="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{School_Motto}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<detail>
+		<band height="789" splitType="Stretch">
+			<line>
+				<reportElement x="13" y="80" width="543" height="2" forecolor="#00CC00" backcolor="#00CC00" uuid="f259c004-6210-4e32-8277-9d55ba72557e"/>
+			</line>
+			<staticText>
+				<reportElement style="table_TD" mode="Transparent" x="13" y="91" width="55" height="16" uuid="312db4d6-bbb9-4967-9d88-10e86210c8a8"/>
+				<textElement>
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="1"/>
+				</textElement>
+				<text><![CDATA[NAME]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="68" y="91" width="183" height="16" uuid="386fe2ea-18ee-4e32-b058-ce5876d7203d"/>
+				<textElement>
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="1"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Student_name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="306" y="91" width="83" height="16" uuid="21e27583-6c08-4c68-b100-b2bec7573e6a"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Student_ID}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table_TD" mode="Transparent" x="251" y="91" width="55" height="16" uuid="96b8ec86-1a76-4a1b-8dc7-14b0a046e8c1"/>
+				<textElement>
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="1"/>
+				</textElement>
+				<text><![CDATA[ADM NO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" mode="Transparent" x="389" y="91" width="60" height="16" uuid="2bede20b-86e8-4d00-8a3a-ea1828953de3"/>
+				<textElement>
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="1"/>
+				</textElement>
+				<text><![CDATA[FORM:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="449" y="91" width="110" height="16" uuid="a08dc096-7eee-4b36-a385-8f2c4dcaaf80"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Student_Class}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="68" y="110" width="183" height="16" uuid="3452ab68-251e-4343-b01e-b2d306cc25a6"/>
+				<textElement>
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="1"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{House}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table_TD" mode="Transparent" x="13" y="110" width="55" height="16" uuid="b92c47cc-0898-4d19-addf-a48bc8378e70"/>
+				<textElement>
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="1"/>
+				</textElement>
+				<text><![CDATA[HOUSE:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" mode="Transparent" x="251" y="110" width="55" height="16" uuid="7a7eff08-7d04-48a4-bc91-87170d2d9da7"/>
+				<textElement>
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="1"/>
+				</textElement>
+				<text><![CDATA[KCPE M:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="306" y="110" width="83" height="16" uuid="27f219d7-76a6-4a3a-abe0-3c5f69183fb8"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{kcpe_marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="85" y="131" width="53" height="16" uuid="ea5a1f93-ed35-4a66-be01-c88bc55de596"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{StreamPosition}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="361" y="130" width="58" height="16" uuid="4dbd1b36-731d-49af-a838-a1733435c581"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OverallPosition}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="361" y="149" width="58" height="16" uuid="0bda468b-ba78-47f8-a724-3c31d0d114f0"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{MeanPoints}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table_TD" mode="Transparent" x="140" y="150" width="55" height="16" uuid="17945a01-01b3-413b-987a-238f220aa95a"/>
+				<textElement>
+					<font fontName="Serif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[OUT OF:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" mode="Transparent" x="13" y="131" width="72" height="16" uuid="35fc895f-f613-4b96-9d46-b0b44bb241d6"/>
+				<textElement>
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="1"/>
+				</textElement>
+				<text><![CDATA[STRM POS:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="195" y="150" width="56" height="16" uuid="c2a9733e-f271-4c22-8074-4248d45c1c01"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TotalOutOf}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table_TD" mode="Transparent" x="306" y="149" width="55" height="16" uuid="8262ca24-fe13-4631-beff-87ecab353f36"/>
+				<textElement>
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="1"/>
+				</textElement>
+				<text><![CDATA[M.PTS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" mode="Transparent" x="13" y="150" width="72" height="16" uuid="ed5342bc-73f9-47ce-affb-ec2c966d193b"/>
+				<textElement>
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="1"/>
+				</textElement>
+				<text><![CDATA[TOTAL:]]></text>
+			</staticText>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="85" y="150" width="53" height="16" uuid="c3cd43cc-8b20-432b-b5c6-fd98ee71e0d1"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TOTALMarks}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table_TD" mode="Transparent" x="140" y="131" width="55" height="16" uuid="917b4a66-bb22-4597-98ce-c662452b6cb7"/>
+				<textElement>
+					<font fontName="Serif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[OUT OF:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="195" y="131" width="56" height="16" uuid="02bf0c81-0b23-4417-bc89-71dd2d414af2"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{StreamOutOf}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table_TD" mode="Transparent" x="306" y="130" width="55" height="16" uuid="5b49a349-bc18-4e30-8561-5993cbed0583"/>
+				<textElement>
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="1"/>
+				</textElement>
+				<text><![CDATA[OVR POS:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="474" y="130" width="84" height="16" uuid="7152cfec-de39-4808-a70a-f00c6d070831"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OverallOutOf}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table_TD" mode="Transparent" x="419" y="130" width="55" height="16" uuid="ac8104f2-0087-448d-a3df-061a25fe714d"/>
+				<textElement>
+					<font fontName="Serif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[OUT OF:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" mode="Transparent" x="419" y="149" width="55" height="16" uuid="38e03feb-07a0-4041-a8b0-a99972960d1f"/>
+				<textElement>
+					<font fontName="Serif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[M. GRD]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="474" y="149" width="84" height="16" uuid="04057810-7bc8-41e6-980d-5c6200796654"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{MeanGrade}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table_TD" mode="Transparent" x="389" y="110" width="60" height="16" uuid="0c701fc4-b5cf-408f-af67-f6007330225e"/>
+				<textElement>
+					<font fontName="Serif" size="11" isBold="true"/>
+					<paragraph leftIndent="1"/>
+				</textElement>
+				<text><![CDATA[KCPE GRD:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" mode="Transparent" x="449" y="110" width="110" height="16" uuid="e475add2-69eb-4597-8373-7fd8fb9c16e7"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{kcpe_grade}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="23" y="612" width="100" height="20" uuid="d16a5a5e-22e4-4a5a-ac71-a133cb8cc9a9"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font fontName="Serif" size="12" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Remarks]]></text>
+			</staticText>
+			<textField>
+				<reportElement mode="Transparent" x="23" y="632" width="228" height="65" uuid="d9c3dbf0-4fa5-44b0-841a-a570e4058554"/>
+				<textElement>
+					<font fontName="Serif" size="11" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OverallRemarks}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="261" y="678" width="142" height="19" uuid="a8b96bd1-0e0e-4c56-a25e-23d3ad0a0dda"/>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Serif" size="12" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Class_Teacher}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="262" y="624" width="85" height="20" uuid="067b7cfe-ea6b-41f6-9eea-bc9f82b75ffc"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font fontName="Serif" size="12" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Class Teacher]]></text>
+			</staticText>
+			<image scaleImage="FillFrame" isUsingCache="true" onErrorType="Blank">
+				<reportElement x="262" y="644" width="116" height="34" uuid="4059bf26-7337-4de3-9ab5-1692c043584d"/>
+				<imageExpression><![CDATA[$F{ClassTeacher_Signature}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement mode="Transparent" x="418" y="678" width="141" height="19" uuid="cd1915d5-2773-4769-a72d-0183869b1717"/>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Serif" size="12" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Principal_name}]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame" isUsingCache="true" onErrorType="Blank">
+				<reportElement x="419" y="644" width="139" height="34" uuid="d88dcb13-d11e-4904-bea3-005c67f5319c"/>
+				<imageExpression><![CDATA[$F{Principal_Signature}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="419" y="624" width="85" height="20" uuid="5af0b3a2-57b7-4044-a52c-533a5c74aa0d"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font fontName="Serif" size="12" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Principal]]></text>
+			</staticText>
+			<image scaleImage="FillFrame" isUsingCache="true" onErrorType="Blank">
+				<reportElement x="486" y="1" width="70" height="68" uuid="b7750c38-40f8-440b-a0af-a9a7655089dc"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<imageExpression><![CDATA[$F{Picture}]]></imageExpression>
+			</image>
+			<image scaleImage="FillFrame" isUsingCache="true" onErrorType="Blank">
+				<reportElement x="13" y="0" width="68" height="68" uuid="8851a243-1eb9-4889-bd27-c98f6a634bef"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<imageExpression><![CDATA[$F{School_logo}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement mode="Transparent" x="68" y="46" width="429" height="15" uuid="51845e25-4b55-4418-9027-a510e51c3f5b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="10" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{School_Motto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="68" y="61" width="429" height="19" uuid="ee202877-1f45-438c-aa36-69a0896cf337"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FORM "+$F{Student_Class}+" "+ $F{Term}+" "+$F{Year}+" REPORT FORM"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="68" y="27" width="429" height="19" uuid="d7554a2c-c68c-41ad-9973-61cf87da855e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="13" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{School_Posta}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="68" y="1" width="429" height="26" uuid="441824ce-724d-48f0-9ae9-0653aef0c840"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="20" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{School_name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="270" y="196" width="36" height="16" uuid="6f0be967-ed27-43c0-83b7-735e9cae351c"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S1AVGPoints}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="342" y="196" width="36" height="16" uuid="7dc09d6f-19c7-470c-95e7-28743dc59bca"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S1AVGPosition}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="306" y="212" width="36" height="16" uuid="ae4f6718-76e0-4694-9d12-7e58452b4af8"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S2AVGGrade}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="342" y="212" width="36" height="16" uuid="ead85096-7e93-4671-b308-a57b28e402b3"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S2AVGPosition}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="378" y="212" width="119" height="16" uuid="4e7daa81-f036-4255-9bea-fdd2d2f0e785"/>
+				<textElement verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isItalic="true" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S2Remarks}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="162" y="180" width="36" height="16" uuid="7460ff37-ff38-4481-b52a-b29934906c7b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Serif" size="11" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[CAT2]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="162" y="196" width="36" height="16" uuid="729112c4-9cfd-4e95-a426-82cf63a260e2"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S1E2Marks}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="497" y="180" width="62" height="16" uuid="25c7e301-5362-422b-953a-3b8dca40a4b9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Serif" size="11" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[T. INITIAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="234" y="180" width="36" height="16" uuid="62197849-9d33-4db9-94a6-ab0ba58c4037"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Serif" size="11" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[AVG]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="126" y="196" width="36" height="16" uuid="7e5c0b30-b6b8-4716-9746-3cfb635aed18"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S1E1Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="126" y="212" width="36" height="16" uuid="aa2f735a-2cd0-408a-a611-b5fa6c2dc95e"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S2E1Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="198" y="212" width="36" height="16" uuid="4fd4de28-6f20-460d-b831-09f962e52cfe"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S2E3Marks}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="270" y="180" width="36" height="16" uuid="5286ca89-dd44-43ae-8d18-362b8d162078"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Serif" size="11" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[PTS]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="198" y="196" width="36" height="16" uuid="5fcbb358-1e27-45da-8b1c-2374ee8e6e96"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S1E3Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="497" y="196" width="62" height="16" uuid="8bcfa263-8433-4724-bcdd-784b91c50c2f"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S1Teacher}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="306" y="196" width="36" height="16" uuid="cf44cd30-7441-447a-b6b8-d6a4220b6f5d"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S1AVGGrade}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="342" y="180" width="36" height="16" uuid="d56d5563-6a6b-463b-9124-702a921c6b28"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Serif" size="11" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[POS]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="270" y="212" width="36" height="16" uuid="ba9698e7-4c84-41a0-9f5c-ebf34597a191"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S2AVGPoints}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="126" y="180" width="36" height="16" uuid="a744d550-3ea1-4508-9e5f-16f7fe105bd3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Serif" size="11" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[CAT1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="198" y="180" width="36" height="16" uuid="824b03a2-32a9-475c-8f1a-f071c8ef342c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Serif" size="11" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[CAT3]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="378" y="180" width="119" height="16" uuid="863cdd67-7e3a-4a29-8352-fbf19a87008a"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font fontName="Serif" size="11" isBold="true" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<text><![CDATA[REMARKS]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="234" y="212" width="36" height="16" uuid="d512053f-9090-484b-a1ea-ec9d253b3879"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S2AVGMarks}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="306" y="180" width="36" height="16" uuid="fe2c156e-2f98-4cb5-8609-a64a449e4000"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Serif" size="11" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[GRD]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="162" y="212" width="36" height="16" uuid="e8477c7a-66e9-4d38-ad96-16376ca028f1"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S2E2Marks}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="13" y="180" width="113" height="16" uuid="0846bf68-001a-49f3-9315-0586ab2be5a2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[SUBJECT]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="378" y="196" width="119" height="16" uuid="2085545f-2892-4c7a-8881-6da152577148"/>
+				<textElement verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isItalic="true" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S1Remarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="234" y="196" width="36" height="16" uuid="742cb3de-4550-4652-a9b5-f3e007811541"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S1AVGMarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="497" y="212" width="62" height="16" uuid="cc56cacd-3888-46b4-84de-d28e061e35dc"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S2Teacher}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="13" y="244" width="113" height="16" uuid="4a7ed7ff-c2b0-4601-8d43-ac9ba4b7b24f"/>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S4NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="13" y="212" width="113" height="16" uuid="54c6c126-d0e8-492e-b7e9-35489a92a6c7"/>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S2NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="198" y="244" width="36" height="16" uuid="9e562b4e-8f78-4a09-a1e0-6b93901463f3"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S4E3Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="162" y="244" width="36" height="16" uuid="0cfe4457-9b21-4141-afc2-c7601cb4b80b"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S4E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="342" y="228" width="36" height="16" uuid="e4c89c59-8d99-4619-a10b-535aa31bd796"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S3AVGPosition}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="162" y="228" width="36" height="16" uuid="cbd9c847-dd46-43a5-8b95-8d5fb6a246ff"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S3E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="306" y="244" width="36" height="16" uuid="29a3d424-8b85-4656-83a1-ae34405fe626"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S4AVGGrade}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="234" y="228" width="36" height="16" uuid="8b060cec-af41-4b3e-9c44-b0bbbc060543"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S3AVGMarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="126" y="228" width="36" height="16" uuid="7706be30-0075-4d3b-a283-f46904230ef1"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S3E1Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="270" y="228" width="36" height="16" uuid="522cfe60-e08b-4b05-af65-d27d0dec54f3"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S3AVGPoints}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="13" y="228" width="113" height="16" uuid="b8622526-0a4d-40a7-b746-1f628e39a4cf"/>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S3NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="378" y="244" width="119" height="16" uuid="d2c854c3-17db-47d2-8cd2-b0d45508bddd"/>
+				<textElement verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isItalic="true" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S4Remarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="342" y="244" width="36" height="16" uuid="b81a5f03-36f6-4701-a352-03e8e59b859a"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S4AVGPosition}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="198" y="228" width="36" height="16" uuid="8c382e69-1660-427e-8bd1-04e38d422916"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S3E3Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="270" y="244" width="36" height="16" uuid="58f00a7f-4526-4833-9227-71cfb9bc5c01"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S4AVGPoints}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="306" y="228" width="36" height="16" uuid="b4ad1d38-f4c6-4f7f-be94-5b64e3e532d2"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S3AVGGrade}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="126" y="244" width="36" height="16" uuid="1495b994-2b7d-408b-9a50-7db499d4dfd6"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S4E1Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="234" y="244" width="36" height="16" uuid="56a58d2b-7643-4c7c-96e0-67fe759ac700"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S4AVGMarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="378" y="228" width="119" height="16" uuid="37d2ed71-4c94-4fa7-9a40-f9ae13af7b27"/>
+				<textElement verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isItalic="true" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S3Remarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="497" y="244" width="62" height="16" uuid="490c6477-4a60-4f7f-9843-38bfcf920a0f"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S4Teacher}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="497" y="228" width="62" height="16" uuid="3dd62922-bd10-4a95-9998-b24f4d87ee42"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S3Teacher}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="378" y="292" width="119" height="16" uuid="37215d10-f1d6-4735-9025-c7243af16946"/>
+				<textElement verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isItalic="true" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S7Remarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="126" y="308" width="36" height="16" uuid="9e72fdac-d0e0-4ccf-974b-0b49fd606e13"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S8E1Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="198" y="276" width="36" height="16" uuid="9a597c6d-2ec6-4008-9126-00607b89540d"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S6E3Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="162" y="276" width="36" height="16" uuid="931707c5-1e78-4083-9775-93902389bfdf"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S6E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="162" y="292" width="36" height="16" uuid="3f86d7e0-80f8-478b-a59c-b8b6d6b4a446"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S7E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="342" y="260" width="36" height="16" uuid="b07c3e7e-baaf-4bbc-89bd-932806a46665"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S5AVGPosition}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="13" y="308" width="113" height="16" uuid="a044528c-b650-438a-83bd-0cce7e7d1a20"/>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S8NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="162" y="260" width="36" height="16" uuid="45c99e26-91a4-4349-99e9-f77c0cc43f01"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S5E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="198" y="292" width="36" height="16" uuid="01154d14-f033-4f3f-aac6-9e969f919b15"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S7E3Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="306" y="276" width="36" height="16" uuid="a2fb194c-aa24-4121-a4ab-334b45eeda88"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S6AVGGrade}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="13" y="276" width="113" height="16" uuid="80671413-39c6-409c-b31b-70cdfdd61d4c"/>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S6NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="270" y="308" width="36" height="16" uuid="b013e7db-9543-46b9-8e19-05824b108e2d"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S8AVGPoints}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="234" y="260" width="36" height="16" uuid="d9b7e4ea-0d5c-4452-86b0-116f8c59e2f3"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S5AVGMarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="497" y="292" width="62" height="16" uuid="9fed19e4-b577-4551-80d5-967dd20d3dcf"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S7Teacher}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="126" y="260" width="36" height="16" uuid="9e250a0f-2afd-4168-b48c-6cfaa352793e"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S5E1Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="342" y="292" width="36" height="16" uuid="4831f54d-4e70-41b7-b41a-43f48746cfeb"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S7AVGPosition}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="306" y="292" width="36" height="16" uuid="685c4ff5-82c7-4c58-a983-6e67760ccca1"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S7AVGGrade}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="270" y="260" width="36" height="16" uuid="db8f6ec6-e9f4-4ba6-af6b-1b27845d2346"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S5AVGPoints}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="126" y="292" width="36" height="16" uuid="c920818b-cbdf-441a-8875-7ddc79ef26de"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S7E1Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="13" y="260" width="113" height="16" uuid="f4f0ce6b-658e-42a5-bbfe-3220b2983b15"/>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S5NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="270" y="292" width="36" height="16" uuid="be4bc680-d469-4cca-952a-e60098cb923f"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S7AVGPoints}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="378" y="276" width="119" height="16" uuid="32fca954-cb92-4db7-8c41-14d9c0f7918b"/>
+				<textElement verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isItalic="true" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S6Remarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="162" y="308" width="36" height="16" uuid="b54b243a-1b6e-4672-89d1-40b40c4ed621"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S8E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="378" y="308" width="119" height="16" uuid="c1fca529-33d8-441e-a95f-09ec6ec0745b"/>
+				<textElement verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isItalic="true" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S8Remarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="342" y="276" width="36" height="16" uuid="21e04969-ced0-4152-ace5-1f3c8758f422"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S6AVGPosition}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="198" y="260" width="36" height="16" uuid="9ec676c5-39e5-4268-a48b-a85bf7233fdd"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S5E3Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="342" y="308" width="36" height="16" uuid="dd03dba6-a67f-4f9e-b43d-6d904484f850"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S8AVGPosition}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="270" y="276" width="36" height="16" uuid="4bb5c21c-d531-490b-90fd-de0d7e574b4b"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S6AVGPoints}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="13" y="292" width="113" height="16" uuid="8547a0b6-aa5d-470d-b999-38ab628e2f03"/>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S7NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="234" y="308" width="36" height="16" uuid="5acd4a0d-f682-486f-a08c-8dda4a8e0440"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S8AVGMarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="306" y="308" width="36" height="16" uuid="6a1d9d62-696f-4b94-ab29-0c7fe5d4845a"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S8AVGGrade}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="306" y="260" width="36" height="16" uuid="04ddea58-3e4b-416f-bcba-b64a0beb228e"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S5AVGGrade}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="126" y="276" width="36" height="16" uuid="eeb2d3ff-f908-456c-9f2b-106e72c5b91c"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S6E1Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="234" y="276" width="36" height="16" uuid="dc5d3f1c-f922-4aac-84d3-813ef2fada69"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S6AVGMarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="497" y="308" width="62" height="16" uuid="a4c875cc-dd0d-49a0-986a-07a3987e990c"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S8Teacher}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="378" y="260" width="119" height="16" uuid="ea8236a2-224f-49c5-a25f-d4b1403eeca0"/>
+				<textElement verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isItalic="true" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S5Remarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="198" y="308" width="36" height="16" uuid="1f4efd0f-a0da-4931-af46-ecb7c771b650"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S8E3Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="497" y="276" width="62" height="16" uuid="9410d254-8f55-4f46-9e3b-f9d40d4bf485"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S6Teacher}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="234" y="292" width="36" height="16" uuid="2d87a49e-c54f-40cf-bb1a-5852907b946f"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S7AVGMarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="497" y="260" width="62" height="16" uuid="a7315a62-07bd-4c64-8089-635846ba8274"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S5Teacher}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="126" y="340" width="36" height="16" uuid="f223f3b0-dc4a-4304-9035-1d8f9418ebad"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S10E1Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="198" y="340" width="36" height="16" uuid="3fde4970-b1a7-4f69-906b-7481dad9e48d"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S9E3Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="306" y="340" width="36" height="16" uuid="e36dc9d2-a310-4b1b-9024-2de9f5703776"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S10AVGGrade}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="126" y="324" width="36" height="16" uuid="4a10d91a-c503-493e-9d87-a703d30d0921"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S9E1Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="497" y="340" width="62" height="16" uuid="2c209d6f-a031-4edd-9af0-f9d306a762eb"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S10Teacher}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="162" y="324" width="36" height="16" uuid="8818b9b0-768a-4ae0-894f-96a6d3c6fefb"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S9E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="497" y="324" width="62" height="16" uuid="4ab3bcd7-07a0-4b67-a026-4ed8bec4f7cf"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S9Teacher}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="234" y="324" width="36" height="16" uuid="f76f3464-8329-4863-9f22-41fb2cc53b10"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S9AVGMarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="270" y="324" width="36" height="16" uuid="3df116e0-045a-4b96-8679-94b241386626"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S9AVGPoints}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="13" y="324" width="113" height="16" uuid="4d689c56-7203-403a-b747-07c7a3590e57"/>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S9NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="306" y="324" width="36" height="16" uuid="6b7534a8-6278-4799-90dd-2face8200641"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S9AVGGrade}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="378" y="340" width="119" height="16" uuid="91c47d87-d6c9-4855-8405-fbba9617a7e1"/>
+				<textElement verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isItalic="true" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S10Remarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="234" y="340" width="36" height="16" uuid="b4c8652a-2a75-4713-9bd8-5a59aad1fee8"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S10AVGMarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="342" y="324" width="36" height="16" uuid="1a65ed7b-5a12-49f9-8b86-4a649b4e3819"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S9AVGPosition}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="198" y="324" width="36" height="16" uuid="85fbb945-1162-4858-b669-a34d131872aa"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S9E3Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="162" y="340" width="36" height="16" uuid="40dd6539-be32-455f-949e-633348c9d680"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S10E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="13" y="340" width="113" height="16" uuid="0f99399c-2b0a-41ce-8c38-9fb54e322d1e"/>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S10NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="342" y="340" width="36" height="16" uuid="2024d2e2-1fd9-4202-992a-f746a9ea467c"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S10AVGPosition}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="270" y="340" width="36" height="16" uuid="dd77205b-2ea1-4691-ab87-79b7445d3e3a"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S10AVGPoints}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="378" y="324" width="119" height="16" uuid="8343f4ba-08bd-4ce7-9470-4818ebf7533e"/>
+				<textElement verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isItalic="true" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S9Remarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="126" y="372" width="36" height="16" uuid="e12fb422-336d-492d-8717-34521fe8ce35"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S12E1Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="198" y="372" width="36" height="16" uuid="d57ee322-d5f3-49b4-8a2d-cde9ab046f25"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S12E3Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="306" y="372" width="36" height="16" uuid="c4d224a3-4754-4e89-867e-40110d9d38ce"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S12AVGGrade}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="126" y="356" width="36" height="16" uuid="29117dc6-cb3f-48e6-9e5f-b639a568f2ef"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S11E1Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="497" y="372" width="62" height="16" uuid="6a0e7924-c0cb-4f4c-bd54-71b580ee1b60"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S12Teacher}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="162" y="356" width="36" height="16" uuid="472cc1cf-1368-4d20-b3f9-583d4c83b836"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S11E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="497" y="356" width="62" height="16" uuid="47d3a34a-bdf6-47c2-b8a7-418514319cb9"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S11Teacher}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="234" y="356" width="36" height="16" uuid="003679d6-7632-45f3-9a45-20f8090a07ad"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S11AVGMarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="270" y="356" width="36" height="16" uuid="9930bd9f-2ce5-42f0-a0bd-56e66dd67eab"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S11AVGPoints}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="13" y="356" width="113" height="16" uuid="96c15ced-dc54-46c7-83c0-202ac0231a1f"/>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S11NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="306" y="356" width="36" height="16" uuid="74fa524f-e636-4320-919a-543b32b41c5d"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S11AVGGrade}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="378" y="372" width="119" height="16" uuid="7d210b31-40ef-46f4-9641-a982f7a34a5c"/>
+				<textElement verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isItalic="true" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S12Remarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="234" y="372" width="36" height="16" uuid="7a5da627-028f-432e-a86f-31893087d3a0"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S12AVGMarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="342" y="356" width="36" height="16" uuid="a00636fa-1e49-4e8f-81ec-4d9348e5466a"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S11AVGPosition}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="198" y="356" width="36" height="16" uuid="2ef3d07d-43e5-4ea0-86e5-0cc368e655db"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S10E3Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="162" y="372" width="36" height="16" uuid="9af1acd3-e468-4492-a969-f911c5f8115e"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S12E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="13" y="372" width="113" height="16" uuid="b131702d-b319-44fc-a61f-f3ff80d3ebd2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S12NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="342" y="372" width="36" height="16" uuid="3f463d51-80e7-4dd8-8fa0-a0a0575fabe0"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S12AVGPosition}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="270" y="372" width="36" height="16" uuid="97cb8099-3c59-4797-bc68-01f0405d1f49"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S12AVGPoints}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="378" y="356" width="119" height="16" uuid="12b31c5d-cf06-49c2-85a7-516c6fc42686"/>
+				<textElement verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isItalic="true" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S11Remarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="126" y="404" width="36" height="16" uuid="8789d897-d5f3-4a6f-b6e3-4ab8b91d2c3d"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S14E1Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="198" y="404" width="36" height="16" uuid="14667527-7444-4658-99e8-2ae69bd9ac2a"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S14E3Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="306" y="404" width="36" height="16" uuid="a36c6781-82c0-40e0-b852-d503eb7d828d"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S14AVGGrade}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="126" y="388" width="36" height="16" uuid="a656c35a-e6ad-4c3b-9bcd-acb91784cc65"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S13E1Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="497" y="404" width="62" height="16" uuid="4bab4fec-a370-4f92-9786-da4f7945f735"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S14Teacher}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="162" y="388" width="36" height="16" uuid="73778ce4-8633-4a48-9eb5-9a4798c3f1f4"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S13E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="497" y="388" width="62" height="16" uuid="8372b2be-e8f7-45d2-b38c-2db312c88279"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S13Teacher}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="234" y="388" width="36" height="16" uuid="a1df981d-c758-47d5-aa64-1b2fb812bc1e"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S13AVGMarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="270" y="388" width="36" height="16" uuid="0e1c590a-85d4-431f-8864-5329af58bd1c"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S13AVGPoints}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="13" y="388" width="113" height="16" uuid="a3961843-96bf-4035-8665-1a0abcad5253"/>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S13NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="306" y="388" width="36" height="16" uuid="e9b24d4d-0a0e-4fc9-8fa9-cf15486f8e4a"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S13AVGGrade}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="378" y="404" width="119" height="16" uuid="c39e329e-ef48-476f-b1fd-863c0db44267"/>
+				<textElement verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isItalic="true" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S14Remarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="234" y="404" width="36" height="16" uuid="2214d441-c80a-4043-acca-d9c0d193b95e"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S14AVGMarks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="342" y="388" width="36" height="16" uuid="5f7e93dd-71bb-4685-8623-03a722fa7568"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S13AVGPosition}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="198" y="388" width="36" height="16" uuid="5f014eba-c0af-4d4c-b1ab-4de5fe07866c"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S13E3Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="162" y="404" width="36" height="16" uuid="a68b2abc-2973-4fed-8e39-615dc42865ee"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S14E2Marks}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="13" y="404" width="113" height="16" uuid="3a9fc92f-97f9-4c84-81d7-e35cd006e1f2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S14NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="342" y="404" width="36" height="16" uuid="a38db7b7-b2b2-42a0-8e44-78001a76868e"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S14AVGPosition}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="270" y="404" width="36" height="16" uuid="0f1793ed-7ae5-4d4e-93fa-314e399ac181"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S14AVGPoints}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="378" y="388" width="119" height="16" uuid="ddac17cd-ab0e-48f6-a047-644212d91ba4"/>
+				<textElement verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="true" isItalic="true" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S13Remarks}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="261" y="711" width="134" height="20" uuid="ce5c0a3a-f1b4-48b7-a3ee-0d36f7b3f6ec"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[School Closed On: ]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement mode="Transparent" x="395" y="711" width="164" height="20" uuid="1d9d6037-f542-4efb-b8a3-b114449582dd"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Serif" size="12" isBold="false" isUnderline="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ClosingDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="261" y="730" width="134" height="20" uuid="7dac31bf-6637-418d-b7e2-086cd4d2ae00"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Serif" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Next Term Begins On:]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="395" y="731" width="164" height="20" uuid="97da0150-c6ee-4b58-b18a-a34d2dfaa72e"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Serif" size="12" isBold="false" isUnderline="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OpeningDate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="612" width="16" height="138" forecolor="#999999" uuid="6556e835-e337-49c1-88ee-1b55ace5aada"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+					<font fontName="Serif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["AC"+$F{Student_ID}+"ME"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="23" y="696" width="100" height="15" uuid="33c74683-d43a-4608-9813-26afc7341f0d"/>
+				<textElement>
+					<font fontName="Serif"/>
+				</textElement>
+				<text><![CDATA[Parent's Signature]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="23" y="730" width="150" height="15" uuid="df7cc573-7c40-42c7-a888-825dabd3a2e9"/>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Serif" size="11" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Father}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="23" y="729" width="150" height="1" uuid="113585a5-e6d8-43bb-8c39-581bf806a831"/>
+			</line>
+			<line>
+				<reportElement x="13" y="172" width="543" height="2" forecolor="#00CC00" backcolor="#00CC00" uuid="13d02a2f-67bb-4912-9cb6-34d4cb7fc8d7"/>
+			</line>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="16" y="436" width="134" height="13" uuid="6eb4f469-6d9c-4eb9-813b-35e9378bbaf2"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="10" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Form 1]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="40" y="473" width="24" height="12" uuid="b21bd3f1-279f-44a1-92c8-fe6a4a2b171b"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F1T2P}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="123" y="485" width="27" height="12" uuid="32bc26f6-bf08-4f27-b11e-a7ac5fc723d3"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F1T3M}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="123" y="461" width="27" height="12" uuid="5672b37d-8a1a-464f-85f6-21f8f5bd7399"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F1T1M}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="16" y="449" width="24" height="12" uuid="a062a1b0-bf24-466e-872c-28d7f11f1784"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Term]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="184" y="423" width="219" height="13" uuid="78cd2855-41df-45b2-80af-e39308dab03b"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="10" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Student's Progressive Perfomance]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="40" y="485" width="24" height="12" uuid="23c879eb-c1c5-48d2-a6f2-861de1d1db0c"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F1T3P}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="123" y="473" width="27" height="12" uuid="cedb417c-6858-48f9-8f02-b4925fe211ee"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F1T2M}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="40" y="461" width="24" height="12" uuid="88788196-e98b-4293-a218-b3e0dc618416"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F1T1P}]]></textFieldExpression>
+			</textField>
+			<lineChart>
+				<chart isShowLegend="false" theme="default">
+					<reportElement mode="Transparent" x="13" y="500" width="545" height="110" uuid="eea46826-0a65-4d64-bc1b-3a9c16ab9820"/>
+					<chartTitle color="#009933">
+						<font size="8" isBold="true" isUnderline="true"/>
+						<titleExpression><![CDATA["Students Performance Chart"]]></titleExpression>
+					</chartTitle>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset resetType="Page"/>
+					<categorySeries>
+						<seriesExpression><![CDATA[""]]></seriesExpression>
+						<categoryExpression><![CDATA["F1T1"]]></categoryExpression>
+						<valueExpression><![CDATA[$F{F1T1M}]]></valueExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA[""]]></seriesExpression>
+						<categoryExpression><![CDATA["F1T2"]]></categoryExpression>
+						<valueExpression><![CDATA[$F{F1T2M}]]></valueExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA[""]]></seriesExpression>
+						<categoryExpression><![CDATA["F1T3"]]></categoryExpression>
+						<valueExpression><![CDATA[$F{F1T3M}]]></valueExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA[""]]></seriesExpression>
+						<categoryExpression><![CDATA["F2T1"]]></categoryExpression>
+						<valueExpression><![CDATA[$F{F2T1M}]]></valueExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA[""]]></seriesExpression>
+						<categoryExpression><![CDATA["F2T2"]]></categoryExpression>
+						<valueExpression><![CDATA[$F{F2T2M}]]></valueExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA[""]]></seriesExpression>
+						<categoryExpression><![CDATA["F2T3"]]></categoryExpression>
+						<valueExpression><![CDATA[$F{F2T3M}]]></valueExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA[""]]></seriesExpression>
+						<categoryExpression><![CDATA["F3T1"]]></categoryExpression>
+						<valueExpression><![CDATA[$F{F3T1M}]]></valueExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA[""]]></seriesExpression>
+						<categoryExpression><![CDATA["F3T2"]]></categoryExpression>
+						<valueExpression><![CDATA[$F{F3T2M}]]></valueExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA[""]]></seriesExpression>
+						<categoryExpression><![CDATA["F3T3"]]></categoryExpression>
+						<valueExpression><![CDATA[$F{F3T3M}]]></valueExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA[""]]></seriesExpression>
+						<categoryExpression><![CDATA["F4T1"]]></categoryExpression>
+						<valueExpression><![CDATA[$F{F4T1M}]]></valueExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA[""]]></seriesExpression>
+						<categoryExpression><![CDATA["F4T2"]]></categoryExpression>
+						<valueExpression><![CDATA[$F{F4T2M}]]></valueExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA[""]]></seriesExpression>
+						<categoryExpression><![CDATA["F4T3"]]></categoryExpression>
+						<valueExpression><![CDATA[$F{F4T3M}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<linePlot isShowLines="true" isShowShapes="true">
+					<plot>
+						<seriesColor seriesOrder="0" color="#666666"/>
+					</plot>
+					<categoryAxisFormat>
+						<axisFormat/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+					<rangeAxisMinValueExpression><![CDATA[0.0]]></rangeAxisMinValueExpression>
+					<rangeAxisMaxValueExpression><![CDATA[12.0]]></rangeAxisMaxValueExpression>
+				</linePlot>
+			</lineChart>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="13" y="196" width="113" height="16" uuid="da2c162a-295f-429e-98d8-f38a53b6e104"/>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="12" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{S1NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="13" y="766" width="95" height="15" uuid="8a7fc6a8-2e2c-4db6-beb7-8e0cb266eea8"/>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Serif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Required Fee Ksh.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="184" y="767" width="100" height="15" uuid="94389630-5884-4ad9-a5c5-9df667811f13"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Serif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fee Paid Ksh.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="361" y="766" width="105" height="15" uuid="200d9a2d-8dd8-4271-acdb-72b75370c28a"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Serif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Balance Ksh.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="64" y="449" width="35" height="12" uuid="30cfde64-5faa-45f3-9d25-bc19dddc06bb"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Out Of]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="40" y="449" width="24" height="12" uuid="cb13fca3-0864-4bb2-ae4a-99eec2d75d0f"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Pos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="99" y="449" width="24" height="12" uuid="7e49a0b6-6db5-4b90-bf1c-6b29064d6a89"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[MG]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="123" y="449" width="27" height="12" uuid="681c9823-ae57-4dc1-abc8-e00a6d522c34"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[MPTS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="16" y="461" width="24" height="12" uuid="a2b45503-b8c9-41da-ad61-be36101c65d0"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="16" y="485" width="24" height="12" uuid="31226057-0325-4309-a1eb-d1557ab44406"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[3]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="16" y="473" width="24" height="12" uuid="b26d8a74-21e6-4d68-9082-2a8b16bd4786"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[2]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="64" y="461" width="35" height="12" uuid="398a7395-4548-4c06-bcea-6e5e6a7b6095"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F1T1OP}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="64" y="485" width="35" height="12" uuid="e4400f4f-7376-4a36-ba86-6d28d6e2ba29"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F1T3OP}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="64" y="473" width="35" height="12" uuid="f6dccced-62f8-47e6-80fc-bc09b0c5be34"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F1T2OP}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="99" y="461" width="24" height="12" uuid="0c3c9fde-00c6-4817-b2bb-bd6ea1c15f65"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F1T1MG}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="99" y="485" width="24" height="12" uuid="ebb4036b-29bb-46a7-aa50-8592e5d42ba2"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F1T3MG}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="99" y="473" width="24" height="12" uuid="7b3e2f39-0ce8-441f-a8fd-02631a8a2fd4"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F1T2MG}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="150" y="436" width="135" height="13" uuid="ebdc2747-0d52-45d2-bf9c-0bb7bcb2d12a"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="10" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Form 2]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="258" y="461" width="27" height="12" uuid="b0571f2b-139f-44f1-b81a-a20b175dd107"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F2T1M}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="233" y="473" width="25" height="12" uuid="3d50212f-4b1b-471b-9b3e-dcb8450943b7"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F2T2MG}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="198" y="473" width="35" height="12" uuid="c9a9f3d2-d7a1-4028-996e-a98a1c90b458"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F2T2OP}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="174" y="485" width="25" height="12" uuid="44cc4d22-56e5-4929-b6f5-456f2deb697b"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F2T3P}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="198" y="449" width="35" height="12" uuid="fb4cb235-b34c-4908-85b8-2659a394100c"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Out Of]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="258" y="485" width="27" height="12" uuid="5baf95f6-0595-465a-8618-f2f8d0f8b2d2"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F2T3M}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="150" y="461" width="25" height="12" uuid="bab8d21c-4046-42e3-aa25-59e13f486c51"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[1]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="198" y="461" width="35" height="12" uuid="5adaddd0-2139-400a-b424-79f834c2b017"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F2T1OP}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="150" y="485" width="25" height="12" uuid="7349fa32-ca3f-46b5-918f-2168d4681715"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[3]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="150" y="449" width="25" height="12" uuid="6b5593ad-bff1-4448-be8e-1edd8ee9d909"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Term]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="233" y="461" width="25" height="12" uuid="3da88fd9-8b92-4d2e-a0fd-6e21b5607f21"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F2T1MG}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="174" y="473" width="25" height="12" uuid="d14eb6f2-ab2f-431a-8ccf-51a30ca5c411"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F2T2P}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="258" y="449" width="27" height="12" uuid="8f2d8c20-795c-461a-9bbd-2f484447f147"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[MPTS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="150" y="473" width="25" height="12" uuid="98db410f-a2b9-419a-b17d-9620adde076b"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[2]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="174" y="449" width="25" height="12" uuid="dad58583-a487-4ff2-af99-ea8af3de6e9b"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Pos]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="174" y="461" width="25" height="12" uuid="e7adc15f-5073-48a2-a008-fbc9f4495916"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F2T1P}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="198" y="485" width="35" height="12" uuid="9db94449-433b-44a0-ac66-5d26899542e6"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F2T3OP}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="233" y="485" width="25" height="12" uuid="3ecdcdaa-11ec-4df9-a2eb-d0935f97cea2"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F2T3MG}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="258" y="473" width="27" height="12" uuid="3e0a03ed-6464-4910-a302-c98cefeebe2f"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F2T2M}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="233" y="449" width="25" height="12" uuid="0aee1e38-0ee0-4448-b4f8-f136cfa4dc51"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[MG]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="285" y="436" width="134" height="13" uuid="de30db28-e93e-4a51-83c6-5e686cbfa0a9"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="10" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Form 3]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="466" y="449" width="35" height="12" uuid="0436e2e0-b3ac-445f-8012-233242d40bc7"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Out Of]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="392" y="461" width="27" height="12" uuid="6547d606-4c13-4aa0-9fc3-5283a00ca3e4"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F3T1M}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="442" y="473" width="25" height="12" uuid="62bb7bb5-caa8-4068-9907-0051482a7d74"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F4T2P}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="418" y="436" width="135" height="13" uuid="e8a85d65-0828-4592-b334-4ef30804e3ab"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="10" isBold="true" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Form 4]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="368" y="473" width="24" height="12" uuid="dcd88007-9fd0-4612-b3ae-8138f4cbfe6c"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F3T2MG}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="333" y="473" width="35" height="12" uuid="015cf2ff-b12f-4b98-80fd-94894ef860bf"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F3T2OP}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="466" y="485" width="35" height="12" uuid="8986d863-fab1-4c99-9155-56bced7e9595"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F4T3OP}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="525" y="485" width="28" height="12" uuid="fa79206f-55e3-46a8-a675-6a89d8013815"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F4T3M}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="442" y="449" width="25" height="12" uuid="a81d6ff8-7ccf-4ae6-a32e-be93e0f1361b"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Pos]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="309" y="485" width="24" height="12" uuid="3a99be83-5463-4db7-9adb-07c02678df75"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F3T3P}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="525" y="461" width="28" height="12" uuid="6e0c3261-8813-4c0c-aa52-219cd49c59bb"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F4T1M}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="333" y="449" width="35" height="12" uuid="84e4e011-3cd8-49f1-a73c-091ba47aef4b"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Out Of]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="392" y="485" width="27" height="12" uuid="5def29a1-7975-4bad-863c-bd45040caebc"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F3T3M}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="285" y="461" width="24" height="12" uuid="a13acf1f-825e-4156-b172-42a30aa93bff"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[1]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="333" y="461" width="35" height="12" uuid="7d6e2276-9e25-49a9-81f2-94f55bb3f422"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F3T1OP}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="285" y="485" width="24" height="12" uuid="10323a08-50cf-4a58-b567-280de8adb8f5"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[3]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="501" y="473" width="24" height="12" uuid="96fdfe68-e7b3-4af3-9f68-1264e57c1e23"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F4T2MG}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="501" y="449" width="24" height="12" uuid="40bcb6b9-d75d-4306-8c5b-91e9c8f86e16"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[MG]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="285" y="449" width="24" height="12" uuid="910f1c30-7bf4-4d57-81f3-cbc838cf7c9c"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Term]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="525" y="449" width="28" height="12" uuid="fd10018f-628f-4542-8dce-5d32725b3970"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[MPTS]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="466" y="473" width="35" height="12" uuid="6ff7bed0-080d-41f5-98dd-6f0260185907"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F4T2OP}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="525" y="473" width="28" height="12" uuid="a92ddfd9-46e8-4449-9f31-53cc02e85cba"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F4T2M}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="442" y="485" width="25" height="12" uuid="086943f3-c534-4518-84ae-06bb73085c74"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F4T3P}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="501" y="485" width="24" height="12" uuid="dd71ae16-ce62-401c-8431-b5a5dadfbebc"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F4T3MG}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="368" y="461" width="24" height="12" uuid="f11210da-a55d-45e2-a0ea-51f45f82a21a"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F3T1MG}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="309" y="473" width="24" height="12" uuid="e44e7655-c6eb-4fa0-9b0f-b236f22cce28"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F3T2P}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="392" y="449" width="27" height="12" uuid="667ee789-20fe-4fd1-9b4d-28bddcdb674e"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[MPTS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="285" y="473" width="24" height="12" uuid="d778cee7-fb1c-4068-b667-87c7870f7330"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[2]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="442" y="461" width="25" height="12" uuid="c2af8496-6783-41fd-aa2a-46e40b9253af"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F4T1P}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="309" y="449" width="24" height="12" uuid="fa8a0ae5-7d91-4979-8054-0b9b7932d5eb"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Pos]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="309" y="461" width="24" height="12" uuid="ecdaa8c2-99be-47b4-88a6-c7ab341676a8"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F3T1P}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="333" y="485" width="35" height="12" uuid="6ca1cebe-1a27-46d4-b551-4bae1e2b3475"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F3T3OP}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="418" y="461" width="25" height="12" uuid="e4e8c192-077d-41ec-9ff0-2e929d8d93aa"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="418" y="473" width="25" height="12" uuid="7c472b2f-1bf9-4f24-bb28-95be1d452848"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[2]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="466" y="461" width="35" height="12" uuid="5c07d57a-6c72-4377-8fc3-dc8b96cda4b4"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F4T1OP}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="368" y="485" width="24" height="12" uuid="5b71d6a9-ee59-47a8-aa54-d218076f7820"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F3T3MG}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="418" y="449" width="25" height="12" uuid="360aa16f-9646-47ff-9fdf-1000dfbb9a02"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Term]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="392" y="473" width="27" height="12" uuid="88bf01e3-4379-4410-afee-dbca94654268"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F3T2M}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="368" y="449" width="24" height="12" uuid="f620dc43-59aa-4c16-a1bd-7349f03d1c58"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[MG]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="table" mode="Transparent" x="501" y="461" width="24" height="12" uuid="9b68b570-f6c9-46a6-ab49-9a7299b56fc0"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{F4T1MG}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" mode="Transparent" x="418" y="485" width="25" height="12" uuid="dfe6be85-d8c0-4a0e-b85a-ff37ef406815"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font fontName="Serif" size="9" isBold="false" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[3]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="108" y="765" width="76" height="15" uuid="0b251501-587d-4cca-899d-996a4f8e92b2"/>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Serif" size="11" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FeeRequired}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="285" y="765" width="76" height="15" uuid="930365a2-59f4-4b30-8e4e-685dc1f30b45"/>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Serif" size="11" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FeePaid}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="466" y="765" width="76" height="15" uuid="33f0499d-9cf0-4a28-8b4b-4ff816498a89"/>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Serif" size="11" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FeeBalance}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="25" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement x="477" y="0" width="90" height="20" uuid="5f82eff1-4733-4acd-8efc-f1a5d0d819d9"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="446" height="20" forecolor="#999999" uuid="23cefa60-fdf9-4b68-b9ca-364baac1d525"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[acme developed and supported by lySOFTS Call: +254797969142 Email:woramaslysofts@gmail.com
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="446" y="0" width="28" height="20" forecolor="#000000" uuid="a9299088-25e5-43fd-8754-c32c1757e6db"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="false" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Print:]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Subject Top Students" language="groovy" pageWidth="595" pageHeight="842" columnWidth="567" leftMargin="14" rightMargin="14" topMargin="14" bottomMargin="14" whenResourceMissingType="Empty" uuid="31e3a7d3-0410-41b9-b280-40db0b81e192">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#FFFFFF"/>
+		</conditionalStyle>
+	</style>
+	<subDataset name="Table Dataset 1" uuid="31ee8623-079b-4e4f-a9b9-683d7966aa27">
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+	</subDataset>
+	<parameter name="ExamForm" class="java.lang.String"/>
+	<parameter name="ExamYear" class="java.lang.String"/>
+	<parameter name="ExamTerm" class="java.lang.String"/>
+	<parameter name="NoChamps" class="java.lang.String"/>
+	<parameter name="ExamName" class="java.lang.String"/>
+	<parameter name="bgImage" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT tblSchool.*,SubjectChampions.* FROM SubjectChampions INNER JOIN tblSchool]]>
+	</queryString>
+	<field name="School_Code" class="java.lang.Object"/>
+	<field name="School_id" class="java.lang.Object"/>
+	<field name="School_name" class="java.lang.Object"/>
+	<field name="School_Posta" class="java.lang.Object"/>
+	<field name="School_logo" class="java.lang.Object"/>
+	<field name="School_Motto" class="java.lang.Object"/>
+	<field name="School_Email" class="java.lang.Object"/>
+	<field name="School_Contact" class="java.lang.Object"/>
+	<field name="Principal_name" class="java.lang.Object"/>
+	<field name="Principal_Signature" class="java.lang.Object"/>
+	<field name="ClosingDate" class="java.lang.Object"/>
+	<field name="OpeningDate" class="java.lang.Object"/>
+	<field name="Full_Purchase" class="java.lang.Object"/>
+	<field name="TrialDeadline" class="java.lang.Object"/>
+	<field name="SubjectName" class="java.lang.Object"/>
+	<field name="StudentID" class="java.lang.Object"/>
+	<field name="StudentName" class="java.lang.Object"/>
+	<field name="StudentClass" class="java.lang.Object"/>
+	<field name="Marks" class="java.lang.Object"/>
+	<field name="Grade" class="java.lang.Object"/>
+	<field name="Position" class="java.lang.Object"/>
+	<group name="SubjectGroup">
+		<groupExpression><![CDATA[$F{SubjectName}]]></groupExpression>
+		<groupHeader>
+			<band height="66">
+				<textField>
+					<reportElement mode="Transparent" x="25" y="27" width="314" height="23" uuid="58a8567c-9d54-4dc7-aeb8-dd40da3ff33b"/>
+					<textElement>
+						<font fontName="Serif" size="16" isBold="true" isUnderline="true"/>
+						<paragraph leftIndent="1"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{SubjectName} +" TOP CHAMPION(S)"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="table_TD" mode="Transparent" x="257" y="50" width="63" height="16" uuid="96b8ec86-1a76-4a1b-8dc7-14b0a046e8c1"/>
+					<textElement textAlignment="Center">
+						<font fontName="Serif" size="12" isBold="false"/>
+						<paragraph leftIndent="1"/>
+					</textElement>
+					<text><![CDATA[MARKS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table_TD" mode="Transparent" x="25" y="50" width="55" height="16" uuid="b92c47cc-0898-4d19-addf-a48bc8378e70"/>
+					<textElement>
+						<font fontName="Serif" size="12" isBold="false"/>
+						<paragraph leftIndent="1"/>
+					</textElement>
+					<text><![CDATA[ADM NO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table_TD" mode="Transparent" x="80" y="50" width="177" height="16" uuid="a29c9f2b-c167-43a1-aa83-7ccd949e9384"/>
+					<textElement>
+						<font fontName="Serif" size="12" isBold="false"/>
+						<paragraph leftIndent="1"/>
+					</textElement>
+					<text><![CDATA[NAME]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table_TD" mode="Transparent" x="320" y="50" width="63" height="16" uuid="0bbee810-d0b2-4eea-b41e-21b6c3140885"/>
+					<textElement textAlignment="Center">
+						<font fontName="Serif" size="12" isBold="false"/>
+						<paragraph leftIndent="1"/>
+					</textElement>
+					<text><![CDATA[GRADE]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<background>
+		<band height="814" splitType="Stretch">
+			<image scaleImage="FillFrame">
+				<reportElement x="0" y="0" width="567" height="814" uuid="790764e7-924d-4518-89c3-cf116c0d9eb2"/>
+				<imageExpression><![CDATA[$P{bgImage}]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<title>
+		<band height="96">
+			<image scaleImage="FillFrame" isUsingCache="true" onErrorType="Blank">
+				<reportElement mode="Transparent" x="13" y="0" width="68" height="87" uuid="8851a243-1eb9-4889-bd27-c98f6a634bef"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<imageExpression><![CDATA[$F{School_logo}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement mode="Transparent" x="85" y="46" width="412" height="15" uuid="51845e25-4b55-4418-9027-a510e51c3f5b"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Serif" size="10" isBold="false" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{School_Motto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="85" y="27" width="412" height="19" uuid="d7554a2c-c68c-41ad-9973-61cf87da855e"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Serif" size="13" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{School_Posta}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="85" y="1" width="412" height="26" uuid="441824ce-724d-48f0-9ae9-0653aef0c840"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Serif" size="20" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{School_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="85" y="68" width="482" height="28" uuid="ee202877-1f45-438c-aa36-69a0896cf337"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Serif" size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FORM "+$P{ExamForm}+" "+$P{ExamYear}+" "+$P{ExamTerm}+" "+$P{ExamName}+" SUBJECT CHAMPIONS"]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="1"/>
+	</pageHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<textField>
+				<reportElement style="table_TD" mode="Transparent" x="25" y="0" width="55" height="16" uuid="27f219d7-76a6-4a3a-abe0-3c5f69183fb8"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="12" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{StudentID}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_TD" mode="Transparent" x="80" y="0" width="177" height="16" uuid="386fe2ea-18ee-4e32-b058-ce5876d7203d"/>
+				<textElement>
+					<font fontName="Serif" size="12" isBold="false"/>
+					<paragraph leftIndent="1"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{StudentName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_TD" mode="Transparent" x="257" y="0" width="63" height="16" uuid="e475add2-69eb-4597-8373-7fd8fb9c16e7"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="12" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Marks}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="table_TD" mode="Transparent" x="320" y="0" width="63" height="16" uuid="22223bce-9d7c-48cf-aebe-90708afc9790"/>
+				<textElement textAlignment="Center">
+					<font fontName="Serif" size="12" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Grade}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="25" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement mode="Transparent" x="477" y="3" width="90" height="20" uuid="5f82eff1-4733-4acd-8efc-f1a5d0d819d9"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Serif" size="8" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="3" width="446" height="20" forecolor="#999999" uuid="23cefa60-fdf9-4b68-b9ca-364baac1d525"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[acme developed and supported by lySOFTS Call: +254797969142 Email:woramaslysofts@gmail.com
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="446" y="3" width="28" height="20" forecolor="#000000" uuid="a9299088-25e5-43fd-8754-c32c1757e6db"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Serif" size="9" isBold="false" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Print:]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>
