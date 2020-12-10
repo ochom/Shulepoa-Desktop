@@ -5,13 +5,16 @@ import com.lysofts.utils.ConnClass;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.sql.*;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -22,18 +25,18 @@ import net.sf.jasperreports.swing.JRViewer;
 
 
 public class ReportsFrm extends javax.swing.JFrame {
-    Connection Conn = ConnClass.connectDB();
+    Connection conn = ConnClass.connectDB();
     PreparedStatement pst = null;
     ResultSet rs = null;
     
     String Activation = "";
-    InputStream Report = null;
-    String sql = null,report_bg=null;//"C:/Acme/Exam System/verbg.png"
+    String sql = null,report_bg=null, reportTitle="";
     String Form,Year,Term,Exam,ExamFormLevel,NumberOfChamps,Report_Request="";
+    String reportName;
     
     public ReportsFrm() {
         initComponents();
-        new ConnClass().setFrameIcon(this);
+        new ConnClass().setFrameIcon(ReportsFrm.this);
         
         GetAcedmicYears();
         getSchoolActivation();
@@ -45,7 +48,7 @@ public class ReportsFrm extends javax.swing.JFrame {
        cmbYear.removeAllItems();
        cmbYear.addItem("SELECT");
         try{
-            pst = Conn.prepareStatement("SELECT * FROM students_exams group by Year ORDER BY Year DESC");
+            pst = conn.prepareStatement("SELECT * FROM students_exams group by Year ORDER BY Year DESC");
             rs = pst.executeQuery();
             while(rs.next()){
                 String classname = rs.getString("Year");
@@ -59,7 +62,7 @@ public class ReportsFrm extends javax.swing.JFrame {
     private void getFormNames(){
     try{
        sql = "SELECT * FROM tblclasses ORDER BY Class_name ASC";
-       pst = Conn.prepareStatement(sql);
+       pst = conn.prepareStatement(sql);
        rs = pst.executeQuery();
            while(rs.next()){
                comboForm.addItem(rs.getString("Class_name")); 
@@ -72,7 +75,7 @@ public class ReportsFrm extends javax.swing.JFrame {
     private void getSchoolActivation(){
         try{
             sql = "SELECT * FROM tblschool";
-            pst = Conn.prepareStatement(sql);
+            pst = conn.prepareStatement(sql);
             rs = pst.executeQuery();
                 if(rs.next()){
                    Activation = rs.getString("Full_purchase");               
@@ -89,7 +92,7 @@ public class ReportsFrm extends javax.swing.JFrame {
 //            new File("C:\\Acme\\Exam System\\verbg.png").delete();
 //        }
 //        try{
-//            InputStream inputStream  = getClass().getResourceAsStream("images\\verbg.png");
+//            InputStream inputStream  = getClass().getClassLoader().getResourceAsStream("images\\verbg.png");
 //            FileOutputStream fos = new FileOutputStream("C:\\Acme\\Exam System\\verbg.png");
 //            byte[] buffer = new byte[inputStream.available()];
 //            inputStream.read(buffer);
@@ -102,616 +105,509 @@ public class ReportsFrm extends javax.swing.JFrame {
 //            System.out.println(e);
 //        }
     }
-	
-    private void printMarksSheet(String Form){
-        try{   
-           Report=getClass().getResourceAsStream("Reports/MarkSheet.jrxml");
-           HashMap param=new HashMap();
-            param.put("ExamForm", Form);
-            if(!(Activation.equalsIgnoreCase("3"))){
-                param.put("bgImage", report_bg);
-            }else{
-                param.put("bgImage", null);
-            }
-            
-            JasperDesign jd = JRXmlLoader.load(Report);
-            JasperReport jr=JasperCompileManager.compileReport(jd);
-            JasperPrint jp=JasperFillManager.fillReport(jr, param, Conn);
-            JRViewer jv = new JRViewer(jp);
 
-                JFrame jf =new JFrame();
-                jf.getContentPane().add(jv);
-                jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/Print_16x16.png")));
-                jf.setType(Type.UTILITY);
-                jf.validate();
-                jf.setVisible(true); 
-                jf.setSize(new Dimension(900,650));
-                jf.setLocationRelativeTo(this);
-                jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                jf.setTitle("Form "+Form+" Marksheet");
-        }catch(HeadlessException | JRException e){
-            JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
-        }
-        
-    }
-    private void printMarksConfirmationSheet(String Form,String Year,String Term,String Exam){
-       try{   
-           if(Exam.equalsIgnoreCase("Exam 1")){
-               Report=getClass().getResourceAsStream("Reports/Exam1ConfirmationSheet.jrxml");              
-           }else if (Exam.equalsIgnoreCase("Exam 2")){
-               Report=getClass().getResourceAsStream("Reports/Exam2ConfirmationSheet.jrxml");
-           }else if(Exam.equalsIgnoreCase("Exam 3")){
-               Report=getClass().getResourceAsStream("Reports/Exam3ConfirmationSheet.jrxml");
-           }
-           HashMap param=new HashMap();
-            param.put("ExamForm", Form);
-            param.put("ExamYear", Year);
-            param.put("ExamTerm", Term);
-            if(!(Activation.equalsIgnoreCase("3"))){
-                param.put("bgImage", report_bg);
-            }else{
-                param.put("bgImage", null);
-            }
-                        
-            JasperDesign jd = JRXmlLoader.load(Report);
-            JasperReport jr=JasperCompileManager.compileReport(jd);
-            JasperPrint jp=JasperFillManager.fillReport(jr, param, Conn);
-            JRViewer jv = new JRViewer(jp);
-                JFrame jf =new JFrame();
-                jf.getContentPane().add(jv);
-                jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/Print_16x16.png")));
-                jf.setType(Type.UTILITY);
-                jf.validate();
-                jf.setVisible(true); 
-                jf.setSize(new Dimension(900,650));
-                jf.setLocationRelativeTo(this);
-                jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                jf.setTitle("Form "+Form+" Marks Confirmation Sheet");
-            }
-            catch(HeadlessException | JRException e){
-                JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
-            }    
-    }
-    private void printResultSlips(String Form,String Year,String Term,String Exam){
-        try{   
-           if(Exam.equalsIgnoreCase("Exam 1")){
-               Report=getClass().getResourceAsStream("Reports/Exam1ResultSlip.jrxml");               
-           }else if (Exam.equalsIgnoreCase("Exam 2")){
-               Report=getClass().getResourceAsStream("Reports/Exam2ResultSlip.jrxml");
-           }else if(Exam.equalsIgnoreCase("Exam 3")){
-               Report=getClass().getResourceAsStream("Reports/Exam3ResultSlip.jrxml");
-           }
-           HashMap param=new HashMap();
-            param.put("ExamForm", Form);
-            param.put("ExamYear", Year);
-            param.put("ExamTerm", Term);
-            if(!(Activation.equalsIgnoreCase("3"))){
-                param.put("bgImage", report_bg);
-            }else{
-                param.put("bgImage", null);
-            }
-            
-            JasperDesign jd = JRXmlLoader.load(Report);
-            JasperReport jr=JasperCompileManager.compileReport(jd);
-            JasperPrint jp=JasperFillManager.fillReport(jr, param, Conn);
-            JRViewer jv = new JRViewer(jp);
+    
+    private void showReport(HashMap params){
+        try {
+            String fileName = String.format("reports/%s.jrxml", reportName);
+            System.out.println("FILE IS:  "+fileName);
+            try(InputStream report = getClass().getClassLoader().getResourceAsStream(fileName)){            
+                JasperDesign jd = JRXmlLoader.load(report);
+                System.out.println("JasperDesign loaded");
+                JasperReport jr = JasperCompileManager.compileReport(jd);
+                System.out.println("JasperReport compiled");
+                JasperPrint jp  = JasperFillManager.fillReport(jr, params, conn);
+                JRViewer jv     = new JRViewer(jp);
 
-                JFrame jf =new JFrame();
+                JFrame jf =new JFrame(reportTitle);
                 jf.getContentPane().add(jv);
-                jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/Print_16x16.png")));
-                jf.setType(Type.UTILITY);
+                jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
+                jf.setType(Type.NORMAL);
                 jf.validate();
-                jf.setVisible(true); 
                 jf.setSize(new Dimension(900,650));
                 jf.setLocationRelativeTo(this);
                 jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                jf.setTitle("Form "+Form+" Result Slips");
-            }
-            catch(HeadlessException | JRException e){
-                JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
-            }
-    }
-    private void printExamStreamRankingList(String Form,String Year,String Term,String Exam){
-        try{   
-            switch(Exam){
-                case "EXAM 1":
-                   Report=getClass().getResourceAsStream("Reports/Exam1RankingList.jrxml");              
-                   break;
-               case "EXAM 2":
-                   Report=getClass().getResourceAsStream("Reports/Exam2RankingList.jrxml");              
-                   break;
-               case "EXAM 3":
-                   Report=getClass().getResourceAsStream("Reports/Exam3RankingList.jrxml");              
-                   break;
-               default:
-                   break;            
-            }
-           HashMap param=new HashMap();
-            param.put("ExamForm", Form);
-            param.put("ExamYear", Year);
-            param.put("ExamTerm", Term);
-            if(!(Activation.equalsIgnoreCase("3"))){
-                param.put("bgImage", report_bg);
-            }else{
-                param.put("bgImage", null);
-            }
-            
-            JasperDesign jd = JRXmlLoader.load(Report);
-            JasperReport jr=JasperCompileManager.compileReport(jd);
-            JasperPrint jp=JasperFillManager.fillReport(jr, param, Conn);
-            JRViewer jv = new JRViewer(jp);
-
-          
-                JFrame jf =new JFrame();
-                jf.getContentPane().add(jv);
-                jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/Print_16x16.png")));
-                jf.setType(Type.UTILITY);
-                jf.validate();
-                jf.setVisible(true); 
-                jf.setSize(new Dimension(900,650));
-                jf.setLocationRelativeTo(this);
-                jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                jf.setTitle("Form "+Form+" "+Exam+" Ranking List");
-            }
-            catch(HeadlessException | JRException e){
-                JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
-            }
-    }
-    private void printExamOverallRankingList(String Form,String Year,String Term,String Exam,String ExamFormLevel){
-        try{  
-           switch(Exam){
-               case "EXAM 1":
-                   Report=getClass().getResourceAsStream("Reports/Exam1OverallRankingList.jrxml");              
-                   break;
-               case "EXAM 2":
-                   Report=getClass().getResourceAsStream("Reports/Exam2OverallRankingList.jrxml");              
-                   break;
-               case "EXAM 3":
-                   Report=getClass().getResourceAsStream("Reports/Exam3OverallRankingList.jrxml");              
-                   break;
-               default:
-                   break;
-           } 
-           HashMap param=new HashMap();
-            param.put("ExamForm", Form);
-            param.put("ExamYear", Year);
-            param.put("ExamTerm", Term);
-            param.put("ExamFormLevel",ExamFormLevel);
-            if(!(Activation.equalsIgnoreCase("3"))){
-                param.put("bgImage", report_bg);
-            }else{
-                param.put("bgImage", null);
-            }
-            
-            JasperDesign jd = JRXmlLoader.load(Report);
-            JasperReport jr=JasperCompileManager.compileReport(jd);
-            JasperPrint jp=JasperFillManager.fillReport(jr, param, Conn);
-            JRViewer jv = new JRViewer(jp);
-            
-                JFrame jf =new JFrame();
-                jf.getContentPane().add(jv);
-                jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/Print_16x16.png")));
-                jf.setType(Type.UTILITY);
-                jf.validate();
-                jf.setVisible(true); 
-                jf.setSize(new Dimension(900,650));
-                jf.setLocationRelativeTo(this);
-                jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                jf.setTitle("Form "+ExamFormLevel+" "+Exam+" Ranking List");
-            }
-            catch(HeadlessException | JRException e){
-                JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
-            }
-    }
-    private void printTermStreamRankingList(String Form,String Year,String Term){
-        try{  
-            Report=getClass().getResourceAsStream("Reports/EndTermStreamRankingList.jrxml");              
-           
-           HashMap param=new HashMap();
-            param.put("ExamForm", Form);
-            param.put("ExamYear", Year);
-            param.put("ExamTerm", Term);
-            if(!(Activation.equalsIgnoreCase("3"))){
-                param.put("bgImage", report_bg);
-            }else{
-                param.put("bgImage", null);
-            }
-            
-            JasperDesign jd = JRXmlLoader.load(Report);
-            JasperReport jr=JasperCompileManager.compileReport(jd);
-            JasperPrint jp=JasperFillManager.fillReport(jr, param, Conn);
-            JRViewer jv = new JRViewer(jp);
-
-                JFrame jf =new JFrame();
-                jf.getContentPane().add(jv);
-                jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/Print_16x16.png")));
-                jf.setType(Type.UTILITY);
-                jf.validate();
-                jf.setVisible(true); 
-                jf.setSize(new Dimension(900,650));
-                jf.setLocationRelativeTo(this);
-                jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                jf.setTitle("Form "+Form+" "+" End Term Ranking List");
-            }
-            catch(HeadlessException | JRException e){
-                JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
-            }
-    }
-    private void printTermOverallRankingList(String Form,String Year,String Term,String ExamFormLevel){
-        try{  
-            Report=getClass().getResourceAsStream("Reports/EndTermOverallRankingList.jrxml");              
-           
-           HashMap param=new HashMap();
-            param.put("ExamForm", Form);
-            param.put("ExamYear", Year);
-            param.put("ExamTerm", Term);
-            param.put("ExamFormLevel", ExamFormLevel);
-            if(!(Activation.equalsIgnoreCase("3"))){
-                param.put("bgImage", report_bg);
-            }else{
-                param.put("bgImage", null);
-            }
-            JasperDesign jd = JRXmlLoader.load(Report);
-            JasperReport jr=JasperCompileManager.compileReport(jd);
-            JasperPrint jp=JasperFillManager.fillReport(jr, param, Conn);
-            JRViewer jv = new JRViewer(jp);
-
-                JFrame jf =new JFrame();
-                jf.getContentPane().add(jv);
-                jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/Print_16x16.png")));
-                jf.setType(Type.UTILITY);
-                jf.validate();
                 jf.setVisible(true);
-                jf.setSize(new Dimension(900,650));
-                jf.setLocationRelativeTo(this);
-                jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                jf.setTitle("Form "+ExamFormLevel+" "+" End Term Ranking List");
             }
-            catch(HeadlessException | JRException e){
-                JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
-            }
+        } catch (Exception ex) {
+            Logger.getLogger(ReportsFrm.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-    private void printReportForms(String Form,String Year,String Term,String Activation){
-        try{   
-          Report=getClass().getResourceAsStream("Reports/ReportForm.jrxml");
-         /* 
-          Report="/src/main/Reports/ReportForm.jrxml";
-          */
-          
-           HashMap param=new HashMap();
-            param.put("ExamForm", Form);
-            param.put("ExamYear", Year);
-            param.put("ExamTerm", Term);
-            if(!(Activation.equalsIgnoreCase("3"))){
-                param.put("bgImage", report_bg);
-            }else{
-                param.put("bgImage", null);
-            }
-            JasperDesign jd = JRXmlLoader.load(Report);
-            JasperReport jr=JasperCompileManager.compileReport(jd);
-            JasperPrint jp=JasperFillManager.fillReport(jr, param, Conn);
+   
+    
+    
+    private void printMarksSheet(String Form){
+        reportName = "MarkSheet";
+        HashMap param=new HashMap();
+         param.put("ExamForm", Form);
+         if(!(Activation.equalsIgnoreCase("3"))){
+             param.put("bgImage", report_bg);
+         }else{
+             param.put("bgImage", null);
+         }
+         reportTitle = "Form "+Form+" Marksheet";
+         showReport(param);           
+    }
+    
+    private void printMarksConfirmationSheet(String Form,String Year,String Term,String Exam){
+       if(Exam.equalsIgnoreCase("Exam 1")){
+           reportName = "Exam1ConfirmationSheet";
+        }else if (Exam.equalsIgnoreCase("Exam 2")){
+            reportName = "Exam2ConfirmationSheet";
+        }else if(Exam.equalsIgnoreCase("Exam 3")){
+            reportName = "Exam3ConfirmationSheet";
+        }
+        HashMap param=new HashMap();
+        param.put("ExamForm", Form);
+        param.put("ExamYear", Year);
+        param.put("ExamTerm", Term);
+        if(!(Activation.equalsIgnoreCase("3"))){
+            param.put("bgImage", report_bg);
+        }else{
+            param.put("bgImage", null);
+        }
+
+        reportTitle = "Form "+Form+" Marks Confirmation Sheet";
+        showReport(param);       
+    }
+    
+    private void printResultSlips(String Form,String Year,String Term,String Exam){
+        if(Exam.equalsIgnoreCase("Exam 1")){
+           reportName = "Exam1ResultSlip";            
+        }else if (Exam.equalsIgnoreCase("Exam 2")){
+           reportName = "Exam2ResultSlip";
+        }else if(Exam.equalsIgnoreCase("Exam 3")){
+           reportName = "Exam3ResultSlip";
+        }
+        HashMap param=new HashMap();
+         param.put("ExamForm", Form);
+         param.put("ExamYear", Year);
+         param.put("ExamTerm", Term);
+         if(!(Activation.equalsIgnoreCase("3"))){
+             param.put("bgImage", report_bg);
+         }else{
+             param.put("bgImage", null);
+         }
             
-            JRViewer jv = new JRViewer(jp);
-                JFrame jf =new JFrame();
-                jf.getContentPane().add(jv);
-                jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/Print_16x16.png")));
-                jf.setType(Type.UTILITY);
-                jf.validate();
-                jf.setVisible(true); 
-                jf.setSize(new Dimension(900,650));
-                jf.setLocationRelativeTo(this);
-                jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                jf.setTitle("Form "+Form+" Report Form");
-            }
-            catch(HeadlessException | JRException e){
-                JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
-            }
+        reportTitle = "Form "+Form+" Result Slips";
+        showReport(param);    
+    }
+    
+    private void printExamStreamRankingList(String Form,String Year,String Term,String Exam){
+       switch(Exam){
+            case "EXAM 1":
+                reportName = "Exam1RankingList";            
+               break;
+           case "EXAM 2":
+                reportName = "Exam2RankingList";         
+               break;
+           case "EXAM 3":
+                reportName = "Exam3RankingList";          
+               break;
+           default:
+               break;            
+        }
+        HashMap param=new HashMap();
+        param.put("ExamForm", Form);
+        param.put("ExamYear", Year);
+        param.put("ExamTerm", Term);
+        if(!(Activation.equalsIgnoreCase("3"))){
+            param.put("bgImage", report_bg);
+        }else{
+            param.put("bgImage", null);
+        }
+            
+        reportTitle = "Form "+Form+" "+Exam+" Ranking List";
+        showReport(param);  
+    }
+    
+    private void printExamOverallRankingList(String Form,String Year,String Term,String Exam,String ExamFormLevel){
+        
+        switch(Exam){
+            case "EXAM 1":
+                reportName = "Exam1OverallRankingList";       
+                break;
+            case "EXAM 2":
+                reportName = "Exam2OverallRankingList";        
+                break;
+            case "EXAM 3":
+                reportName = "Exam3OverallRankingList";           
+                break;
+            default:
+                break;
+        } 
+        HashMap param=new HashMap();
+         param.put("ExamForm", Form);
+         param.put("ExamYear", Year);
+         param.put("ExamTerm", Term);
+         param.put("ExamFormLevel",ExamFormLevel);
+         if(!(Activation.equalsIgnoreCase("3"))){
+             param.put("bgImage", report_bg);
+         }else{
+             param.put("bgImage", null);
+         }
+            
+        reportTitle = "Form "+Form+" "+Exam+" Ranking List";
+        showReport(param);  
+    }
+    
+    private void printTermStreamRankingList(String Form,String Year,String Term){
+        reportName = "EndTermStreamRankingList";                        
+           
+        HashMap param=new HashMap();
+        param.put("ExamForm", Form);
+        param.put("ExamYear", Year);
+        param.put("ExamTerm", Term);
+        if(!(Activation.equalsIgnoreCase("3"))){
+            param.put("bgImage", report_bg);
+        }else{
+            param.put("bgImage", null);
+        }
+
+        reportTitle = "Form "+Form+" "+" End Term Ranking List";
+        showReport(param);  
+    }
+    
+    private void printTermOverallRankingList(String Form,String Year,String Term,String ExamFormLevel){
+        reportName = "EndTermOverallRankingList"; 
+                    
+        HashMap param=new HashMap();
+        param.put("ExamForm", Form);
+        param.put("ExamYear", Year);
+        param.put("ExamTerm", Term);
+        param.put("ExamFormLevel", ExamFormLevel);
+        if(!(Activation.equalsIgnoreCase("3"))){
+            param.put("bgImage", report_bg);
+        }else{
+            param.put("bgImage", null);
+        }
+
+        reportTitle = "Form "+ExamFormLevel+" "+" End Term Ranking List";
+        showReport(param);  
+    }
+    
+    private void printReportForms(String Form,String Year,String Term,String Activation){
+        reportName = "ReportForm"; 
+          
+        HashMap param=new HashMap();
+        param.put("ExamForm", Form);
+        param.put("ExamYear", Year);
+        param.put("ExamTerm", Term);
+        if(!(Activation.equalsIgnoreCase("3"))){
+            param.put("bgImage", report_bg);
+        }else{
+            param.put("bgImage", null);
+        }
+
+        reportTitle = "Form "+Form+" report Form";
+        showReport(param);  
     }
     
     
     private void AnalyseSubjectPerformance(String Form,String Year,String Term,String Exam){
         try{
             sql = "DELETE  FROM ClassSubjectPerfomance";
-            pst=Conn.prepareStatement(sql);
+            pst=conn.prepareStatement(sql);
             pst.executeUpdate();
             System.out.println("Space created for subject perfomance");            
             
             InsertSubjectsToSubjectAnalysisTable(Form,Year,Term);
             
-          sql = "SELECT * FROM ClassSubjectPerfomance";
-          pst = Conn.prepareStatement(sql);
-          rs = pst.executeQuery();
-          String GradeCol = null;
-          String MarksCol = null;
-          String PointsCol = null;
-          String SubjectNO;
-          String SubjectName;
-          switch(Exam){
-              case "EXAM 1":
-                  //<editor-fold defaultstate="collapsed" desc="comment">
-                  while(rs.next()){
-                      SubjectNO = rs.getString("SubjectNO");
-                      SubjectName = rs.getString("SubjectName");
-                      if(SubjectNO.equalsIgnoreCase("1")){
-                        GradeCol = "S1E1Grade";
-                        MarksCol = "S1E1Marks";
-                        PointsCol = "S1E1Points";
-                      }else if(SubjectNO.equalsIgnoreCase("2")){
-                        GradeCol = "S2E1Grade";
-                        MarksCol = "S2E1Marks";
-                        PointsCol = "S2E1Points";
-                      }else if(SubjectNO.equalsIgnoreCase("3")){
-                        GradeCol = "S3E1Grade";
-                        MarksCol = "S3E1Marks";
-                        PointsCol = "S3E1Points";
-                      }else if(SubjectNO.equalsIgnoreCase("4")){
-                        GradeCol = "S4E1Grade";
-                        MarksCol = "S4E1Marks";
-                        PointsCol = "S4E1Points";
-                      }else if(SubjectNO.equalsIgnoreCase("5")){
-                        GradeCol = "S5E1Grade";
-                        MarksCol = "S5E1Marks";
-                        PointsCol = "S5E1Points";
-                      }else if(SubjectNO.equalsIgnoreCase("6")){
-                        GradeCol = "S6E1Grade";
-                        MarksCol = "S6E1Marks";
-                        PointsCol = "S6E1Points";
-                      }else if(SubjectNO.equalsIgnoreCase("7")){
-                        GradeCol = "S7E1Grade";
-                        MarksCol = "S7E1Marks";
-                        PointsCol = "S7E1Points";
-                      }else if(SubjectNO.equalsIgnoreCase("8")){
-                        GradeCol = "S8E1Grade";
-                        MarksCol = "S8E1Marks";
-                        PointsCol = "S8E1Points";
-                      }else if(SubjectNO.equalsIgnoreCase("9")){
-                        GradeCol = "S9E1Grade";
-                        MarksCol = "S9E1Marks";
-                        PointsCol = "S9E1Points";
-                      }else if(SubjectNO.equalsIgnoreCase("10")){
-                        GradeCol = "S10E1Grade";
-                        MarksCol = "S10E1Marks";
-                        PointsCol = "S10E1Points";
-                      }else if(SubjectNO.equalsIgnoreCase("11")){
-                        GradeCol = "S11E1Grade";
-                        MarksCol = "S11E1Marks";
-                        PointsCol = "S11E1Points";
-                      }else if(SubjectNO.equalsIgnoreCase("12")){
-                        GradeCol = "S12E1Grade";
-                        MarksCol = "S12E1Marks";
-                        PointsCol = "S12E1Points";
-                      }else if(SubjectNO.equalsIgnoreCase("13")){
-                        GradeCol = "S13E1Grade";
-                        MarksCol = "S13E1Marks";
-                        PointsCol = "S13E1Points";
-                      }else if(SubjectNO.equalsIgnoreCase("14")){
-                        GradeCol = "S14E1Grade";
-                        MarksCol = "S14E1Marks";
-                        PointsCol = "S14E1Points";
-                      }
-                        
-                      getDefiningSubjectAnalysisQueries(Form,Year,Term,MarksCol,PointsCol,GradeCol,SubjectNO,SubjectName);
-                  }
-                  
-                  break;
-//</editor-fold>
-              case "EXAM 2":
-                  //<editor-fold defaultstate="collapsed" desc="comment">
-                  while(rs.next()){
-                      SubjectNO = rs.getString("SubjectNO");
-                      SubjectName = rs.getString("SubjectName");
-                      if(SubjectNO.equalsIgnoreCase("1")){
-                        GradeCol = "S1E2Grade";
-                        MarksCol = "S1E2Marks";
-                        PointsCol = "S1E2Points";
-                      }else if(SubjectNO.equalsIgnoreCase("2")){
-                        GradeCol = "S2E2Grade";
-                        MarksCol = "S2E2Marks";
-                        PointsCol = "S2E2Points";
-                      }else if(SubjectNO.equalsIgnoreCase("3")){
-                        GradeCol = "S3E2Grade";
-                        MarksCol = "S3E2Marks";
-                        PointsCol = "S3E2Points";
-                      }else if(SubjectNO.equalsIgnoreCase("4")){
-                        GradeCol = "S4E2Grade";
-                        MarksCol = "S4E2Marks";
-                        PointsCol = "S4E2Points";
-                      }else if(SubjectNO.equalsIgnoreCase("5")){
-                        GradeCol = "S5E2Grade";
-                        MarksCol = "S5E2Marks";
-                        PointsCol = "S5E2Points";
-                      }else if(SubjectNO.equalsIgnoreCase("6")){
-                        GradeCol = "S6E2Grade";
-                        MarksCol = "S6E2Marks";
-                        PointsCol = "S6E2Points";
-                      }else if(SubjectNO.equalsIgnoreCase("7")){
-                        GradeCol = "S7E2Grade";
-                        MarksCol = "S7E2Marks";
-                        PointsCol = "S7E2Points";
-                      }else if(SubjectNO.equalsIgnoreCase("8")){
-                        GradeCol = "S8E2Grade";
-                        MarksCol = "S8E2Marks";
-                        PointsCol = "S8E2Points";
-                      }else if(SubjectNO.equalsIgnoreCase("9")){
-                        GradeCol = "S9E2Grade";
-                        MarksCol = "S9E2Marks";
-                        PointsCol = "S9E2Points";
-                      }else if(SubjectNO.equalsIgnoreCase("10")){
-                        GradeCol = "S10E2Grade";
-                        MarksCol = "S10E2Marks";
-                        PointsCol = "S10E2Points";
-                      }else if(SubjectNO.equalsIgnoreCase("11")){
-                        GradeCol = "S11E2Grade";
-                        MarksCol = "S11E2Marks";
-                        PointsCol = "S11E2Points";
-                      }else if(SubjectNO.equalsIgnoreCase("12")){
-                        GradeCol = "S12E2Grade";
-                        MarksCol = "S12E2Marks";
-                        PointsCol = "S12E2Points";
-                      }else if(SubjectNO.equalsIgnoreCase("13")){
-                        GradeCol = "S13E2Grade";
-                        MarksCol = "S13E2Marks";
-                        PointsCol = "S13E2Points";
-                      }else if(SubjectNO.equalsIgnoreCase("14")){
-                        GradeCol = "S14E2Grade";
-                        MarksCol = "S14E2Marks";
-                        PointsCol = "S14E2Points";
-                      }
-                      getDefiningSubjectAnalysisQueries(Form,Year,Term,MarksCol,PointsCol,GradeCol,SubjectNO,SubjectName);
-                  }
-                  
-                  break;
-//</editor-fold>
-              case "EXAM 3":
-                  //<editor-fold defaultstate="collapsed" desc="comment">
-                  while(rs.next()){
-                      SubjectNO = rs.getString("SubjectNO");
-                      SubjectName = rs.getString("SubjectName");
-                      if(SubjectNO.equalsIgnoreCase("1")){
-                        GradeCol = "S1E3Grade";
-                        MarksCol = "S1E3Marks";
-                        PointsCol = "S1E3Points";
-                      }else if(SubjectNO.equalsIgnoreCase("2")){
-                        GradeCol = "S2E3Grade";
-                        MarksCol = "S2E3Marks";
-                        PointsCol = "S2E3Points";
-                      }else if(SubjectNO.equalsIgnoreCase("3")){
-                        GradeCol = "S3E3Grade";
-                        MarksCol = "S3E3Marks";
-                        PointsCol = "S3E3Points";
-                      }else if(SubjectNO.equalsIgnoreCase("4")){
-                        GradeCol = "S4E3Grade";
-                        MarksCol = "S4E3Marks";
-                        PointsCol = "S4E3Points";
-                      }else if(SubjectNO.equalsIgnoreCase("5")){
-                        GradeCol = "S5E3Grade";
-                        MarksCol = "S5E3Marks";
-                        PointsCol = "S5E3Points";
-                      }else if(SubjectNO.equalsIgnoreCase("6")){
-                        GradeCol = "S6E3Grade";
-                        MarksCol = "S6E3Marks";
-                        PointsCol = "S6E3Points";
-                      }else if(SubjectNO.equalsIgnoreCase("7")){
-                        GradeCol = "S7E3Grade";
-                        MarksCol = "S7E3Marks";
-                        PointsCol = "S7E3Points";
-                      }else if(SubjectNO.equalsIgnoreCase("8")){
-                        GradeCol = "S8E3Grade";
-                        MarksCol = "S8E3Marks";
-                        PointsCol = "S8E3Points";
-                      }else if(SubjectNO.equalsIgnoreCase("9")){
-                        GradeCol = "S9E3Grade";
-                        MarksCol = "S9E3Marks";
-                        PointsCol = "S9E3Points";
-                      }else if(SubjectNO.equalsIgnoreCase("10")){
-                        GradeCol = "S10E3Grade";
-                        MarksCol = "S10E3Marks";
-                        PointsCol = "S10E3Points";
-                      }else if(SubjectNO.equalsIgnoreCase("11")){
-                        GradeCol = "S11E3Grade";
-                        MarksCol = "S11E3Marks";
-                        PointsCol = "S11E3Points";
-                      }else if(SubjectNO.equalsIgnoreCase("12")){
-                        GradeCol = "S12E3Grade";
-                        MarksCol = "S12E3Marks";
-                        PointsCol = "S12E3Points";
-                      }else if(SubjectNO.equalsIgnoreCase("13")){
-                        GradeCol = "S13E3Grade";
-                        MarksCol = "S13E3Marks";
-                        PointsCol = "S13E3Points";
-                      }else if(SubjectNO.equalsIgnoreCase("14")){
-                        GradeCol = "S14E3Grade";
-                        MarksCol = "S14E3Marks";
-                        PointsCol = "S14E3Points";
-                      }
-                      getDefiningSubjectAnalysisQueries(Form,Year,Term,MarksCol,PointsCol,GradeCol,SubjectNO,SubjectName);
-                  }
-                  break;
-//</editor-fold>
-              case "END TERM":
-                  //<editor-fold defaultstate="collapsed" desc="comment">
-                  while(rs.next()){
-                      SubjectNO = rs.getString("SubjectNO");
-                      SubjectName = rs.getString("SubjectName");
-                      if(SubjectNO.equalsIgnoreCase("1")){
-                        GradeCol = "S1AVGGrade";
-                        MarksCol = "S1AVGMarks";
-                        PointsCol = "S1AVGPoints";
-                      }else if(SubjectNO.equalsIgnoreCase("2")){
-                        GradeCol = "S2AVGGrade";
-                        MarksCol = "S2AVGMarks";
-                        PointsCol = "S2AVGPoints";
-                      }else if(SubjectNO.equalsIgnoreCase("3")){
-                        GradeCol = "S3AVGGrade";
-                        MarksCol = "S3AVGMarks";
-                        PointsCol = "S3AVGPoints";
-                      }else if(SubjectNO.equalsIgnoreCase("4")){
-                        GradeCol = "S4AVGGrade";
-                        MarksCol = "S4AVGMarks";
-                        PointsCol = "S4AVGPoints";
-                      }else if(SubjectNO.equalsIgnoreCase("5")){
-                        GradeCol = "S5AVGGrade";
-                        MarksCol = "S5AVGMarks";
-                        PointsCol = "S5AVGPoints";
-                      }else if(SubjectNO.equalsIgnoreCase("6")){
-                        GradeCol = "S6AVGGrade";
-                        MarksCol = "S6AVGMarks";
-                        PointsCol = "S6AVGPoints";
-                      }else if(SubjectNO.equalsIgnoreCase("7")){
-                        GradeCol = "S7AVGGrade";
-                        MarksCol = "S7AVGMarks";
-                        PointsCol = "S7AVGPoints";
-                      }else if(SubjectNO.equalsIgnoreCase("8")){
-                        GradeCol = "S8AVGGrade";
-                        MarksCol = "S8AVGMarks";
-                        PointsCol = "S8AVGPoints";
-                      }else if(SubjectNO.equalsIgnoreCase("9")){
-                        GradeCol = "S9AVGGrade";
-                        MarksCol = "S9AVGMarks";
-                        PointsCol = "S9AVGPoints";
-                      }else if(SubjectNO.equalsIgnoreCase("10")){
-                        GradeCol = "S10AVGGrade";
-                        MarksCol = "S10AVGMarks";
-                        PointsCol = "S10AVGPoints";
-                      }else if(SubjectNO.equalsIgnoreCase("11")){
-                        GradeCol = "S11AVGGrade";
-                        MarksCol = "S11AVGMarks";
-                        PointsCol = "S11AVGPoints";
-                      }else if(SubjectNO.equalsIgnoreCase("12")){
-                        GradeCol = "S12AVGGrade";
-                        MarksCol = "S12AVGMarks";
-                        PointsCol = "S12AVGPoints";
-                      }else if(SubjectNO.equalsIgnoreCase("13")){
-                        GradeCol = "S13AVGGrade";
-                        MarksCol = "S13AVGMarks";
-                        PointsCol = "S13AVGPoints";
-                      }else if(SubjectNO.equalsIgnoreCase("14")){
-                        GradeCol = "S14AVGGrade";
-                        MarksCol = "S14AVGMarks";
-                        PointsCol = "S14AVGPoints";
-                      }
-                      
-                      getDefiningSubjectAnalysisQueries(Form,Year,Term,MarksCol,PointsCol,GradeCol,SubjectNO,SubjectName);
-                  }
-                  break;
-//</editor-fold>
-          }
+            sql = "SELECT * FROM ClassSubjectPerfomance";
+            pst = conn.prepareStatement(sql);
+            rs = pst.executeQuery();
+            String GradeCol = null;
+            String MarksCol = null;
+            String PointsCol = null;
+            String SubjectNO;
+            String SubjectName;
+            switch(Exam){
+                case "EXAM 1":
+                    //<editor-fold defaultstate="collapsed" desc="comment">
+                    while(rs.next()){
+                        SubjectNO = rs.getString("SubjectNO");
+                        SubjectName = rs.getString("SubjectName");
+                        if(SubjectNO.equalsIgnoreCase("1")){
+                          GradeCol = "S1E1Grade";
+                          MarksCol = "S1E1Marks";
+                          PointsCol = "S1E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("2")){
+                          GradeCol = "S2E1Grade";
+                          MarksCol = "S2E1Marks";
+                          PointsCol = "S2E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("3")){
+                          GradeCol = "S3E1Grade";
+                          MarksCol = "S3E1Marks";
+                          PointsCol = "S3E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("4")){
+                          GradeCol = "S4E1Grade";
+                          MarksCol = "S4E1Marks";
+                          PointsCol = "S4E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("5")){
+                          GradeCol = "S5E1Grade";
+                          MarksCol = "S5E1Marks";
+                          PointsCol = "S5E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("6")){
+                          GradeCol = "S6E1Grade";
+                          MarksCol = "S6E1Marks";
+                          PointsCol = "S6E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("7")){
+                          GradeCol = "S7E1Grade";
+                          MarksCol = "S7E1Marks";
+                          PointsCol = "S7E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("8")){
+                          GradeCol = "S8E1Grade";
+                          MarksCol = "S8E1Marks";
+                          PointsCol = "S8E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("9")){
+                          GradeCol = "S9E1Grade";
+                          MarksCol = "S9E1Marks";
+                          PointsCol = "S9E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("10")){
+                          GradeCol = "S10E1Grade";
+                          MarksCol = "S10E1Marks";
+                          PointsCol = "S10E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("11")){
+                          GradeCol = "S11E1Grade";
+                          MarksCol = "S11E1Marks";
+                          PointsCol = "S11E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("12")){
+                          GradeCol = "S12E1Grade";
+                          MarksCol = "S12E1Marks";
+                          PointsCol = "S12E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("13")){
+                          GradeCol = "S13E1Grade";
+                          MarksCol = "S13E1Marks";
+                          PointsCol = "S13E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("14")){
+                          GradeCol = "S14E1Grade";
+                          MarksCol = "S14E1Marks";
+                          PointsCol = "S14E1Points";
+                        }
+
+                        getDefiningSubjectAnalysisQueries(Form,Year,Term,MarksCol,PointsCol,GradeCol,SubjectNO,SubjectName);
+                    }
+
+                    break;
+    //</editor-fold>
+                case "EXAM 2":
+                    //<editor-fold defaultstate="collapsed" desc="comment">
+                    while(rs.next()){
+                        SubjectNO = rs.getString("SubjectNO");
+                        SubjectName = rs.getString("SubjectName");
+                        if(SubjectNO.equalsIgnoreCase("1")){
+                          GradeCol = "S1E2Grade";
+                          MarksCol = "S1E2Marks";
+                          PointsCol = "S1E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("2")){
+                          GradeCol = "S2E2Grade";
+                          MarksCol = "S2E2Marks";
+                          PointsCol = "S2E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("3")){
+                          GradeCol = "S3E2Grade";
+                          MarksCol = "S3E2Marks";
+                          PointsCol = "S3E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("4")){
+                          GradeCol = "S4E2Grade";
+                          MarksCol = "S4E2Marks";
+                          PointsCol = "S4E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("5")){
+                          GradeCol = "S5E2Grade";
+                          MarksCol = "S5E2Marks";
+                          PointsCol = "S5E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("6")){
+                          GradeCol = "S6E2Grade";
+                          MarksCol = "S6E2Marks";
+                          PointsCol = "S6E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("7")){
+                          GradeCol = "S7E2Grade";
+                          MarksCol = "S7E2Marks";
+                          PointsCol = "S7E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("8")){
+                          GradeCol = "S8E2Grade";
+                          MarksCol = "S8E2Marks";
+                          PointsCol = "S8E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("9")){
+                          GradeCol = "S9E2Grade";
+                          MarksCol = "S9E2Marks";
+                          PointsCol = "S9E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("10")){
+                          GradeCol = "S10E2Grade";
+                          MarksCol = "S10E2Marks";
+                          PointsCol = "S10E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("11")){
+                          GradeCol = "S11E2Grade";
+                          MarksCol = "S11E2Marks";
+                          PointsCol = "S11E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("12")){
+                          GradeCol = "S12E2Grade";
+                          MarksCol = "S12E2Marks";
+                          PointsCol = "S12E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("13")){
+                          GradeCol = "S13E2Grade";
+                          MarksCol = "S13E2Marks";
+                          PointsCol = "S13E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("14")){
+                          GradeCol = "S14E2Grade";
+                          MarksCol = "S14E2Marks";
+                          PointsCol = "S14E2Points";
+                        }
+                        getDefiningSubjectAnalysisQueries(Form,Year,Term,MarksCol,PointsCol,GradeCol,SubjectNO,SubjectName);
+                    }
+
+                    break;
+    //</editor-fold>
+                case "EXAM 3":
+                    //<editor-fold defaultstate="collapsed" desc="comment">
+                    while(rs.next()){
+                        SubjectNO = rs.getString("SubjectNO");
+                        SubjectName = rs.getString("SubjectName");
+                        if(SubjectNO.equalsIgnoreCase("1")){
+                          GradeCol = "S1E3Grade";
+                          MarksCol = "S1E3Marks";
+                          PointsCol = "S1E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("2")){
+                          GradeCol = "S2E3Grade";
+                          MarksCol = "S2E3Marks";
+                          PointsCol = "S2E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("3")){
+                          GradeCol = "S3E3Grade";
+                          MarksCol = "S3E3Marks";
+                          PointsCol = "S3E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("4")){
+                          GradeCol = "S4E3Grade";
+                          MarksCol = "S4E3Marks";
+                          PointsCol = "S4E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("5")){
+                          GradeCol = "S5E3Grade";
+                          MarksCol = "S5E3Marks";
+                          PointsCol = "S5E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("6")){
+                          GradeCol = "S6E3Grade";
+                          MarksCol = "S6E3Marks";
+                          PointsCol = "S6E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("7")){
+                          GradeCol = "S7E3Grade";
+                          MarksCol = "S7E3Marks";
+                          PointsCol = "S7E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("8")){
+                          GradeCol = "S8E3Grade";
+                          MarksCol = "S8E3Marks";
+                          PointsCol = "S8E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("9")){
+                          GradeCol = "S9E3Grade";
+                          MarksCol = "S9E3Marks";
+                          PointsCol = "S9E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("10")){
+                          GradeCol = "S10E3Grade";
+                          MarksCol = "S10E3Marks";
+                          PointsCol = "S10E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("11")){
+                          GradeCol = "S11E3Grade";
+                          MarksCol = "S11E3Marks";
+                          PointsCol = "S11E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("12")){
+                          GradeCol = "S12E3Grade";
+                          MarksCol = "S12E3Marks";
+                          PointsCol = "S12E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("13")){
+                          GradeCol = "S13E3Grade";
+                          MarksCol = "S13E3Marks";
+                          PointsCol = "S13E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("14")){
+                          GradeCol = "S14E3Grade";
+                          MarksCol = "S14E3Marks";
+                          PointsCol = "S14E3Points";
+                        }
+                        getDefiningSubjectAnalysisQueries(Form,Year,Term,MarksCol,PointsCol,GradeCol,SubjectNO,SubjectName);
+                    }
+                    break;
+    //</editor-fold>
+                case "END TERM":
+                    //<editor-fold defaultstate="collapsed" desc="comment">
+                    while(rs.next()){
+                        SubjectNO = rs.getString("SubjectNO");
+                        SubjectName = rs.getString("SubjectName");
+                        if(SubjectNO.equalsIgnoreCase("1")){
+                          GradeCol = "S1AVGGrade";
+                          MarksCol = "S1AVGMarks";
+                          PointsCol = "S1AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("2")){
+                          GradeCol = "S2AVGGrade";
+                          MarksCol = "S2AVGMarks";
+                          PointsCol = "S2AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("3")){
+                          GradeCol = "S3AVGGrade";
+                          MarksCol = "S3AVGMarks";
+                          PointsCol = "S3AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("4")){
+                          GradeCol = "S4AVGGrade";
+                          MarksCol = "S4AVGMarks";
+                          PointsCol = "S4AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("5")){
+                          GradeCol = "S5AVGGrade";
+                          MarksCol = "S5AVGMarks";
+                          PointsCol = "S5AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("6")){
+                          GradeCol = "S6AVGGrade";
+                          MarksCol = "S6AVGMarks";
+                          PointsCol = "S6AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("7")){
+                          GradeCol = "S7AVGGrade";
+                          MarksCol = "S7AVGMarks";
+                          PointsCol = "S7AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("8")){
+                          GradeCol = "S8AVGGrade";
+                          MarksCol = "S8AVGMarks";
+                          PointsCol = "S8AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("9")){
+                          GradeCol = "S9AVGGrade";
+                          MarksCol = "S9AVGMarks";
+                          PointsCol = "S9AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("10")){
+                          GradeCol = "S10AVGGrade";
+                          MarksCol = "S10AVGMarks";
+                          PointsCol = "S10AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("11")){
+                          GradeCol = "S11AVGGrade";
+                          MarksCol = "S11AVGMarks";
+                          PointsCol = "S11AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("12")){
+                          GradeCol = "S12AVGGrade";
+                          MarksCol = "S12AVGMarks";
+                          PointsCol = "S12AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("13")){
+                          GradeCol = "S13AVGGrade";
+                          MarksCol = "S13AVGMarks";
+                          PointsCol = "S13AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("14")){
+                          GradeCol = "S14AVGGrade";
+                          MarksCol = "S14AVGMarks";
+                          PointsCol = "S14AVGPoints";
+                        }
+
+                        getDefiningSubjectAnalysisQueries(Form,Year,Term,MarksCol,PointsCol,GradeCol,SubjectNO,SubjectName);
+                    }
+                    break;
+    //</editor-fold>
+            }
   
         }catch(SQLException e){
             JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
         }
     }
+    
     private void InsertSubjectsToSubjectAnalysisTable(String Form,String Year,String Term){
         try{
             sql = "SELECT * FROM Subjects";
-            pst  = Conn.prepareStatement(sql);
+            pst  = conn.prepareStatement(sql);
             rs =  rs = pst.executeQuery();
             //Add subjects to the table
             while(rs.next()){
                 String SubjectNO = rs.getString("S_NO");
                 String SubjectName = rs.getString("Subject_name");
                 sql = "INSERT INTO ClassSubjectPerfomance (Form,Year,Term,SubjectNO,SubjectName) values ('"+Form+"','"+Year+"','"+Term+"','"+SubjectNO+"','"+SubjectName+"')";
-                pst  = Conn.prepareStatement(sql);
+                pst  = conn.prepareStatement(sql);
                 pst.executeUpdate();
             }
         }catch(Exception e){
@@ -719,6 +615,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         }
         
     }
+    
     private void getDefiningSubjectAnalysisQueries(String Form,String Year,String Term,String MarksCol,String PointsCol,String GradeCol,String SubjectNumber,String SubjectName){
         String Ap = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='A' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
         String Amns = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='A-' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
@@ -739,56 +636,40 @@ public class ReportsFrm extends javax.swing.JFrame {
         
         try{
            sql = "UPDATE ClassSubjectPerfomance set SubjectMeanMarks=("+SubjectMarks+"),SubjectMeanPoints=("+SubjectMean+"), SubjectEntry = ("+SubjectEntry+"), AP = ("+Ap+"), 'Amns' = ("+Amns+"), 'Bpls' = ("+Bpls+"),BP = ("+Bp+"), 'Bmns' = ("+Bmns+"), 'Cpls' = ("+Cpls+"), 'CP' = ("+Cp+"), 'Cmns' = ("+Cmns+"), 'Dpls' = ("+Dpls+"), 'DP' = ("+Dp+"), 'Dmns' = ("+Dmns+"), 'EP' = ("+Ep+") WHERE SubjectNO = '"+SubjectNumber+"'";
-            pst = Conn.prepareStatement(sql);
+            pst = conn.prepareStatement(sql);
             pst.executeUpdate(); 
         }catch(SQLException e){
             e.printStackTrace();
         }
         
     }
+    
     private void setTheSubjectPosition(){
         try{
             sql = "UPDATE ClassSubjectPerfomance set SubjectPosition=(1+(SELECT Count(*) From ClassSubjectPerfomance as t2 WHERE ((t2.SubjectMeanPoints+0)>(ClassSubjectPerfomance.SubjectMeanPoints+0)))) WHERE(SubjectMeanPoints+0>0)";
-            pst = Conn.prepareStatement(sql);
+            pst = conn.prepareStatement(sql);
             pst.executeUpdate();
         }catch(Exception e){
             JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
         }
     }
+    
     private void printExamSubjectPerfomance(String Form,String Year,String Term,String Exam){
-        try{   
-          Report=getClass().getResourceAsStream("Reports/SubjectMeans.jrxml");
+        reportName = "SubjectMeans"; 
           
-           HashMap param=new HashMap();
-            param.put("ExamForm", Form);
-            param.put("ExamYear", Year);
-            param.put("ExamTerm", Term);
-            param.put("ExamName",Exam);
-            if(!(Activation.equalsIgnoreCase("3"))){
-                param.put("bgImage", report_bg);
-            }else{
-                param.put("bgImage", null);
-            }
-            
-            JasperDesign jd = JRXmlLoader.load(Report);
-            JasperReport jr=JasperCompileManager.compileReport(jd);
-            JasperPrint jp=JasperFillManager.fillReport(jr, param, Conn);
-            JRViewer jv = new JRViewer(jp);
-
-                JFrame jf =new JFrame();
-                jf.getContentPane().add(jv);
-                jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/Print_16x16.png")));
-                jf.setType(Type.UTILITY);
-                jf.validate();
-                jf.setVisible(true); 
-                jf.setSize(new Dimension(900,650));
-                jf.setLocationRelativeTo(this);
-                jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                jf.setTitle("Form "+Form+" Marksheet");
-            }
-            catch(HeadlessException | JRException e){
-                JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
-            }
+        HashMap param=new HashMap();
+        param.put("ExamForm", Form);
+        param.put("ExamYear", Year);
+        param.put("ExamTerm", Term);
+        param.put("ExamName",Exam);
+        if(!(Activation.equalsIgnoreCase("3"))){
+            param.put("bgImage", report_bg);
+        }else{
+            param.put("bgImage", null);
+        }
+        
+        reportTitle = "Form "+Form+" Marksheet";
+        showReport(param);  
     }
     
     private void AnalyzeClassesPerfomance(String Form,String Year,String Term,String Exam,String ExamFormLevel){
@@ -819,7 +700,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         
         }
         try{
-            PreparedStatement ps = Conn.prepareStatement("Select * from tblClasses WHERE substr(Class_name,1,1) = '"+ExamFormLevel+"'");
+            PreparedStatement ps = conn.prepareStatement("Select * from tblClasses WHERE substr(Class_name,1,1) = '"+ExamFormLevel+"'");
             ResultSet rst = ps.executeQuery();
             while(rst.next()){
                 Form = rst.getString("Class_name");
@@ -844,7 +725,7 @@ public class ReportsFrm extends javax.swing.JFrame {
                 try{
                    sql = "UPDATE tblClasses set Entry=("+ClassEntry+"),AverageMarks=("+ClassMarks+"),MeanPoints=("+ClassMean+"),"+
                         " Ap = ("+Ap+"), 'Amns' = ("+Amns+"), 'Bpls' = ("+Bpls+"),BP = ("+Bp+"), 'Bmns' = ("+Bmns+"), 'Cpls' = ("+Cpls+"), 'CP' = ("+Cp+"), 'Cmns' = ("+Cmns+"), 'Dpls' = ("+Dpls+"), 'DP' = ("+Dp+"), 'Dmns' = ("+Dmns+"), 'EP' = ("+Ep+") WHERE Class_name = '"+Form+"'";
-                    pst = Conn.prepareStatement(sql);
+                    pst = conn.prepareStatement(sql);
                     pst.executeUpdate(); 
                     System.out.println("Classes Ranked, Form: "+ Form);
                 }catch(SQLException e){
@@ -856,49 +737,33 @@ public class ReportsFrm extends javax.swing.JFrame {
         }
         
     }
+    
     private void setTheClassPosition(String ExamFormLevel){
         try{
             sql = "UPDATE tblClasses set Position=(1+(SELECT Count(*) From tblClasses as t2 WHERE ((t2.MeanPoints+0)>(tblClasses.MeanPoints+0) AND substr(Class_name,1,1)='"+ExamFormLevel+"') )) WHERE(MeanPoints+0>0)";
-            pst = Conn.prepareStatement(sql);
+            pst = conn.prepareStatement(sql);
             pst.executeUpdate();
         }catch(Exception e){
             JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
         }
     }
+   
     private void printClassPerformance(String ExamFormLevel,String Year,String Term,String Exam){
-    try{   
-          Report=getClass().getResourceAsStream("Reports/ClassMeans.jrxml");
-          
-           HashMap param=new HashMap();
-            param.put("ExamForm", ExamFormLevel);
-            param.put("ExamYear", Year);
-            param.put("ExamTerm", Term);
-            param.put("ExamName",Exam);
-            if(!(Activation.equalsIgnoreCase("3"))){
-                param.put("bgImage", report_bg);
-            }else{
-                param.put("bgImage", null);
-            }
-            
-            JasperDesign jd = JRXmlLoader.load(Report);
-            JasperReport jr=JasperCompileManager.compileReport(jd);
-            JasperPrint jp=JasperFillManager.fillReport(jr, param, Conn);
-            JRViewer jv = new JRViewer(jp);
-
-                JFrame jf =new JFrame();
-                jf.getContentPane().add(jv);
-                jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/Print_16x16.png")));
-                jf.setType(Type.UTILITY);
-                jf.validate();
-                jf.setVisible(true); 
-                jf.setSize(new Dimension(900,650));
-                jf.setLocationRelativeTo(this);
-                jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                jf.setTitle("Form "+ExamFormLevel+" Marksheet");
-            }
-            catch(HeadlessException | JRException e){
-                JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
-            }
+        reportName = "ClassMeans"; 
+    
+        HashMap param=new HashMap();
+        param.put("ExamForm", ExamFormLevel);
+        param.put("ExamYear", Year);
+        param.put("ExamTerm", Term);
+        param.put("ExamName",Exam);
+        if(!(Activation.equalsIgnoreCase("3"))){
+            param.put("bgImage", report_bg);
+        }else{
+            param.put("bgImage", null);
+        }
+        
+        reportTitle = "Form "+ExamFormLevel+" Marksheet";
+        showReport(param);  
     }
     
     private void AnalyzeSubjectChampions(String Form,String Year,String Term,String Exam,String NumberOfChamps){
@@ -906,12 +771,12 @@ public class ReportsFrm extends javax.swing.JFrame {
         String GradeCol = null;
         try{
             sql = "DELETE  FROM SubjectChampions";
-            pst=Conn.prepareStatement(sql);
+            pst=conn.prepareStatement(sql);
             pst.executeUpdate();
             System.out.println("Space created for subject perfomance");
             
             sql = "SELECT * FROM Subjects";
-            pst = Conn.prepareStatement(sql);
+            pst = conn.prepareStatement(sql);
             rs=pst.executeQuery();
             switch(Exam){
                 case "EXAM 1"://<editor-fold defaultstate="collapsed" desc="comment">
@@ -1130,10 +995,11 @@ public class ReportsFrm extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
         }
     }
+    
     private void getSubjectChampionsForThisSubject(String Form,String Year,String Term,String SubjectName,String NumberOfChamps,String MarksCol,String GradeCol){
         try{
             sql = "Select students_exams.*,Student_details.* from students_exams INNER JOIN Student_details ON (Student_id=SE_Student_id) Where(SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"' AND "+MarksCol+"+0>0) ORDER BY "+MarksCol+"+0 DESC LIMIT "+NumberOfChamps+"";
-            pst  = Conn.prepareStatement(sql);
+            pst  = conn.prepareStatement(sql);
             ResultSet rst = pst.executeQuery();
             while(rst.next()){
                 String StudentId = rst.getString("Student_id");
@@ -1143,7 +1009,7 @@ public class ReportsFrm extends javax.swing.JFrame {
                 String Grade = rst.getString(GradeCol);
                 sql = "INSERT INTO SubjectChampions (SubjectName,StudentID,StudentName,StudentClass,Marks,Grade) Values ('"+SubjectName+"',"
                         + "'"+StudentId+"','"+StudentName+"','"+StudentClass+"','"+Marks+"','"+Grade+"')";
-                pst = Conn.prepareStatement(sql);
+                pst = conn.prepareStatement(sql);
                 pst.executeUpdate();
             }
         }catch(SQLException e){
@@ -1151,41 +1017,24 @@ public class ReportsFrm extends javax.swing.JFrame {
         }
     
     }
+    
     private void printSubjectCHamps(String Form,String Year,String Term,String Exam,String NumberOfChamps){
-        try{   
-          Report=getClass().getResourceAsStream("Reports/SubjectTopStudents.jrxml");
+        reportName = "SubjectTopStudents"; 
           
-           HashMap param=new HashMap();
-            param.put("ExamForm", Form);
-            param.put("ExamYear", Year);
-            param.put("ExamTerm", Term);
-            param.put("ExamName",Exam);
-            param.put("NoChamps",NumberOfChamps);
-            if(!(Activation.equalsIgnoreCase("3"))){
-                param.put("bgImage", report_bg);
-            }else{
-                param.put("bgImage", null);
-            }
-            
-            JasperDesign jd = JRXmlLoader.load(Report);
-            JasperReport jr=JasperCompileManager.compileReport(jd);
-            JasperPrint jp=JasperFillManager.fillReport(jr, param, Conn);
-            JRViewer jv = new JRViewer(jp);
-
-                JFrame jf =new JFrame();
-                jf.getContentPane().add(jv);
-                jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/Print_16x16.png")));
-                jf.setType(Type.UTILITY);
-                jf.validate();
-                jf.setVisible(true); 
-                jf.setSize(new Dimension(900,650));
-                jf.setLocationRelativeTo(this);
-                jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                jf.setTitle("Form "+Form+" Subject CHampions");
-            }
-            catch(HeadlessException | JRException e){
-                JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
-            }
+        HashMap param=new HashMap();
+        param.put("ExamForm", Form);
+        param.put("ExamYear", Year);
+        param.put("ExamTerm", Term);
+        param.put("ExamName",Exam);
+        param.put("NoChamps",NumberOfChamps);
+        if(!(Activation.equalsIgnoreCase("3"))){
+            param.put("bgImage", report_bg);
+        }else{
+            param.put("bgImage", null);
+        }
+        
+        reportTitle = "Form "+Form+" Subject CHampions";
+        showReport(param);  
     }
     
     @SuppressWarnings("unchecked")
@@ -1262,7 +1111,6 @@ public class ReportsFrm extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
-        setType(java.awt.Window.Type.POPUP);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -1295,7 +1143,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         );
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Print the Following System Reports", 0, 0, new java.awt.Font("Tahoma", 1, 14), new java.awt.Color(0, 0, 153))); // NOI18N
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Print the Following System Reports", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14), new java.awt.Color(0, 0, 153))); // NOI18N
 
         jLabel18.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel18.setText("FORM");
@@ -1322,7 +1170,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         jButton1.setBackground(new java.awt.Color(255, 255, 255));
         jButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton1.setText("1. Marks Sheets");
-        jButton1.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        jButton1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton1.setContentAreaFilled(false);
         jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton1.setFocusPainted(false);
@@ -1336,7 +1184,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         jButton2.setBackground(new java.awt.Color(255, 255, 255));
         jButton2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton2.setText("2. Marks Confirmation Sheets");
-        jButton2.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        jButton2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton2.setContentAreaFilled(false);
         jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton2.setFocusPainted(false);
@@ -1350,7 +1198,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         jButton3.setBackground(new java.awt.Color(255, 255, 255));
         jButton3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton3.setText("3. Exam Result Slip");
-        jButton3.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        jButton3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton3.setContentAreaFilled(false);
         jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton3.setFocusPainted(false);
@@ -1364,7 +1212,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         jButton4.setBackground(new java.awt.Color(255, 255, 255));
         jButton4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton4.setText("4. Exam Stream Ranking List");
-        jButton4.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        jButton4.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton4.setContentAreaFilled(false);
         jButton4.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton4.setFocusPainted(false);
@@ -1378,7 +1226,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         jButton5.setBackground(new java.awt.Color(255, 255, 255));
         jButton5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton5.setText("5. Exam Overall Ranking List");
-        jButton5.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        jButton5.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton5.setContentAreaFilled(false);
         jButton5.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton5.setFocusPainted(false);
@@ -1392,7 +1240,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         jButton6.setBackground(new java.awt.Color(255, 255, 255));
         jButton6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton6.setText("6. Endterm Stream Ranking List");
-        jButton6.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        jButton6.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton6.setContentAreaFilled(false);
         jButton6.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton6.setFocusPainted(false);
@@ -1406,7 +1254,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         jButton7.setBackground(new java.awt.Color(255, 255, 255));
         jButton7.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton7.setText("7. Endterm Overall Ranking List");
-        jButton7.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        jButton7.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton7.setContentAreaFilled(false);
         jButton7.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton7.setFocusPainted(false);
@@ -1420,7 +1268,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         jButton8.setBackground(new java.awt.Color(255, 255, 255));
         jButton8.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton8.setText("8. Report Forms");
-        jButton8.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        jButton8.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton8.setContentAreaFilled(false);
         jButton8.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton8.setFocusPainted(false);
@@ -1434,7 +1282,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         jButton9.setBackground(new java.awt.Color(255, 255, 255));
         jButton9.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton9.setText("9. Exam Subject Performance");
-        jButton9.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        jButton9.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton9.setContentAreaFilled(false);
         jButton9.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton9.setFocusPainted(false);
@@ -1448,7 +1296,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         jButton10.setBackground(new java.awt.Color(255, 255, 255));
         jButton10.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton10.setText("10. Endterm Subject Perfomance");
-        jButton10.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        jButton10.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton10.setContentAreaFilled(false);
         jButton10.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton10.setFocusPainted(false);
@@ -1462,7 +1310,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         jButton11.setBackground(new java.awt.Color(255, 255, 255));
         jButton11.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton11.setText("11. Exam Classes Ranking");
-        jButton11.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        jButton11.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton11.setContentAreaFilled(false);
         jButton11.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton11.setFocusPainted(false);
@@ -1476,7 +1324,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         jButton12.setBackground(new java.awt.Color(255, 255, 255));
         jButton12.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton12.setText("12. Endterm Classes Ranking");
-        jButton12.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        jButton12.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton12.setContentAreaFilled(false);
         jButton12.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton12.setFocusPainted(false);
@@ -1488,7 +1336,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         });
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Subject Champions", 0, 0, new java.awt.Font("Tahoma", 1, 12), new java.awt.Color(0, 0, 204))); // NOI18N
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Subject Champions", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12), new java.awt.Color(0, 0, 204))); // NOI18N
 
         jLabel3.setText("Number of Champions");
 
@@ -1498,7 +1346,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         jButton13.setBackground(new java.awt.Color(255, 255, 255));
         jButton13.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton13.setText("Print for this Exam");
-        jButton13.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        jButton13.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton13.setContentAreaFilled(false);
         jButton13.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton13.setFocusPainted(false);
@@ -1511,7 +1359,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         jButton14.setBackground(new java.awt.Color(255, 255, 255));
         jButton14.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton14.setText("Print for End Term");
-        jButton14.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        jButton14.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton14.setContentAreaFilled(false);
         jButton14.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton14.setFocusPainted(false);
@@ -1644,11 +1492,11 @@ public class ReportsFrm extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 692, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(24, 24, 24)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(48, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1865,7 +1713,7 @@ public class ReportsFrm extends javax.swing.JFrame {
        }else if(Term.equalsIgnoreCase("SELECT")){
            JOptionPane.showMessageDialog(null, "Select the Term of examination","acme",JOptionPane.INFORMATION_MESSAGE);
        }else{
-           lblStatus.setText("Preparing the Report Forms...");
+           lblStatus.setText("Preparing the report Forms...");
            Report_Request="rf";
            ReportDlg.pack();
            ReportDlg.setLocationRelativeTo(this);
@@ -1958,7 +1806,9 @@ public class ReportsFrm extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         try{
-            Conn.close();
+            if (!conn.isClosed()) {
+                conn.close();                
+            }
        }catch(SQLException e){
            System.out.println(e);
        }
@@ -2024,7 +1874,7 @@ public class ReportsFrm extends javax.swing.JFrame {
                         printSubjectCHamps(Form,Year,Term,Exam,NumberOfChamps);
                         break;
                     default:
-                        JOptionPane.showMessageDialog(null,"Selected Report CODE does not exits","Error",1);
+                        JOptionPane.showMessageDialog(null,"Selected report CODE does not exits","Error",1);
                         break;
                 }
                 return null;
@@ -2065,10 +1915,8 @@ public class ReportsFrm extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ReportsFrm().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new ReportsFrm().setVisible(true);
         });
     }
 

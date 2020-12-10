@@ -299,24 +299,25 @@ public class ActivationFrm extends javax.swing.JFrame {
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
 
     }//GEN-LAST:event_formWindowClosing
-    private String getSchoolInfo(String SchoolName) {
+    private String getSchoolInfo() {
+        String schoolName="";
         try {
             sql = "select * from tblSchool";
             pst = Conn.prepareStatement(sql);
             rs = pst.executeQuery();
             if (rs.next()) {
-                SchoolName = rs.getString("School_name");
-                return SchoolName;
+                schoolName = rs.getString("School_name");
+                return schoolName;
             }
         } catch (SQLException e) {
             System.out.println(e);
             return null;
         }
-        return SchoolName;
+        return schoolName;
     }
 
     private void Activate() {
-        String keyExtract = (getSchoolInfo("").toUpperCase().replaceAll("\\.", "").replaceAll("\\'", "")).replaceAll(" ", "");
+        String keyExtract = (getSchoolInfo().toUpperCase().replaceAll("\\.", "").replaceAll("\\'", "")).replaceAll(" ", "");
         String sk1 = "";
         String sk2 = "";
         String sk3 = "";

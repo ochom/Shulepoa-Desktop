@@ -20,9 +20,9 @@ public class LoginFrm extends javax.swing.JFrame {
     Integer Attempts = 3;
     List<String> users;
     public LoginFrm() {
-          initComponents();        
-          new ConnClass().setFrameIcon(LoginFrm.this);   
-          getUsers();
+        initComponents();        
+        new ConnClass().setFrameIcon(LoginFrm.this);   
+        getUsers();
     }
     
     private void getUsers(){
@@ -31,7 +31,6 @@ public class LoginFrm extends javax.swing.JFrame {
             sql = "select * from User";
             pst = Conn.prepareStatement(sql);
             rs = pst.executeQuery();
-            txtUserName.addItem("Select");
             if(rs.isBeforeFirst()){
                 while(rs.next()){
                     users.add(rs.getString("user_name"));
@@ -41,6 +40,7 @@ public class LoginFrm extends javax.swing.JFrame {
             ConnClass.printError(e);
         }
         
+        txtUserName.addItem("Select");
         users.forEach(user -> {
             txtUserName.addItem(user);
         });

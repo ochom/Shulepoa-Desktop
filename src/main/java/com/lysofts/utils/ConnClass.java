@@ -20,8 +20,9 @@ public class ConnClass {
             url = DEBUG? 
                     "jdbc:sqlite:/home/mspace-dev/Downloads/ExamsDB.db": 
                     "jdbc:sqlite:C:/Acme/Exam System/ExamsDB.db";
+            Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection(url);
-        } catch (SQLException e) {
+        } catch (ClassNotFoundException | SQLException e) {
             printError(e);
         }
         return conn;
@@ -29,12 +30,12 @@ public class ConnClass {
 
     public void setFrameIcon(JFrame jframe) {
         try {
-            jframe.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/A Logo Icon File.png")));
+            jframe.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/A Logo Icon File.png")));
         } catch (Exception e) {
             System.out.println(e);
         }
         try {
-            jframe.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/A logo.png")));
+            jframe.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/A logo.png")));
 
         } catch (Exception e) {
             System.out.println(e);
