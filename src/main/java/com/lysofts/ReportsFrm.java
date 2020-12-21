@@ -3,11 +3,8 @@ package com.lysofts;
 
 import com.lysofts.utils.ConnClass;
 import java.awt.Dimension;
-import java.awt.HeadlessException;
 import java.awt.Toolkit;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -23,7 +20,6 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.swing.JRViewer;
 
-
 public class ReportsFrm extends javax.swing.JFrame {
     Connection conn = ConnClass.connectDB();
     PreparedStatement pst = null;
@@ -31,7 +27,7 @@ public class ReportsFrm extends javax.swing.JFrame {
     
     String Activation = "";
     String sql = null,report_bg=null, reportTitle="";
-    String Form,Year,Term,Exam,ExamFormLevel,NumberOfChamps,Report_Request="";
+    String Form,Year,Term, Exam, ExamFormLevel, NumberOfChamps, Report_Request="";
     String reportName;
     
     public ReportsFrm() {
@@ -105,36 +101,39 @@ public class ReportsFrm extends javax.swing.JFrame {
 //            System.out.println(e);
 //        }
     }
-
     
     private void showReport(HashMap params){
         try {
             String fileName = String.format("reports/%s.jrxml", reportName);
             System.out.println("FILE IS:  "+fileName);
-            try(InputStream report = getClass().getClassLoader().getResourceAsStream(fileName)){            
-                JasperDesign jd = JRXmlLoader.load(report);
-                System.out.println("JasperDesign loaded");
-                JasperReport jr = JasperCompileManager.compileReport(jd);
-                System.out.println("JasperReport compiled");
-                JasperPrint jp  = JasperFillManager.fillReport(jr, params, conn);
-                JRViewer jv     = new JRViewer(jp);
-
-                JFrame jf =new JFrame(reportTitle);
-                jf.getContentPane().add(jv);
-                jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
-                jf.setType(Type.NORMAL);
-                jf.validate();
-                jf.setSize(new Dimension(900,650));
-                jf.setLocationRelativeTo(this);
-                jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                jf.setVisible(true);
+            InputStream report = getClass().getClassLoader().getResourceAsStream(fileName);
+            if (report != null) {
+                System.out.println("Report file loaded");
+            }else{
+                System.out.println("Report file NOT loaded");
+                return;
             }
+            JasperDesign jd = JRXmlLoader.load(getClass().getClassLoader().getResourceAsStream(fileName));
+            System.out.println("JasperDesign loaded");
+            
+            JasperReport jr = JasperCompileManager.compileReport(jd); 
+            System.out.println("JasperReport compiled"+jr);           
+            JasperPrint jp  = JasperFillManager.fillReport(jr, params, conn);
+            JRViewer jv     = new JRViewer(jp);
+
+            JFrame jf =new JFrame(reportTitle);
+            jf.getContentPane().add(jv);
+            jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
+            jf.setType(Type.NORMAL);
+            jf.validate();
+            jf.setSize(new Dimension(900,650));
+            jf.setLocationRelativeTo(this);
+            jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            jf.setVisible(true);
         } catch (Exception ex) {
             Logger.getLogger(ReportsFrm.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-   
-    
     
     private void printMarksSheet(String Form){
         reportName = "MarkSheet";

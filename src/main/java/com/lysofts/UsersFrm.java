@@ -10,29 +10,14 @@ public class UsersFrm extends javax.swing.JFrame {
     Connection Conn = ConnClass.connectDB();
     PreparedStatement pst = null;
     ResultSet rs = null;
-    String sql=null,UserID = null;
+    String sql, UserID;
 
     public UsersFrm() {
         initComponents();
-        
+        new ConnClass().setFrameIcon(UsersFrm.this);
         getUsers();
-        getIcon();
     }
-    private void getIcon(){
-        try {
-            this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/A Logo Icon File.png")));
-          
-        }catch(Exception e){
-            System.out.println(e);
-        }
-        try {
-            this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/A logo.png")));
-          
-        }catch(Exception e){
-            System.out.println(e);
-      
-        }
-    }
+    
     private void getUsers(){
         DefaultTableModel model=(DefaultTableModel) tableUsers.getModel();
         model.setRowCount(0);
@@ -391,10 +376,8 @@ public class UsersFrm extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new UsersFrm().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new UsersFrm().setVisible(true);
         });
     }
 

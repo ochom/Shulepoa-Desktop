@@ -1716,7 +1716,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         InputStream Report = null;
         try {
-            Report = getClass().getResourceAsStream("KcseReports/School_Mean.jrxml");
+            Report = getClass().getClassLoader().getResourceAsStream("KcseReports/School_Mean.jrxml");
             HashMap param = new HashMap();
             param.put("project_title", project_title);
             JasperDesign jd = JRXmlLoader.load(Report);
@@ -1726,7 +1726,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
             JFrame jf = new JFrame();
             jf.getContentPane().add(jv);
-            jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/Print_16x16.png")));
+            jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
             jf.setType(Type.UTILITY);
             jf.validate();
             jf.setVisible(true);
@@ -1742,7 +1742,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         InputStream Report = null;
             try {
-                Report = getClass().getResourceAsStream("KcseReports/Subject_gender.jrxml");
+                Report = getClass().getClassLoader().getResourceAsStream("KcseReports/Subject_gender.jrxml");
                 HashMap param = new HashMap();
                 param.put("project_title", project_title);
                 JasperDesign jd = JRXmlLoader.load(Report);
@@ -1752,7 +1752,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
                 JFrame jf = new JFrame();
                 jf.getContentPane().add(jv);
-                jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/Print_16x16.png")));
+                jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
                 jf.setType(Type.UTILITY);
                 jf.validate();
                 jf.setVisible(true);
@@ -1768,7 +1768,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         InputStream Report = null;
         try {
-            Report = getClass().getResourceAsStream("KcseReports/TopGender.jrxml");
+            Report = getClass().getClassLoader().getResourceAsStream("KcseReports/TopGender.jrxml");
             HashMap param = new HashMap();
             param.put("project_title", project_title);
             param.put("gender_name", "Boys");
@@ -1780,7 +1780,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
             JFrame jf = new JFrame();
             jf.getContentPane().add(jv);
-            jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/Print_16x16.png")));
+            jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
             jf.setType(Type.UTILITY);
             jf.validate();
             jf.setVisible(true);
@@ -1796,7 +1796,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         InputStream Report = null;
         try {
-            Report = getClass().getResourceAsStream("KcseReports/TopGender.jrxml");
+            Report = getClass().getClassLoader().getResourceAsStream("KcseReports/TopGender.jrxml");
             HashMap param = new HashMap();
             param.put("project_title", project_title);
             param.put("gender_name", "Girls");
@@ -1808,7 +1808,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
             JFrame jf = new JFrame();
             jf.getContentPane().add(jv);
-            jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/Print_16x16.png")));
+            jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
             jf.setType(Type.UTILITY);
             jf.validate();
             jf.setVisible(true);
@@ -1824,7 +1824,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
         InputStream Report = null;
         try {
-            Report = getClass().getResourceAsStream("KcseReports/TopOverall.jrxml");
+            Report = getClass().getClassLoader().getResourceAsStream("KcseReports/TopOverall.jrxml");
             HashMap param = new HashMap();
             param.put("project_title", project_title);
             JasperDesign jd = JRXmlLoader.load(Report);
@@ -1834,7 +1834,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
             JFrame jf = new JFrame();
             jf.getContentPane().add(jv);
-            jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/Print_16x16.png")));
+            jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
             jf.setType(Type.UTILITY);
             jf.validate();
             jf.setVisible(true);
@@ -1850,7 +1850,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
         InputStream Report = null;
         try {
-            Report = getClass().getResourceAsStream("KcseReports/Subject_Ranking.jrxml");
+            Report = getClass().getClassLoader().getResourceAsStream("KcseReports/Subject_Ranking.jrxml");
             HashMap param = new HashMap();
             param.put("project_title", project_title);
             JasperDesign jd = JRXmlLoader.load(Report);
@@ -1860,7 +1860,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
             JFrame jf = new JFrame();
             jf.getContentPane().add(jv);
-            jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/Print_16x16.png")));
+            jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
             jf.setType(Type.UTILITY);
             jf.validate();
             jf.setVisible(true);

@@ -1770,7 +1770,7 @@ public class StudentRegistrationFrm extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         String name,idno,doa,dob,fadmited,leavedate,remarks;
-        InputStream Report,logo = getClass().getResourceAsStream("/main/images/kenya.png");
+        InputStream Report,logo = getClass().getClassLoader().getResourceAsStream("/main/images/kenya.png");
         //extract the court of arm logo
         String fileLocation =  FileSystemView.getFileSystemView().getDefaultDirectory().getPath()+"/Acme";
         String filename = fileLocation+"/logo.png";
@@ -1803,7 +1803,7 @@ public class StudentRegistrationFrm extends javax.swing.JFrame {
          remarks = taRmarks.getText();
          try{
              
-             Report = getClass().getResourceAsStream("Reports/LeavingCert.jrxml");
+             Report = getClass().getClassLoader().getResourceAsStream("Reports/LeavingCert.jrxml");
              String C_arm = filename;
              
              HashMap param = new HashMap();
@@ -1824,7 +1824,7 @@ public class StudentRegistrationFrm extends javax.swing.JFrame {
             StudentDetailsDialog.setVisible(false);
                 JFrame jf =new JFrame();
                 jf.getContentPane().add(jv);
-                jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/Print_16x16.png")));
+                jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
                 jf.setType(Type.UTILITY);
                 jf.validate();
                 jf.setVisible(true); 

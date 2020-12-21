@@ -45,6 +45,39 @@ public class LoginFrm extends javax.swing.JFrame {
             txtUserName.addItem(user);
         });
     }
+    
+    private void verifyLogin(){
+        if(txtUserName.getItemCount()>0){
+            username = txtUserName.getSelectedItem().toString();
+            password = txtPassword.getText();
+            username = username==null || username.length()==0?"":username;
+            password = password==null || password.length()==0?"":password;
+            if(username.isEmpty() || password.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Username and password cannot be empty", "acme", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            try{
+                sql = "select * from User where user_name=?  and User_password=? ";
+                pst = Conn.prepareStatement(sql);
+                pst.setString(1, username); 
+                pst.setString(2, password );
+                rs = pst.executeQuery();            
+                if(rs.next()){                                   
+                    this.dispose();   
+                    Conn.close();
+                    new RegisterExaminationsFrm().setVisible(true);                     
+                }else{                
+                    JOptionPane.showMessageDialog(null, "Invalid credentials.  Try Again","acme",JOptionPane.WARNING_MESSAGE);
+                    txtPassword.setText("");
+                }
+            }
+            catch(SQLException | HeadlessException e){
+                JOptionPane.showMessageDialog(null,"Error: "+e.getMessage(),"System Error",1);
+            }  
+        } else{
+            JOptionPane.showMessageDialog(this, "There are no users detected", "acme", JOptionPane.INFORMATION_MESSAGE);
+        } 
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -209,38 +242,7 @@ public class LoginFrm extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-    private void verifyLogin(){
-        if(txtUserName.getItemCount()>0){
-            username = txtUserName.getSelectedItem().toString();
-            password = txtPassword.getText();
-            username = username==null || username.length()==0?"":username;
-            password = password==null || password.length()==0?"":password;
-            if(username.isEmpty() || password.isEmpty()){
-                JOptionPane.showMessageDialog(this, "Username and password cannot be empty", "acme", JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-            try{
-                sql = "select * from User where user_name=?  and User_password=? ";
-                pst = Conn.prepareStatement(sql);
-                pst.setString(1, username); 
-                pst.setString(2, password );
-                rs = pst.executeQuery();            
-                if(rs.next()){                                   
-                    this.dispose();   
-                    Conn.close();
-                    new RegisterExaminationsFrm().setVisible(true);                     
-                }else{                
-                    JOptionPane.showMessageDialog(null, "Invalid credentials.  Try Again","acme",JOptionPane.WARNING_MESSAGE);
-                    txtPassword.setText("");
-                }
-            }
-            catch(SQLException | HeadlessException e){
-                JOptionPane.showMessageDialog(null,"Error: "+e.getMessage(),"System Error",1);
-            }  
-        } else{
-            JOptionPane.showMessageDialog(this, "There are no users detected", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } 
-    }
+    
     
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         verifyLogin();  

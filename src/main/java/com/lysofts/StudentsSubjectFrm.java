@@ -24,13 +24,13 @@ public class StudentsSubjectFrm extends javax.swing.JFrame {
     }
     private void getIcon(){
         try {
-            this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/A Logo Icon File.png")));
+            this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/A Logo Icon File.png")));
           
         }catch(Exception e){
             System.out.println(e);
         }
         try {
-            this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("images/A logo.png")));
+            this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/A logo.png")));
           
         }catch(Exception e){
             System.out.println(e);
