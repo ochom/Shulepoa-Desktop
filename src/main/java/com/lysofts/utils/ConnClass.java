@@ -18,12 +18,15 @@ public class ConnClass {
     public static Connection connectDB() {
         try {
             url = DEBUG? 
-                    "jdbc:sqlite:/home/mspace-dev/Downloads/ExamsDB.db": 
+                    "jdbc:sqlite::resource:database/ExamsDB.db": 
                     "jdbc:sqlite:C:/Acme/Exam System/ExamsDB.db";
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection(url);
         } catch (ClassNotFoundException | SQLException e) {
             printError(e);
+        }
+        if(conn!=null){
+           System.out.println("Connected");
         }
         return conn;
     }
@@ -71,6 +74,7 @@ public class ConnClass {
             return false;
         }
     }
+    
     public static ResultSet QueryWithResult(String sql){
         try {
             return conn.prepareStatement(sql).executeQuery();

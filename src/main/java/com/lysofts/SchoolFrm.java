@@ -22,7 +22,7 @@ public class SchoolFrm extends javax.swing.JFrame {
         initComponents();
         
         
-        new ConnClass().setFrameIcon(this);
+        new ConnClass().setFrameIcon(SchoolFrm.this);
         getSchoolDetails();
         getTeachers();
         getLogo();
@@ -312,6 +312,7 @@ public class SchoolFrm extends javax.swing.JFrame {
                 pst.setString(4, Logo);
                 pst.setString(5, comboPrincipal.getSelectedItem().toString());
                 pst.setString(6, Sign);
+                pst.setString(7, "0");
                 pst.executeUpdate();
                 JOptionPane.showMessageDialog(null, "School details updated succesfully");  
             }

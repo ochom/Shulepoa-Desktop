@@ -816,7 +816,7 @@ FROM tblschool,tbl_kcse_marks WHERE project_title=$P{project_title} LIMIT 1;]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Serif" size="9" isBold="true" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[acme developed and supported by lySOFTS Call: +254797969142 Email:woramaslysofts@gmail.com
+				<text><![CDATA[acme developed and supported by lySOFTS Call: +254797969142 Email:support@lysofts.co.ke
 ]]></text>
 			</staticText>
 			<staticText>

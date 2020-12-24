@@ -813,7 +813,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Serif" size="8" isBold="true" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[acme developed and supported by lySOFTS Call: +254797969142 Email:woramaslysofts@gmail.com
+				<text><![CDATA[acme developed and supported by lySOFTS Call: +254797969142 Email:support@lysofts.co.ke
 ]]></text>
 			</staticText>
 		</band>

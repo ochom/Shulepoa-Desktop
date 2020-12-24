@@ -1049,7 +1049,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Serif" size="9" isBold="true" isItalic="true"/>
 				</textElement>
-				<text><![CDATA[acme developed and supported by lySOFTS Call: +254797969142 Email:woramaslysofts@gmail.com]]></text>
+				<text><![CDATA[acme developed and supported by lySOFTS Call: +254797969142 Email:support@lysofts.co.ke]]></text>
 			</staticText>
 			<image scaleImage="FillFrame" isUsingCache="true" onErrorType="Blank">
 				<reportElement mode="Transparent" x="487" y="36" width="68" height="68" uuid="d2267bcb-bc06-4b48-a780-29a9947759e6"/>
