@@ -14,7 +14,6 @@ import javax.swing.UIManager;
  * @author Ritch
  */
 public class Launcher {
-    ConfigFileClass configClass;
     public static void main(String[] args) {
         try {
             com.jtattoo.plaf.acryl.AcrylLookAndFeel.setTheme("Default", "", "acme");
@@ -24,31 +23,6 @@ public class Launcher {
         }
 
         DecorationHelper.decorateWindows(false);
-        //new Launcher().RunLaunch();
         new LoginFrm().setVisible(true);
-    }
-
-    private void RunLaunch() {
-        try {
-            configClass = new ConfigFileClass();
-            configClass.CreatePreferences();
-
-            if (configClass.isNewInstallation()) {
-                configClass.setTrialDeadline();
-                new SystemInitialization().run();
-                return;
-            }
-
-            if (!configClass.isNewInstallation() && configClass.AgreedToTerms()) {
-                new SystemInitialization().run();
-                return;
-            }
-
-            if (!configClass.isNewInstallation() && !configClass.AgreedToTerms()) {
-                new UpdateNotice().setVisible(true);
-            }
-        } catch (Exception ex) {
-            ConnClass.printError(ex);
-        }
     }
 }

@@ -22,7 +22,7 @@ public class SchoolFrm extends javax.swing.JFrame {
         initComponents();
         
         
-        new ConnClass().setFrameIcon(SchoolFrm.this);
+        new ConnClass().setFrameIcon(this);
         getSchoolDetails();
         getTeachers();
         getLogo();
@@ -300,11 +300,8 @@ public class SchoolFrm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
-        if(!current_school_name.equalsIgnoreCase(txtSchoolName.getText()) && !new ConfigFileClass().activeState(1)){
-            new ConfigFileClass().setTrialEnded();
-        }
         try{
-            sql = "Update tblSchool SET School_name=?,School_posta=?,School_motto=?,school_logo=?,Principal_name=?,Principal_signature=?,Full_Purchase=? ";
+            sql = "Update tblSchool SET School_name=?,School_posta=?,School_motto=?,school_logo=?,Principal_name=?,Principal_signature=?";
                 pst = Conn.prepareStatement(sql);
                 pst.setString(1, txtSchoolName.getText());
                 pst.setString(2, txtPostalAddress.getText());

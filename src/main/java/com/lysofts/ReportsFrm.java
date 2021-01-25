@@ -1,9 +1,9 @@
+
 package com.lysofts;
 
 import com.lysofts.utils.ConnClass;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.Window;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.HashMap;
@@ -21,85 +21,93 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.swing.JRViewer;
 
 public class ReportsFrm extends javax.swing.JFrame {
-
     Connection conn = ConnClass.connectDB();
     PreparedStatement pst = null;
     ResultSet rs = null;
-
+    
     String Activation = "";
-    String sql = null, report_bg = null, reportTitle = "";
-    String Form, Year, Term, Exam, ExamFormLevel, NumberOfChamps, Report_Request = "";
+    String sql = null,report_bg=null, reportTitle="";
+    String Form,Year,Term, Exam, ExamFormLevel, NumberOfChamps, Report_Request="";
     String reportName;
-
+    
     public ReportsFrm() {
         initComponents();
         new ConnClass().setFrameIcon(ReportsFrm.this);
-
+        
         GetAcedmicYears();
         getSchoolActivation();
         getFormNames();
-
+        
     }
 
-    private void GetAcedmicYears() {
-        cmbYear.removeAllItems();
-        cmbYear.addItem("SELECT");
-        try {
+    private void GetAcedmicYears(){
+       cmbYear.removeAllItems();
+       cmbYear.addItem("SELECT");
+        try{
             pst = conn.prepareStatement("SELECT * FROM students_exams group by Year ORDER BY Year DESC");
             rs = pst.executeQuery();
-            while (rs.next()) {
+            while(rs.next()){
                 String classname = rs.getString("Year");
                 cmbYear.addItem(classname);
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "System Err : " + e, "Error", 0);
-        }
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
+        } 
     }
-
-    private void getFormNames() {
-        try {
-            sql = "SELECT * FROM tblclasses ORDER BY Class_name ASC";
-            pst = conn.prepareStatement(sql);
-            rs = pst.executeQuery();
-            while (rs.next()) {
-                comboForm.addItem(rs.getString("Class_name"));
+    
+    private void getFormNames(){
+    try{
+       sql = "SELECT * FROM tblclasses ORDER BY Class_name ASC";
+       pst = conn.prepareStatement(sql);
+       rs = pst.executeQuery();
+           while(rs.next()){
+               comboForm.addItem(rs.getString("Class_name")); 
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "System Err : " + e, "Error", 0);
+        }
+        catch(SQLException e){
+            JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
         }
     }
-
-    private void getSchoolActivation() {
-        try {
+    private void getSchoolActivation(){
+        try{
             sql = "SELECT * FROM tblschool";
             pst = conn.prepareStatement(sql);
             rs = pst.executeQuery();
-            if (rs.next()) {
-                Activation = rs.getString("Full_purchase");
+                if(rs.next()){
+                   Activation = rs.getString("Full_purchase");               
+                }
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "System Err : " + e, "Error", 0);
-        }
+            catch(SQLException e){
+                JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
+        } 	
     }
-
-    private void showReport(HashMap params) {
-        String fileName = String.format("reports/%s.jrxml", reportName);
-        System.out.println("FILE IS:  " + fileName);
-        try (InputStream report = getClass().getClassLoader().getResourceAsStream(fileName)) {
-            JasperDesign jd = JRXmlLoader.load(report);
+ 
+    
+    private void showReport(HashMap params){
+        try {
+            String fileName = String.format("reports/%s.jrxml", reportName);
+            System.out.println("FILE IS:  "+fileName);
+            InputStream report = getClass().getClassLoader().getResourceAsStream(fileName);
+            if (report != null) {
+                System.out.println("Report file loaded");
+            }else{
+                System.out.println("Report file NOT loaded");
+                return;
+            }
+            JasperDesign jd = JRXmlLoader.load(getClass().getClassLoader().getResourceAsStream(fileName));
             System.out.println("JasperDesign loaded");
+            
+            JasperReport jr = JasperCompileManager.compileReport(jd); 
+            System.out.println("JasperReport compiled"+jr);           
+            JasperPrint jp  = JasperFillManager.fillReport(jr, params, conn);
+            JRViewer jv     = new JRViewer(jp);
 
-            JasperReport jr = JasperCompileManager.compileReport(jd);
-            System.out.println("JasperReport compiled" + jr);
-            JasperPrint jp = JasperFillManager.fillReport(jr, params, conn);
-            JRViewer jv = new JRViewer(jp);
-
-            JFrame jf = new JFrame(reportTitle);
+            JFrame jf =new JFrame(reportTitle);
             jf.getContentPane().add(jv);
             jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
             jf.setType(Type.NORMAL);
             jf.validate();
-            jf.setSize(new Dimension(900, 650));
+            jf.setSize(new Dimension(900,650));
             jf.setLocationRelativeTo(this);
             jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             jf.setVisible(true);
@@ -107,184 +115,184 @@ public class ReportsFrm extends javax.swing.JFrame {
             Logger.getLogger(ReportsFrm.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    private void printMarksSheet(String Form) {
+    
+    private void printMarksSheet(String Form){
         reportName = "MarkSheet";
-        HashMap param = new HashMap();
-        param.put("ExamForm", Form);
-
-        if (!(Activation.equalsIgnoreCase("3"))) {
-            param.put("bgImage", report_bg);
-        } else {
-            param.put("bgImage", null);
-        }
-        reportTitle = "Form " + Form + " Marksheet";
-        showReport(param);
+        HashMap param=new HashMap();
+         param.put("ExamForm", Form);
+         if(!(Activation.equalsIgnoreCase("3"))){
+             param.put("bgImage", report_bg);
+         }else{
+             param.put("bgImage", null);
+         }
+         reportTitle = "Form "+Form+" Marksheet";
+         showReport(param);           
     }
-
-    private void printMarksConfirmationSheet(String Form, String Year, String Term, String Exam) {
-        if (Exam.equalsIgnoreCase("Exam 1")) {
-            reportName = "Exam1ConfirmationSheet";
-        } else if (Exam.equalsIgnoreCase("Exam 2")) {
+    
+    private void printMarksConfirmationSheet(String Form,String Year,String Term,String Exam){
+       if(Exam.equalsIgnoreCase("Exam 1")){
+           reportName = "Exam1ConfirmationSheet";
+        }else if (Exam.equalsIgnoreCase("Exam 2")){
             reportName = "Exam2ConfirmationSheet";
-        } else if (Exam.equalsIgnoreCase("Exam 3")) {
+        }else if(Exam.equalsIgnoreCase("Exam 3")){
             reportName = "Exam3ConfirmationSheet";
         }
-        HashMap param = new HashMap();
+        HashMap param=new HashMap();
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
-        if (!(Activation.equalsIgnoreCase("3"))) {
+        if(!(Activation.equalsIgnoreCase("3"))){
             param.put("bgImage", report_bg);
-        } else {
+        }else{
             param.put("bgImage", null);
         }
 
-        reportTitle = "Form " + Form + " Marks Confirmation Sheet";
-        showReport(param);
+        reportTitle = "Form "+Form+" Marks Confirmation Sheet";
+        showReport(param);       
     }
-
-    private void printResultSlips(String Form, String Year, String Term, String Exam) {
-        if (Exam.equalsIgnoreCase("Exam 1")) {
-            reportName = "Exam1ResultSlip";
-        } else if (Exam.equalsIgnoreCase("Exam 2")) {
-            reportName = "Exam2ResultSlip";
-        } else if (Exam.equalsIgnoreCase("Exam 3")) {
-            reportName = "Exam3ResultSlip";
+    
+    private void printResultSlips(String Form,String Year,String Term,String Exam){
+        if(Exam.equalsIgnoreCase("Exam 1")){
+           reportName = "Exam1ResultSlip";            
+        }else if (Exam.equalsIgnoreCase("Exam 2")){
+           reportName = "Exam2ResultSlip";
+        }else if(Exam.equalsIgnoreCase("Exam 3")){
+           reportName = "Exam3ResultSlip";
         }
-        HashMap param = new HashMap();
-        param.put("ExamForm", Form);
-        param.put("ExamYear", Year);
-        param.put("ExamTerm", Term);
-        if (!(Activation.equalsIgnoreCase("3"))) {
-            param.put("bgImage", report_bg);
-        } else {
-            param.put("bgImage", null);
-        }
-
-        reportTitle = "Form " + Form + " Result Slips";
-        showReport(param);
+        HashMap param=new HashMap();
+         param.put("ExamForm", Form);
+         param.put("ExamYear", Year);
+         param.put("ExamTerm", Term);
+         if(!(Activation.equalsIgnoreCase("3"))){
+             param.put("bgImage", report_bg);
+         }else{
+             param.put("bgImage", null);
+         }
+            
+        reportTitle = "Form "+Form+" Result Slips";
+        showReport(param);    
     }
-
-    private void printExamStreamRankingList(String Form, String Year, String Term, String Exam) {
-        switch (Exam) {
+    
+    private void printExamStreamRankingList(String Form,String Year,String Term,String Exam){
+       switch(Exam){
             case "EXAM 1":
-                reportName = "Exam1RankingList";
+                reportName = "Exam1RankingList";            
+               break;
+           case "EXAM 2":
+                reportName = "Exam2RankingList";         
+               break;
+           case "EXAM 3":
+                reportName = "Exam3RankingList";          
+               break;
+           default:
+               break;            
+        }
+        HashMap param=new HashMap();
+        param.put("ExamForm", Form);
+        param.put("ExamYear", Year);
+        param.put("ExamTerm", Term);
+        if(!(Activation.equalsIgnoreCase("3"))){
+            param.put("bgImage", report_bg);
+        }else{
+            param.put("bgImage", null);
+        }
+            
+        reportTitle = "Form "+Form+" "+Exam+" Ranking List";
+        showReport(param);  
+    }
+    
+    private void printExamOverallRankingList(String Form,String Year,String Term,String Exam,String ExamFormLevel){
+        
+        switch(Exam){
+            case "EXAM 1":
+                reportName = "Exam1OverallRankingList";       
                 break;
             case "EXAM 2":
-                reportName = "Exam2RankingList";
+                reportName = "Exam2OverallRankingList";        
                 break;
             case "EXAM 3":
-                reportName = "Exam3RankingList";
+                reportName = "Exam3OverallRankingList";           
                 break;
             default:
                 break;
-        }
-        HashMap param = new HashMap();
+        } 
+        HashMap param=new HashMap();
+         param.put("ExamForm", Form);
+         param.put("ExamYear", Year);
+         param.put("ExamTerm", Term);
+         param.put("ExamFormLevel",ExamFormLevel);
+         if(!(Activation.equalsIgnoreCase("3"))){
+             param.put("bgImage", report_bg);
+         }else{
+             param.put("bgImage", null);
+         }
+            
+        reportTitle = "Form "+Form+" "+Exam+" Ranking List";
+        showReport(param);  
+    }
+    
+    private void printTermStreamRankingList(String Form,String Year,String Term){
+        reportName = "EndTermStreamRankingList";                        
+           
+        HashMap param=new HashMap();
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
-        if (!(Activation.equalsIgnoreCase("3"))) {
+        if(!(Activation.equalsIgnoreCase("3"))){
             param.put("bgImage", report_bg);
-        } else {
+        }else{
             param.put("bgImage", null);
         }
 
-        reportTitle = "Form " + Form + " " + Exam + " Ranking List";
-        showReport(param);
+        reportTitle = "Form "+Form+" "+" End Term Ranking List";
+        showReport(param);  
     }
-
-    private void printExamOverallRankingList(String Form, String Year, String Term, String Exam, String ExamFormLevel) {
-
-        switch (Exam) {
-            case "EXAM 1":
-                reportName = "Exam1OverallRankingList";
-                break;
-            case "EXAM 2":
-                reportName = "Exam2OverallRankingList";
-                break;
-            case "EXAM 3":
-                reportName = "Exam3OverallRankingList";
-                break;
-            default:
-                break;
-        }
-        HashMap param = new HashMap();
+    
+    private void printTermOverallRankingList(String Form,String Year,String Term,String ExamFormLevel){
+        reportName = "EndTermOverallRankingList"; 
+                    
+        HashMap param=new HashMap();
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
         param.put("ExamFormLevel", ExamFormLevel);
-        if (!(Activation.equalsIgnoreCase("3"))) {
+        if(!(Activation.equalsIgnoreCase("3"))){
             param.put("bgImage", report_bg);
-        } else {
+        }else{
             param.put("bgImage", null);
         }
 
-        reportTitle = "Form " + Form + " " + Exam + " Ranking List";
-        showReport(param);
+        reportTitle = "Form "+ExamFormLevel+" "+" End Term Ranking List";
+        showReport(param);  
     }
-
-    private void printTermStreamRankingList(String Form, String Year, String Term) {
-        reportName = "EndTermStreamRankingList";
-
-        HashMap param = new HashMap();
+    
+    private void printReportForms(String Form,String Year,String Term,String Activation){
+        reportName = "ReportForm"; 
+          
+        HashMap param=new HashMap();
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
-        if (!(Activation.equalsIgnoreCase("3"))) {
+        if(!(Activation.equalsIgnoreCase("3"))){
             param.put("bgImage", report_bg);
-        } else {
+        }else{
             param.put("bgImage", null);
         }
 
-        reportTitle = "Form " + Form + " " + " End Term Ranking List";
-        showReport(param);
+        reportTitle = "Form "+Form+" report Form";
+        showReport(param);  
     }
-
-    private void printTermOverallRankingList(String Form, String Year, String Term, String ExamFormLevel) {
-        reportName = "EndTermOverallRankingList";
-
-        HashMap param = new HashMap();
-        param.put("ExamForm", Form);
-        param.put("ExamYear", Year);
-        param.put("ExamTerm", Term);
-        param.put("ExamFormLevel", ExamFormLevel);
-        if (!(Activation.equalsIgnoreCase("3"))) {
-            param.put("bgImage", report_bg);
-        } else {
-            param.put("bgImage", null);
-        }
-
-        reportTitle = "Form " + ExamFormLevel + " " + " End Term Ranking List";
-        showReport(param);
-    }
-
-    private void printReportForms(String Form, String Year, String Term, String Activation) {
-        reportName = "ReportForm";
-
-        HashMap param = new HashMap();
-        param.put("ExamForm", Form);
-        param.put("ExamYear", Year);
-        param.put("ExamTerm", Term);
-        if (!(Activation.equalsIgnoreCase("3"))) {
-            param.put("bgImage", report_bg);
-        } else {
-            param.put("bgImage", null);
-        }
-
-        reportTitle = "Form " + Form + " report Form";
-        showReport(param);
-    }
-
-    private void AnalyseSubjectPerformance(String Form, String Year, String Term, String Exam) {
-        try {
+    
+    
+    private void AnalyseSubjectPerformance(String Form,String Year,String Term,String Exam){
+        try{
             sql = "DELETE  FROM ClassSubjectPerfomance";
-            pst = conn.prepareStatement(sql);
+            pst=conn.prepareStatement(sql);
             pst.executeUpdate();
-            System.out.println("Space created for subject perfomance");
-
-            InsertSubjectsToSubjectAnalysisTable(Form, Year, Term);
-
+            System.out.println("Space created for subject perfomance");            
+            
+            InsertSubjectsToSubjectAnalysisTable(Form,Year,Term);
+            
             sql = "SELECT * FROM ClassSubjectPerfomance";
             pst = conn.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -293,362 +301,362 @@ public class ReportsFrm extends javax.swing.JFrame {
             String PointsCol = null;
             String SubjectNO;
             String SubjectName;
-            switch (Exam) {
+            switch(Exam){
                 case "EXAM 1":
                     //<editor-fold defaultstate="collapsed" desc="comment">
-                    while (rs.next()) {
+                    while(rs.next()){
                         SubjectNO = rs.getString("SubjectNO");
                         SubjectName = rs.getString("SubjectName");
-                        if (SubjectNO.equalsIgnoreCase("1")) {
-                            GradeCol = "S1E1Grade";
-                            MarksCol = "S1E1Marks";
-                            PointsCol = "S1E1Points";
-                        } else if (SubjectNO.equalsIgnoreCase("2")) {
-                            GradeCol = "S2E1Grade";
-                            MarksCol = "S2E1Marks";
-                            PointsCol = "S2E1Points";
-                        } else if (SubjectNO.equalsIgnoreCase("3")) {
-                            GradeCol = "S3E1Grade";
-                            MarksCol = "S3E1Marks";
-                            PointsCol = "S3E1Points";
-                        } else if (SubjectNO.equalsIgnoreCase("4")) {
-                            GradeCol = "S4E1Grade";
-                            MarksCol = "S4E1Marks";
-                            PointsCol = "S4E1Points";
-                        } else if (SubjectNO.equalsIgnoreCase("5")) {
-                            GradeCol = "S5E1Grade";
-                            MarksCol = "S5E1Marks";
-                            PointsCol = "S5E1Points";
-                        } else if (SubjectNO.equalsIgnoreCase("6")) {
-                            GradeCol = "S6E1Grade";
-                            MarksCol = "S6E1Marks";
-                            PointsCol = "S6E1Points";
-                        } else if (SubjectNO.equalsIgnoreCase("7")) {
-                            GradeCol = "S7E1Grade";
-                            MarksCol = "S7E1Marks";
-                            PointsCol = "S7E1Points";
-                        } else if (SubjectNO.equalsIgnoreCase("8")) {
-                            GradeCol = "S8E1Grade";
-                            MarksCol = "S8E1Marks";
-                            PointsCol = "S8E1Points";
-                        } else if (SubjectNO.equalsIgnoreCase("9")) {
-                            GradeCol = "S9E1Grade";
-                            MarksCol = "S9E1Marks";
-                            PointsCol = "S9E1Points";
-                        } else if (SubjectNO.equalsIgnoreCase("10")) {
-                            GradeCol = "S10E1Grade";
-                            MarksCol = "S10E1Marks";
-                            PointsCol = "S10E1Points";
-                        } else if (SubjectNO.equalsIgnoreCase("11")) {
-                            GradeCol = "S11E1Grade";
-                            MarksCol = "S11E1Marks";
-                            PointsCol = "S11E1Points";
-                        } else if (SubjectNO.equalsIgnoreCase("12")) {
-                            GradeCol = "S12E1Grade";
-                            MarksCol = "S12E1Marks";
-                            PointsCol = "S12E1Points";
-                        } else if (SubjectNO.equalsIgnoreCase("13")) {
-                            GradeCol = "S13E1Grade";
-                            MarksCol = "S13E1Marks";
-                            PointsCol = "S13E1Points";
-                        } else if (SubjectNO.equalsIgnoreCase("14")) {
-                            GradeCol = "S14E1Grade";
-                            MarksCol = "S14E1Marks";
-                            PointsCol = "S14E1Points";
+                        if(SubjectNO.equalsIgnoreCase("1")){
+                          GradeCol = "S1E1Grade";
+                          MarksCol = "S1E1Marks";
+                          PointsCol = "S1E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("2")){
+                          GradeCol = "S2E1Grade";
+                          MarksCol = "S2E1Marks";
+                          PointsCol = "S2E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("3")){
+                          GradeCol = "S3E1Grade";
+                          MarksCol = "S3E1Marks";
+                          PointsCol = "S3E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("4")){
+                          GradeCol = "S4E1Grade";
+                          MarksCol = "S4E1Marks";
+                          PointsCol = "S4E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("5")){
+                          GradeCol = "S5E1Grade";
+                          MarksCol = "S5E1Marks";
+                          PointsCol = "S5E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("6")){
+                          GradeCol = "S6E1Grade";
+                          MarksCol = "S6E1Marks";
+                          PointsCol = "S6E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("7")){
+                          GradeCol = "S7E1Grade";
+                          MarksCol = "S7E1Marks";
+                          PointsCol = "S7E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("8")){
+                          GradeCol = "S8E1Grade";
+                          MarksCol = "S8E1Marks";
+                          PointsCol = "S8E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("9")){
+                          GradeCol = "S9E1Grade";
+                          MarksCol = "S9E1Marks";
+                          PointsCol = "S9E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("10")){
+                          GradeCol = "S10E1Grade";
+                          MarksCol = "S10E1Marks";
+                          PointsCol = "S10E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("11")){
+                          GradeCol = "S11E1Grade";
+                          MarksCol = "S11E1Marks";
+                          PointsCol = "S11E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("12")){
+                          GradeCol = "S12E1Grade";
+                          MarksCol = "S12E1Marks";
+                          PointsCol = "S12E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("13")){
+                          GradeCol = "S13E1Grade";
+                          MarksCol = "S13E1Marks";
+                          PointsCol = "S13E1Points";
+                        }else if(SubjectNO.equalsIgnoreCase("14")){
+                          GradeCol = "S14E1Grade";
+                          MarksCol = "S14E1Marks";
+                          PointsCol = "S14E1Points";
                         }
 
-                        getDefiningSubjectAnalysisQueries(Form, Year, Term, MarksCol, PointsCol, GradeCol, SubjectNO, SubjectName);
+                        getDefiningSubjectAnalysisQueries(Form,Year,Term,MarksCol,PointsCol,GradeCol,SubjectNO,SubjectName);
                     }
 
                     break;
-                //</editor-fold>
+    //</editor-fold>
                 case "EXAM 2":
                     //<editor-fold defaultstate="collapsed" desc="comment">
-                    while (rs.next()) {
+                    while(rs.next()){
                         SubjectNO = rs.getString("SubjectNO");
                         SubjectName = rs.getString("SubjectName");
-                        if (SubjectNO.equalsIgnoreCase("1")) {
-                            GradeCol = "S1E2Grade";
-                            MarksCol = "S1E2Marks";
-                            PointsCol = "S1E2Points";
-                        } else if (SubjectNO.equalsIgnoreCase("2")) {
-                            GradeCol = "S2E2Grade";
-                            MarksCol = "S2E2Marks";
-                            PointsCol = "S2E2Points";
-                        } else if (SubjectNO.equalsIgnoreCase("3")) {
-                            GradeCol = "S3E2Grade";
-                            MarksCol = "S3E2Marks";
-                            PointsCol = "S3E2Points";
-                        } else if (SubjectNO.equalsIgnoreCase("4")) {
-                            GradeCol = "S4E2Grade";
-                            MarksCol = "S4E2Marks";
-                            PointsCol = "S4E2Points";
-                        } else if (SubjectNO.equalsIgnoreCase("5")) {
-                            GradeCol = "S5E2Grade";
-                            MarksCol = "S5E2Marks";
-                            PointsCol = "S5E2Points";
-                        } else if (SubjectNO.equalsIgnoreCase("6")) {
-                            GradeCol = "S6E2Grade";
-                            MarksCol = "S6E2Marks";
-                            PointsCol = "S6E2Points";
-                        } else if (SubjectNO.equalsIgnoreCase("7")) {
-                            GradeCol = "S7E2Grade";
-                            MarksCol = "S7E2Marks";
-                            PointsCol = "S7E2Points";
-                        } else if (SubjectNO.equalsIgnoreCase("8")) {
-                            GradeCol = "S8E2Grade";
-                            MarksCol = "S8E2Marks";
-                            PointsCol = "S8E2Points";
-                        } else if (SubjectNO.equalsIgnoreCase("9")) {
-                            GradeCol = "S9E2Grade";
-                            MarksCol = "S9E2Marks";
-                            PointsCol = "S9E2Points";
-                        } else if (SubjectNO.equalsIgnoreCase("10")) {
-                            GradeCol = "S10E2Grade";
-                            MarksCol = "S10E2Marks";
-                            PointsCol = "S10E2Points";
-                        } else if (SubjectNO.equalsIgnoreCase("11")) {
-                            GradeCol = "S11E2Grade";
-                            MarksCol = "S11E2Marks";
-                            PointsCol = "S11E2Points";
-                        } else if (SubjectNO.equalsIgnoreCase("12")) {
-                            GradeCol = "S12E2Grade";
-                            MarksCol = "S12E2Marks";
-                            PointsCol = "S12E2Points";
-                        } else if (SubjectNO.equalsIgnoreCase("13")) {
-                            GradeCol = "S13E2Grade";
-                            MarksCol = "S13E2Marks";
-                            PointsCol = "S13E2Points";
-                        } else if (SubjectNO.equalsIgnoreCase("14")) {
-                            GradeCol = "S14E2Grade";
-                            MarksCol = "S14E2Marks";
-                            PointsCol = "S14E2Points";
+                        if(SubjectNO.equalsIgnoreCase("1")){
+                          GradeCol = "S1E2Grade";
+                          MarksCol = "S1E2Marks";
+                          PointsCol = "S1E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("2")){
+                          GradeCol = "S2E2Grade";
+                          MarksCol = "S2E2Marks";
+                          PointsCol = "S2E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("3")){
+                          GradeCol = "S3E2Grade";
+                          MarksCol = "S3E2Marks";
+                          PointsCol = "S3E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("4")){
+                          GradeCol = "S4E2Grade";
+                          MarksCol = "S4E2Marks";
+                          PointsCol = "S4E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("5")){
+                          GradeCol = "S5E2Grade";
+                          MarksCol = "S5E2Marks";
+                          PointsCol = "S5E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("6")){
+                          GradeCol = "S6E2Grade";
+                          MarksCol = "S6E2Marks";
+                          PointsCol = "S6E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("7")){
+                          GradeCol = "S7E2Grade";
+                          MarksCol = "S7E2Marks";
+                          PointsCol = "S7E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("8")){
+                          GradeCol = "S8E2Grade";
+                          MarksCol = "S8E2Marks";
+                          PointsCol = "S8E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("9")){
+                          GradeCol = "S9E2Grade";
+                          MarksCol = "S9E2Marks";
+                          PointsCol = "S9E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("10")){
+                          GradeCol = "S10E2Grade";
+                          MarksCol = "S10E2Marks";
+                          PointsCol = "S10E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("11")){
+                          GradeCol = "S11E2Grade";
+                          MarksCol = "S11E2Marks";
+                          PointsCol = "S11E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("12")){
+                          GradeCol = "S12E2Grade";
+                          MarksCol = "S12E2Marks";
+                          PointsCol = "S12E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("13")){
+                          GradeCol = "S13E2Grade";
+                          MarksCol = "S13E2Marks";
+                          PointsCol = "S13E2Points";
+                        }else if(SubjectNO.equalsIgnoreCase("14")){
+                          GradeCol = "S14E2Grade";
+                          MarksCol = "S14E2Marks";
+                          PointsCol = "S14E2Points";
                         }
-                        getDefiningSubjectAnalysisQueries(Form, Year, Term, MarksCol, PointsCol, GradeCol, SubjectNO, SubjectName);
+                        getDefiningSubjectAnalysisQueries(Form,Year,Term,MarksCol,PointsCol,GradeCol,SubjectNO,SubjectName);
                     }
 
                     break;
-                //</editor-fold>
+    //</editor-fold>
                 case "EXAM 3":
                     //<editor-fold defaultstate="collapsed" desc="comment">
-                    while (rs.next()) {
+                    while(rs.next()){
                         SubjectNO = rs.getString("SubjectNO");
                         SubjectName = rs.getString("SubjectName");
-                        if (SubjectNO.equalsIgnoreCase("1")) {
-                            GradeCol = "S1E3Grade";
-                            MarksCol = "S1E3Marks";
-                            PointsCol = "S1E3Points";
-                        } else if (SubjectNO.equalsIgnoreCase("2")) {
-                            GradeCol = "S2E3Grade";
-                            MarksCol = "S2E3Marks";
-                            PointsCol = "S2E3Points";
-                        } else if (SubjectNO.equalsIgnoreCase("3")) {
-                            GradeCol = "S3E3Grade";
-                            MarksCol = "S3E3Marks";
-                            PointsCol = "S3E3Points";
-                        } else if (SubjectNO.equalsIgnoreCase("4")) {
-                            GradeCol = "S4E3Grade";
-                            MarksCol = "S4E3Marks";
-                            PointsCol = "S4E3Points";
-                        } else if (SubjectNO.equalsIgnoreCase("5")) {
-                            GradeCol = "S5E3Grade";
-                            MarksCol = "S5E3Marks";
-                            PointsCol = "S5E3Points";
-                        } else if (SubjectNO.equalsIgnoreCase("6")) {
-                            GradeCol = "S6E3Grade";
-                            MarksCol = "S6E3Marks";
-                            PointsCol = "S6E3Points";
-                        } else if (SubjectNO.equalsIgnoreCase("7")) {
-                            GradeCol = "S7E3Grade";
-                            MarksCol = "S7E3Marks";
-                            PointsCol = "S7E3Points";
-                        } else if (SubjectNO.equalsIgnoreCase("8")) {
-                            GradeCol = "S8E3Grade";
-                            MarksCol = "S8E3Marks";
-                            PointsCol = "S8E3Points";
-                        } else if (SubjectNO.equalsIgnoreCase("9")) {
-                            GradeCol = "S9E3Grade";
-                            MarksCol = "S9E3Marks";
-                            PointsCol = "S9E3Points";
-                        } else if (SubjectNO.equalsIgnoreCase("10")) {
-                            GradeCol = "S10E3Grade";
-                            MarksCol = "S10E3Marks";
-                            PointsCol = "S10E3Points";
-                        } else if (SubjectNO.equalsIgnoreCase("11")) {
-                            GradeCol = "S11E3Grade";
-                            MarksCol = "S11E3Marks";
-                            PointsCol = "S11E3Points";
-                        } else if (SubjectNO.equalsIgnoreCase("12")) {
-                            GradeCol = "S12E3Grade";
-                            MarksCol = "S12E3Marks";
-                            PointsCol = "S12E3Points";
-                        } else if (SubjectNO.equalsIgnoreCase("13")) {
-                            GradeCol = "S13E3Grade";
-                            MarksCol = "S13E3Marks";
-                            PointsCol = "S13E3Points";
-                        } else if (SubjectNO.equalsIgnoreCase("14")) {
-                            GradeCol = "S14E3Grade";
-                            MarksCol = "S14E3Marks";
-                            PointsCol = "S14E3Points";
+                        if(SubjectNO.equalsIgnoreCase("1")){
+                          GradeCol = "S1E3Grade";
+                          MarksCol = "S1E3Marks";
+                          PointsCol = "S1E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("2")){
+                          GradeCol = "S2E3Grade";
+                          MarksCol = "S2E3Marks";
+                          PointsCol = "S2E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("3")){
+                          GradeCol = "S3E3Grade";
+                          MarksCol = "S3E3Marks";
+                          PointsCol = "S3E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("4")){
+                          GradeCol = "S4E3Grade";
+                          MarksCol = "S4E3Marks";
+                          PointsCol = "S4E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("5")){
+                          GradeCol = "S5E3Grade";
+                          MarksCol = "S5E3Marks";
+                          PointsCol = "S5E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("6")){
+                          GradeCol = "S6E3Grade";
+                          MarksCol = "S6E3Marks";
+                          PointsCol = "S6E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("7")){
+                          GradeCol = "S7E3Grade";
+                          MarksCol = "S7E3Marks";
+                          PointsCol = "S7E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("8")){
+                          GradeCol = "S8E3Grade";
+                          MarksCol = "S8E3Marks";
+                          PointsCol = "S8E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("9")){
+                          GradeCol = "S9E3Grade";
+                          MarksCol = "S9E3Marks";
+                          PointsCol = "S9E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("10")){
+                          GradeCol = "S10E3Grade";
+                          MarksCol = "S10E3Marks";
+                          PointsCol = "S10E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("11")){
+                          GradeCol = "S11E3Grade";
+                          MarksCol = "S11E3Marks";
+                          PointsCol = "S11E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("12")){
+                          GradeCol = "S12E3Grade";
+                          MarksCol = "S12E3Marks";
+                          PointsCol = "S12E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("13")){
+                          GradeCol = "S13E3Grade";
+                          MarksCol = "S13E3Marks";
+                          PointsCol = "S13E3Points";
+                        }else if(SubjectNO.equalsIgnoreCase("14")){
+                          GradeCol = "S14E3Grade";
+                          MarksCol = "S14E3Marks";
+                          PointsCol = "S14E3Points";
                         }
-                        getDefiningSubjectAnalysisQueries(Form, Year, Term, MarksCol, PointsCol, GradeCol, SubjectNO, SubjectName);
+                        getDefiningSubjectAnalysisQueries(Form,Year,Term,MarksCol,PointsCol,GradeCol,SubjectNO,SubjectName);
                     }
                     break;
-                //</editor-fold>
+    //</editor-fold>
                 case "END TERM":
                     //<editor-fold defaultstate="collapsed" desc="comment">
-                    while (rs.next()) {
+                    while(rs.next()){
                         SubjectNO = rs.getString("SubjectNO");
                         SubjectName = rs.getString("SubjectName");
-                        if (SubjectNO.equalsIgnoreCase("1")) {
-                            GradeCol = "S1AVGGrade";
-                            MarksCol = "S1AVGMarks";
-                            PointsCol = "S1AVGPoints";
-                        } else if (SubjectNO.equalsIgnoreCase("2")) {
-                            GradeCol = "S2AVGGrade";
-                            MarksCol = "S2AVGMarks";
-                            PointsCol = "S2AVGPoints";
-                        } else if (SubjectNO.equalsIgnoreCase("3")) {
-                            GradeCol = "S3AVGGrade";
-                            MarksCol = "S3AVGMarks";
-                            PointsCol = "S3AVGPoints";
-                        } else if (SubjectNO.equalsIgnoreCase("4")) {
-                            GradeCol = "S4AVGGrade";
-                            MarksCol = "S4AVGMarks";
-                            PointsCol = "S4AVGPoints";
-                        } else if (SubjectNO.equalsIgnoreCase("5")) {
-                            GradeCol = "S5AVGGrade";
-                            MarksCol = "S5AVGMarks";
-                            PointsCol = "S5AVGPoints";
-                        } else if (SubjectNO.equalsIgnoreCase("6")) {
-                            GradeCol = "S6AVGGrade";
-                            MarksCol = "S6AVGMarks";
-                            PointsCol = "S6AVGPoints";
-                        } else if (SubjectNO.equalsIgnoreCase("7")) {
-                            GradeCol = "S7AVGGrade";
-                            MarksCol = "S7AVGMarks";
-                            PointsCol = "S7AVGPoints";
-                        } else if (SubjectNO.equalsIgnoreCase("8")) {
-                            GradeCol = "S8AVGGrade";
-                            MarksCol = "S8AVGMarks";
-                            PointsCol = "S8AVGPoints";
-                        } else if (SubjectNO.equalsIgnoreCase("9")) {
-                            GradeCol = "S9AVGGrade";
-                            MarksCol = "S9AVGMarks";
-                            PointsCol = "S9AVGPoints";
-                        } else if (SubjectNO.equalsIgnoreCase("10")) {
-                            GradeCol = "S10AVGGrade";
-                            MarksCol = "S10AVGMarks";
-                            PointsCol = "S10AVGPoints";
-                        } else if (SubjectNO.equalsIgnoreCase("11")) {
-                            GradeCol = "S11AVGGrade";
-                            MarksCol = "S11AVGMarks";
-                            PointsCol = "S11AVGPoints";
-                        } else if (SubjectNO.equalsIgnoreCase("12")) {
-                            GradeCol = "S12AVGGrade";
-                            MarksCol = "S12AVGMarks";
-                            PointsCol = "S12AVGPoints";
-                        } else if (SubjectNO.equalsIgnoreCase("13")) {
-                            GradeCol = "S13AVGGrade";
-                            MarksCol = "S13AVGMarks";
-                            PointsCol = "S13AVGPoints";
-                        } else if (SubjectNO.equalsIgnoreCase("14")) {
-                            GradeCol = "S14AVGGrade";
-                            MarksCol = "S14AVGMarks";
-                            PointsCol = "S14AVGPoints";
+                        if(SubjectNO.equalsIgnoreCase("1")){
+                          GradeCol = "S1AVGGrade";
+                          MarksCol = "S1AVGMarks";
+                          PointsCol = "S1AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("2")){
+                          GradeCol = "S2AVGGrade";
+                          MarksCol = "S2AVGMarks";
+                          PointsCol = "S2AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("3")){
+                          GradeCol = "S3AVGGrade";
+                          MarksCol = "S3AVGMarks";
+                          PointsCol = "S3AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("4")){
+                          GradeCol = "S4AVGGrade";
+                          MarksCol = "S4AVGMarks";
+                          PointsCol = "S4AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("5")){
+                          GradeCol = "S5AVGGrade";
+                          MarksCol = "S5AVGMarks";
+                          PointsCol = "S5AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("6")){
+                          GradeCol = "S6AVGGrade";
+                          MarksCol = "S6AVGMarks";
+                          PointsCol = "S6AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("7")){
+                          GradeCol = "S7AVGGrade";
+                          MarksCol = "S7AVGMarks";
+                          PointsCol = "S7AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("8")){
+                          GradeCol = "S8AVGGrade";
+                          MarksCol = "S8AVGMarks";
+                          PointsCol = "S8AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("9")){
+                          GradeCol = "S9AVGGrade";
+                          MarksCol = "S9AVGMarks";
+                          PointsCol = "S9AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("10")){
+                          GradeCol = "S10AVGGrade";
+                          MarksCol = "S10AVGMarks";
+                          PointsCol = "S10AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("11")){
+                          GradeCol = "S11AVGGrade";
+                          MarksCol = "S11AVGMarks";
+                          PointsCol = "S11AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("12")){
+                          GradeCol = "S12AVGGrade";
+                          MarksCol = "S12AVGMarks";
+                          PointsCol = "S12AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("13")){
+                          GradeCol = "S13AVGGrade";
+                          MarksCol = "S13AVGMarks";
+                          PointsCol = "S13AVGPoints";
+                        }else if(SubjectNO.equalsIgnoreCase("14")){
+                          GradeCol = "S14AVGGrade";
+                          MarksCol = "S14AVGMarks";
+                          PointsCol = "S14AVGPoints";
                         }
 
-                        getDefiningSubjectAnalysisQueries(Form, Year, Term, MarksCol, PointsCol, GradeCol, SubjectNO, SubjectName);
+                        getDefiningSubjectAnalysisQueries(Form,Year,Term,MarksCol,PointsCol,GradeCol,SubjectNO,SubjectName);
                     }
                     break;
-                //</editor-fold>
+    //</editor-fold>
             }
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "System Err : " + e, "Error", 0);
+  
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
         }
     }
-
-    private void InsertSubjectsToSubjectAnalysisTable(String Form, String Year, String Term) {
-        try {
+    
+    private void InsertSubjectsToSubjectAnalysisTable(String Form,String Year,String Term){
+        try{
             sql = "SELECT * FROM Subjects";
-            pst = conn.prepareStatement(sql);
-            rs = rs = pst.executeQuery();
+            pst  = conn.prepareStatement(sql);
+            rs =  rs = pst.executeQuery();
             //Add subjects to the table
-            while (rs.next()) {
+            while(rs.next()){
                 String SubjectNO = rs.getString("S_NO");
                 String SubjectName = rs.getString("Subject_name");
-                sql = "INSERT INTO ClassSubjectPerfomance (Form,Year,Term,SubjectNO,SubjectName) values ('" + Form + "','" + Year + "','" + Term + "','" + SubjectNO + "','" + SubjectName + "')";
-                pst = conn.prepareStatement(sql);
+                sql = "INSERT INTO ClassSubjectPerfomance (Form,Year,Term,SubjectNO,SubjectName) values ('"+Form+"','"+Year+"','"+Term+"','"+SubjectNO+"','"+SubjectName+"')";
+                pst  = conn.prepareStatement(sql);
                 pst.executeUpdate();
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "System Err : " + e, "Error", 0);
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
         }
-
+        
     }
-
-    private void getDefiningSubjectAnalysisQueries(String Form, String Year, String Term, String MarksCol, String PointsCol, String GradeCol, String SubjectNumber, String SubjectName) {
-        String Ap = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='A' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Amns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='A-' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Bpls = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='B+' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Bp = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='B' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Bmns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='B-' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Cpls = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='C+' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Cp = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='C' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Cmns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='C-' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Dpls = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='D+' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Dp = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='D' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Dmns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='D-' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Ep = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='E' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-
-        String SubjectEntry = "SELECT count(*) FROM student_details where (Student_id IN (select SS_Student_id from tblstudents_subjects where SS_subject_Name='" + SubjectName + "') AND Student_class='" + Form + "')";
-        String SubjectMarks = "SELECT Avg(" + MarksCol + ") FROM Students_exams WHERE (SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "' AND " + MarksCol + "+0>0)";
-        String SubjectMean = "SELECT Avg(" + PointsCol + ") FROM Students_exams WHERE (SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "' AND " + MarksCol + "+0>0)";
-
-        try {
-            sql = "UPDATE ClassSubjectPerfomance set SubjectMeanMarks=(" + SubjectMarks + "),SubjectMeanPoints=(" + SubjectMean + "), SubjectEntry = (" + SubjectEntry + "), AP = (" + Ap + "), 'Amns' = (" + Amns + "), 'Bpls' = (" + Bpls + "),BP = (" + Bp + "), 'Bmns' = (" + Bmns + "), 'Cpls' = (" + Cpls + "), 'CP' = (" + Cp + "), 'Cmns' = (" + Cmns + "), 'Dpls' = (" + Dpls + "), 'DP' = (" + Dp + "), 'Dmns' = (" + Dmns + "), 'EP' = (" + Ep + ") WHERE SubjectNO = '" + SubjectNumber + "'";
+    
+    private void getDefiningSubjectAnalysisQueries(String Form,String Year,String Term,String MarksCol,String PointsCol,String GradeCol,String SubjectNumber,String SubjectName){
+        String Ap = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='A' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+        String Amns = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='A-' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+        String Bpls = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='B+' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+        String Bp = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='B' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+        String Bmns = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='B-' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+        String Cpls = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='C+' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+        String Cp = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='C' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+        String Cmns = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='C-' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+        String Dpls = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='D+' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+        String Dp = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='D' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+        String Dmns = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='D-' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+        String Ep = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='E' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+        
+        String SubjectEntry  = "SELECT count(*) FROM student_details where (Student_id IN (select SS_Student_id from tblstudents_subjects where SS_subject_Name='"+SubjectName+"') AND Student_class='"+Form+"')";
+        String SubjectMarks = "SELECT Avg("+MarksCol+") FROM Students_exams WHERE (SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"' AND "+MarksCol+"+0>0)";
+        String SubjectMean = "SELECT Avg("+PointsCol+") FROM Students_exams WHERE (SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"' AND "+MarksCol+"+0>0)";
+        
+        try{
+           sql = "UPDATE ClassSubjectPerfomance set SubjectMeanMarks=("+SubjectMarks+"),SubjectMeanPoints=("+SubjectMean+"), SubjectEntry = ("+SubjectEntry+"), AP = ("+Ap+"), 'Amns' = ("+Amns+"), 'Bpls' = ("+Bpls+"),BP = ("+Bp+"), 'Bmns' = ("+Bmns+"), 'Cpls' = ("+Cpls+"), 'CP' = ("+Cp+"), 'Cmns' = ("+Cmns+"), 'Dpls' = ("+Dpls+"), 'DP' = ("+Dp+"), 'Dmns' = ("+Dmns+"), 'EP' = ("+Ep+") WHERE SubjectNO = '"+SubjectNumber+"'";
             pst = conn.prepareStatement(sql);
-            pst.executeUpdate();
-        } catch (SQLException e) {
+            pst.executeUpdate(); 
+        }catch(SQLException e){
             e.printStackTrace();
         }
-
+        
     }
-
-    private void setTheSubjectPosition() {
-        try {
+    
+    private void setTheSubjectPosition(){
+        try{
             sql = "UPDATE ClassSubjectPerfomance set SubjectPosition=(1+(SELECT Count(*) From ClassSubjectPerfomance as t2 WHERE ((t2.SubjectMeanPoints+0)>(ClassSubjectPerfomance.SubjectMeanPoints+0)))) WHERE(SubjectMeanPoints+0>0)";
             pst = conn.prepareStatement(sql);
             pst.executeUpdate();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "System Err : " + e, "Error", 0);
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
         }
     }
-
-    private void printExamSubjectPerfomance(String Form, String Year, String Term, String Exam) {
-        reportName = "SubjectMeans";
-
-        HashMap param = new HashMap();
+    
+    private void printExamSubjectPerfomance(String Form,String Year,String Term,String Exam){
+        reportName = "SubjectMeans"; 
+          
+        HashMap param=new HashMap();
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
-        param.put("ExamName", Exam);
-        if (!(Activation.equalsIgnoreCase("3"))) {
+        param.put("ExamName",Exam);
+        if(!(Activation.equalsIgnoreCase("3"))){
             param.put("bgImage", report_bg);
-        } else {
+        }else{
             param.put("bgImage", null);
         }
-
-        reportTitle = "Form " + Form + " Marksheet";
-        showReport(param);
+        
+        reportTitle = "Form "+Form+" Marksheet";
+        showReport(param);  
     }
-
-    private void AnalyzeClassesPerfomance(String Form, String Year, String Term, String Exam, String ExamFormLevel) {
-        String MarksCol = null;
+    
+    private void AnalyzeClassesPerfomance(String Form,String Year,String Term,String Exam,String ExamFormLevel){
+        String MarksCol=null;
         String PointsCol = null;
-        String GradeCol = null;
-        switch (Exam) {
+        String GradeCol=null;
+        switch(Exam){
             case "EXAM 1":
                 MarksCol = "Exam1TotalMarks";
                 PointsCol = "Exam1MeanPoints";
@@ -669,397 +677,346 @@ public class ReportsFrm extends javax.swing.JFrame {
                 PointsCol = "MeanPoints";
                 GradeCol = "MeanGrade";
                 break;
-
+        
         }
-        try {
-            PreparedStatement ps = conn.prepareStatement("Select * from tblClasses WHERE substr(Class_name,1,1) = '" + ExamFormLevel + "'");
+        try{
+            PreparedStatement ps = conn.prepareStatement("Select * from tblClasses WHERE substr(Class_name,1,1) = '"+ExamFormLevel+"'");
             ResultSet rst = ps.executeQuery();
-            while (rst.next()) {
+            while(rst.next()){
                 Form = rst.getString("Class_name");
-                String Ap = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='A' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Amns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='A-' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Bpls = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='B+' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Bp = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='B' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Bmns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='B-' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Cpls = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='C+' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Cp = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='C' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Cmns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='C-' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Dpls = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='D+' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Dp = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='D' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Dmns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='D-' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Ep = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='E' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+                String Ap = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='A' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+                String Amns = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='A-' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+                String Bpls = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='B+' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+                String Bp = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='B' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+                String Bmns = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='B-' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+                String Cpls = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='C+' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+                String Cp = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='C' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+                String Cmns = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='C-' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+                String Dpls = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='D+' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+                String Dp = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='D' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+                String Dmns = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='D-' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
+                String Ep = "SELECT Count(*) FROM Students_exams WHERE ("+GradeCol+"='E' AND SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"')";  
 
-                String ClassEntry = "SELECT count(*) FROM student_details where (Student_class='" + Form + "')";
-                String ClassMarks = "SELECT Avg(" + MarksCol + ") FROM Students_exams WHERE (SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "' AND " + MarksCol + "+0>0)";
-                String ClassMean = "SELECT Avg(" + PointsCol + ") FROM Students_exams WHERE (SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "' AND " + PointsCol + "+0>0)";
 
-                try {
-                    sql = "UPDATE tblClasses set Entry=(" + ClassEntry + "),AverageMarks=(" + ClassMarks + "),MeanPoints=(" + ClassMean + "),"
-                            + " Ap = (" + Ap + "), 'Amns' = (" + Amns + "), 'Bpls' = (" + Bpls + "),BP = (" + Bp + "), 'Bmns' = (" + Bmns + "), 'Cpls' = (" + Cpls + "), 'CP' = (" + Cp + "), 'Cmns' = (" + Cmns + "), 'Dpls' = (" + Dpls + "), 'DP' = (" + Dp + "), 'Dmns' = (" + Dmns + "), 'EP' = (" + Ep + ") WHERE Class_name = '" + Form + "'";
+                String ClassEntry  = "SELECT count(*) FROM student_details where (Student_class='"+Form+"')";
+                String ClassMarks = "SELECT Avg("+MarksCol+") FROM Students_exams WHERE (SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"' AND "+MarksCol+"+0>0)";
+                String ClassMean = "SELECT Avg("+PointsCol+") FROM Students_exams WHERE (SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"' AND "+PointsCol+"+0>0)";
+
+                try{
+                   sql = "UPDATE tblClasses set Entry=("+ClassEntry+"),AverageMarks=("+ClassMarks+"),MeanPoints=("+ClassMean+"),"+
+                        " Ap = ("+Ap+"), 'Amns' = ("+Amns+"), 'Bpls' = ("+Bpls+"),BP = ("+Bp+"), 'Bmns' = ("+Bmns+"), 'Cpls' = ("+Cpls+"), 'CP' = ("+Cp+"), 'Cmns' = ("+Cmns+"), 'Dpls' = ("+Dpls+"), 'DP' = ("+Dp+"), 'Dmns' = ("+Dmns+"), 'EP' = ("+Ep+") WHERE Class_name = '"+Form+"'";
                     pst = conn.prepareStatement(sql);
-                    pst.executeUpdate();
-                    System.out.println("Classes Ranked, Form: " + Form);
-                } catch (SQLException e) {
+                    pst.executeUpdate(); 
+                    System.out.println("Classes Ranked, Form: "+ Form);
+                }catch(SQLException e){
                     e.printStackTrace();
                 }
             }
-        } catch (Exception e) {
+        }catch(Exception e){
             e.printStackTrace();
         }
-
+        
     }
-
-    private void setTheClassPosition(String ExamFormLevel) {
-        try {
-            sql = "UPDATE tblClasses set Position=(1+(SELECT Count(*) From tblClasses as t2 WHERE ((t2.MeanPoints+0)>(tblClasses.MeanPoints+0) AND substr(Class_name,1,1)='" + ExamFormLevel + "') )) WHERE(MeanPoints+0>0)";
+    
+    private void setTheClassPosition(String ExamFormLevel){
+        try{
+            sql = "UPDATE tblClasses set Position=(1+(SELECT Count(*) From tblClasses as t2 WHERE ((t2.MeanPoints+0)>(tblClasses.MeanPoints+0) AND substr(Class_name,1,1)='"+ExamFormLevel+"') )) WHERE(MeanPoints+0>0)";
             pst = conn.prepareStatement(sql);
             pst.executeUpdate();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "System Err : " + e, "Error", 0);
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
         }
     }
-
-    private void printClassPerformance(String ExamFormLevel, String Year, String Term, String Exam) {
-        reportName = "ClassMeans";
-
-        HashMap param = new HashMap();
+   
+    private void printClassPerformance(String ExamFormLevel,String Year,String Term,String Exam){
+        reportName = "ClassMeans"; 
+    
+        HashMap param=new HashMap();
         param.put("ExamForm", ExamFormLevel);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
-        param.put("ExamName", Exam);
-        if (!(Activation.equalsIgnoreCase("3"))) {
+        param.put("ExamName",Exam);
+        if(!(Activation.equalsIgnoreCase("3"))){
             param.put("bgImage", report_bg);
-        } else {
+        }else{
             param.put("bgImage", null);
         }
-
-        reportTitle = "Form " + ExamFormLevel + " Marksheet";
-        showReport(param);
+        
+        reportTitle = "Form "+ExamFormLevel+" Marksheet";
+        showReport(param);  
     }
-
-    private void AnalyzeSubjectChampions(String Form, String Year, String Term, String Exam, String NumberOfChamps) {
-        String MarksCol = null;
+    
+    private void AnalyzeSubjectChampions(String Form,String Year,String Term,String Exam,String NumberOfChamps){
+        String MarksCol =null;
         String GradeCol = null;
-        try {
+        try{
             sql = "DELETE  FROM SubjectChampions";
-            pst = conn.prepareStatement(sql);
+            pst=conn.prepareStatement(sql);
             pst.executeUpdate();
             System.out.println("Space created for subject perfomance");
-
+            
             sql = "SELECT * FROM Subjects";
             pst = conn.prepareStatement(sql);
-            rs = pst.executeQuery();
-            switch (Exam) {
+            rs=pst.executeQuery();
+            switch(Exam){
                 case "EXAM 1"://<editor-fold defaultstate="collapsed" desc="comment">
-
-                    while (rs.next()) {
+                    
+                    while(rs.next()){
                         String SubjectName = rs.getString("Subject_name");
                         String SubjectNumber = rs.getString("S_NO");
                         System.out.println(SubjectName);
-                        if (SubjectNumber.equalsIgnoreCase("1")) {
+                        if(SubjectNumber.equalsIgnoreCase("1")){
                             MarksCol = "S1E1Marks";
                             GradeCol = "S1E1Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("2")) {
+                        }if(SubjectNumber.equalsIgnoreCase("2")){
                             MarksCol = "S2E1Marks";
                             GradeCol = "S2E1Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("3")) {
+                        }if(SubjectNumber.equalsIgnoreCase("3")){
                             MarksCol = "S3E1Marks";
                             GradeCol = "S3E1Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("4")) {
+                        }if(SubjectNumber.equalsIgnoreCase("4")){
                             MarksCol = "S4E1Marks";
                             GradeCol = "S4E1Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("5")) {
+                        }if(SubjectNumber.equalsIgnoreCase("5")){
                             MarksCol = "S5E1Marks";
                             GradeCol = "S5E1Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("6")) {
+                        }if(SubjectNumber.equalsIgnoreCase("6")){
                             MarksCol = "S6E1Marks";
                             GradeCol = "S6E1Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("7")) {
+                        }if(SubjectNumber.equalsIgnoreCase("7")){
                             MarksCol = "S7E1Marks";
                             GradeCol = "S7E1Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("8")) {
+                        }if(SubjectNumber.equalsIgnoreCase("8")){
                             MarksCol = "S8E1Marks";
                             GradeCol = "S8E1Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("9")) {
+                        }if(SubjectNumber.equalsIgnoreCase("9")){
                             MarksCol = "S9E1Marks";
                             GradeCol = "S9E1Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("10")) {
+                        }if(SubjectNumber.equalsIgnoreCase("10")){
                             MarksCol = "S10E1Marks";
                             GradeCol = "S10E1Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("11")) {
+                        }if(SubjectNumber.equalsIgnoreCase("11")){
                             MarksCol = "S11E1Marks";
                             GradeCol = "S11E1Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("12")) {
+                        }if(SubjectNumber.equalsIgnoreCase("12")){
                             MarksCol = "S12E1Marks";
                             GradeCol = "S12E1Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("13")) {
+                        }if(SubjectNumber.equalsIgnoreCase("13")){
                             MarksCol = "S13E1Marks";
                             GradeCol = "S13E1Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("14")) {
+                        }if(SubjectNumber.equalsIgnoreCase("14")){
                             MarksCol = "S14E1Marks";
                             GradeCol = "S14E1Grade";
                         }
-                        getSubjectChampionsForThisSubject(Form, Year, Term, SubjectName, NumberOfChamps, MarksCol, GradeCol);
+                        getSubjectChampionsForThisSubject(Form,Year,Term,SubjectName,NumberOfChamps,MarksCol,GradeCol);
                     }
                     break;
 //</editor-fold>
                 case "EXAM 2"://<editor-fold defaultstate="collapsed" desc="comment">
-
-                    while (rs.next()) {
+                    
+                    while(rs.next()){
                         String SubjectName = rs.getString("Subject_name");
                         String SubjectNumber = rs.getString("S_NO");
                         System.out.println(SubjectName);
-                        if (SubjectNumber.equalsIgnoreCase("1")) {
+                        if(SubjectNumber.equalsIgnoreCase("1")){
                             MarksCol = "S1E2Marks";
                             GradeCol = "S1E2Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("2")) {
+                        }if(SubjectNumber.equalsIgnoreCase("2")){
                             MarksCol = "S2E2Marks";
                             GradeCol = "S2E2Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("3")) {
+                        }if(SubjectNumber.equalsIgnoreCase("3")){
                             MarksCol = "S3E2Marks";
                             GradeCol = "S3E2Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("4")) {
+                        }if(SubjectNumber.equalsIgnoreCase("4")){
                             MarksCol = "S4E2Marks";
                             GradeCol = "S4E2Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("5")) {
+                        }if(SubjectNumber.equalsIgnoreCase("5")){
                             MarksCol = "S5E2Marks";
                             GradeCol = "S5E2Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("6")) {
+                        }if(SubjectNumber.equalsIgnoreCase("6")){
                             MarksCol = "S6E2Marks";
                             GradeCol = "S6E2Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("7")) {
+                        }if(SubjectNumber.equalsIgnoreCase("7")){
                             MarksCol = "S7E2Marks";
                             GradeCol = "S7E2Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("8")) {
+                        }if(SubjectNumber.equalsIgnoreCase("8")){
                             MarksCol = "S8E2Marks";
                             GradeCol = "S8E2Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("9")) {
+                        }if(SubjectNumber.equalsIgnoreCase("9")){
                             MarksCol = "S9E2Marks";
                             GradeCol = "S9E2Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("10")) {
+                        }if(SubjectNumber.equalsIgnoreCase("10")){
                             MarksCol = "S10E2Marks";
                             GradeCol = "S10E2Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("11")) {
+                        }if(SubjectNumber.equalsIgnoreCase("11")){
                             MarksCol = "S11E2Marks";
                             GradeCol = "S11E2Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("12")) {
+                        }if(SubjectNumber.equalsIgnoreCase("12")){
                             MarksCol = "S12E2Marks";
                             GradeCol = "S12E2Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("13")) {
+                        }if(SubjectNumber.equalsIgnoreCase("13")){
                             MarksCol = "S13E2Marks";
                             GradeCol = "S13E2Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("14")) {
+                        }if(SubjectNumber.equalsIgnoreCase("14")){
                             MarksCol = "S14E2Marks";
                             GradeCol = "S14E2Grade";
                         }
-                        getSubjectChampionsForThisSubject(Form, Year, Term, SubjectName, NumberOfChamps, MarksCol, GradeCol);
+                        getSubjectChampionsForThisSubject(Form,Year,Term,SubjectName,NumberOfChamps,MarksCol,GradeCol);
                     }
                     break;
 //</editor-fold>
                 case "EXAM 3"://<editor-fold defaultstate="collapsed" desc="comment">
-
-                    while (rs.next()) {
+                    
+                    while(rs.next()){
                         String SubjectName = rs.getString("Subject_name");
                         String SubjectNumber = rs.getString("S_NO");
                         System.out.println(SubjectName);
-                        if (SubjectNumber.equalsIgnoreCase("1")) {
+                        if(SubjectNumber.equalsIgnoreCase("1")){
                             MarksCol = "S1E3Marks";
                             GradeCol = "S1E3Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("2")) {
+                        }if(SubjectNumber.equalsIgnoreCase("2")){
                             MarksCol = "S2E3Marks";
                             GradeCol = "S2E3Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("3")) {
+                        }if(SubjectNumber.equalsIgnoreCase("3")){
                             MarksCol = "S3E3Marks";
                             GradeCol = "S3E3Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("4")) {
+                        }if(SubjectNumber.equalsIgnoreCase("4")){
                             MarksCol = "S4E3Marks";
                             GradeCol = "S4E3Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("5")) {
+                        }if(SubjectNumber.equalsIgnoreCase("5")){
                             MarksCol = "S5E3Marks";
                             GradeCol = "S5E3Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("6")) {
+                        }if(SubjectNumber.equalsIgnoreCase("6")){
                             MarksCol = "S6E3Marks";
                             GradeCol = "S6E3Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("7")) {
+                        }if(SubjectNumber.equalsIgnoreCase("7")){
                             MarksCol = "S7E3Marks";
                             GradeCol = "S7E3Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("8")) {
+                        }if(SubjectNumber.equalsIgnoreCase("8")){
                             MarksCol = "S8E3Marks";
                             GradeCol = "S8E3Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("9")) {
+                        }if(SubjectNumber.equalsIgnoreCase("9")){
                             MarksCol = "S9E3Marks";
                             GradeCol = "S9E3Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("10")) {
+                        }if(SubjectNumber.equalsIgnoreCase("10")){
                             MarksCol = "S10E3Marks";
                             GradeCol = "S10E3Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("11")) {
+                        }if(SubjectNumber.equalsIgnoreCase("11")){
                             MarksCol = "S11E3Marks";
                             GradeCol = "S11E3Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("12")) {
+                        }if(SubjectNumber.equalsIgnoreCase("12")){
                             MarksCol = "S12E3Marks";
                             GradeCol = "S12E3Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("13")) {
+                        }if(SubjectNumber.equalsIgnoreCase("13")){
                             MarksCol = "S13E3Marks";
                             GradeCol = "S13E3Grade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("14")) {
+                        }if(SubjectNumber.equalsIgnoreCase("14")){
                             MarksCol = "S14E3Marks";
                             GradeCol = "S14E3Grade";
                         }
-                        getSubjectChampionsForThisSubject(Form, Year, Term, SubjectName, NumberOfChamps, MarksCol, GradeCol);
+                        getSubjectChampionsForThisSubject(Form,Year,Term,SubjectName,NumberOfChamps,MarksCol,GradeCol);
                     }
                     break;
 //</editor-fold>
                 case "END TERM"://<editor-fold defaultstate="collapsed" desc="comment">
-                    while (rs.next()) {
+                    while(rs.next()){
                         String SubjectName = rs.getString("Subject_name");
                         String SubjectNumber = rs.getString("S_NO");
                         System.out.println(SubjectName);
-                        if (SubjectNumber.equalsIgnoreCase("1")) {
+                        if(SubjectNumber.equalsIgnoreCase("1")){
                             MarksCol = "S1AVGMarks";
                             GradeCol = "S1AVGGrade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("2")) {
+                        }if(SubjectNumber.equalsIgnoreCase("2")){
                             MarksCol = "S2AVGMarks";
                             GradeCol = "S2AVGGrade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("3")) {
+                        }if(SubjectNumber.equalsIgnoreCase("3")){
                             MarksCol = "S3AVGMarks";
                             GradeCol = "S3AVGGrade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("4")) {
+                        }if(SubjectNumber.equalsIgnoreCase("4")){
                             MarksCol = "S4AVGMarks";
                             GradeCol = "S4AVGGrade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("5")) {
+                        }if(SubjectNumber.equalsIgnoreCase("5")){
                             MarksCol = "S5AVGMarks";
                             GradeCol = "S5AVGGrade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("6")) {
+                        }if(SubjectNumber.equalsIgnoreCase("6")){
                             MarksCol = "S6AVGMarks";
                             GradeCol = "S6AVGGrade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("7")) {
+                        }if(SubjectNumber.equalsIgnoreCase("7")){
                             MarksCol = "S7AVGMarks";
                             GradeCol = "S7AVGGrade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("8")) {
+                        }if(SubjectNumber.equalsIgnoreCase("8")){
                             MarksCol = "S8AVGMarks";
                             GradeCol = "S8AVGGrade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("9")) {
+                        }if(SubjectNumber.equalsIgnoreCase("9")){
                             MarksCol = "S9AVGMarks";
                             GradeCol = "S9AVGGrade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("10")) {
+                        }if(SubjectNumber.equalsIgnoreCase("10")){
                             MarksCol = "S10AVGMarks";
                             GradeCol = "S10AVGGrade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("11")) {
+                        }if(SubjectNumber.equalsIgnoreCase("11")){
                             MarksCol = "S11AVGMarks";
                             GradeCol = "S11AVGGrade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("12")) {
+                        }if(SubjectNumber.equalsIgnoreCase("12")){
                             MarksCol = "S12AVGMarks";
                             GradeCol = "S12AVGGrade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("13")) {
+                        }if(SubjectNumber.equalsIgnoreCase("13")){
                             MarksCol = "S13AVGMarks";
                             GradeCol = "S13AVGGrade";
-                        }
-                        if (SubjectNumber.equalsIgnoreCase("14")) {
+                        }if(SubjectNumber.equalsIgnoreCase("14")){
                             MarksCol = "S14AVGMarks";
                             GradeCol = "S14AVGGrade";
                         }
-                        getSubjectChampionsForThisSubject(Form, Year, Term, SubjectName, NumberOfChamps, MarksCol, GradeCol);
+                        getSubjectChampionsForThisSubject(Form,Year,Term,SubjectName,NumberOfChamps,MarksCol,GradeCol);
                     }
                     break;
 //</editor-fold>
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "System Err : " + e, "Error", 0);
+            }            
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
         }
     }
-
-    private void getSubjectChampionsForThisSubject(String Form, String Year, String Term, String SubjectName, String NumberOfChamps, String MarksCol, String GradeCol) {
-        try {
-            sql = "Select students_exams.*,Student_details.* from students_exams INNER JOIN Student_details ON (Student_id=SE_Student_id) Where(SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "' AND " + MarksCol + "+0>0) ORDER BY " + MarksCol + "+0 DESC LIMIT " + NumberOfChamps + "";
-            pst = conn.prepareStatement(sql);
+    
+    private void getSubjectChampionsForThisSubject(String Form,String Year,String Term,String SubjectName,String NumberOfChamps,String MarksCol,String GradeCol){
+        try{
+            sql = "Select students_exams.*,Student_details.* from students_exams INNER JOIN Student_details ON (Student_id=SE_Student_id) Where(SE_StudentClass='"+Form+"' AND Year='"+Year+"' AND Term='"+Term+"' AND "+MarksCol+"+0>0) ORDER BY "+MarksCol+"+0 DESC LIMIT "+NumberOfChamps+"";
+            pst  = conn.prepareStatement(sql);
             ResultSet rst = pst.executeQuery();
-            while (rst.next()) {
+            while(rst.next()){
                 String StudentId = rst.getString("Student_id");
                 String StudentClass = rst.getString("Student_Class");
                 String StudentName = rst.getString("Student_name");
                 String Marks = rst.getString(MarksCol);
                 String Grade = rst.getString(GradeCol);
-                sql = "INSERT INTO SubjectChampions (SubjectName,StudentID,StudentName,StudentClass,Marks,Grade) Values ('" + SubjectName + "',"
-                        + "'" + StudentId + "','" + StudentName + "','" + StudentClass + "','" + Marks + "','" + Grade + "')";
+                sql = "INSERT INTO SubjectChampions (SubjectName,StudentID,StudentName,StudentClass,Marks,Grade) Values ('"+SubjectName+"',"
+                        + "'"+StudentId+"','"+StudentName+"','"+StudentClass+"','"+Marks+"','"+Grade+"')";
                 pst = conn.prepareStatement(sql);
                 pst.executeUpdate();
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "System Err : " + e, "Error", 0);
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
         }
-
+    
     }
-
-    private void printSubjectCHamps(String Form, String Year, String Term, String Exam, String NumberOfChamps) {
-        reportName = "SubjectTopStudents";
-
-        HashMap param = new HashMap();
+    
+    private void printSubjectCHamps(String Form,String Year,String Term,String Exam,String NumberOfChamps){
+        reportName = "SubjectTopStudents"; 
+          
+        HashMap param=new HashMap();
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
-        param.put("ExamName", Exam);
-        param.put("NoChamps", NumberOfChamps);
-        if (!(Activation.equalsIgnoreCase("3"))) {
+        param.put("ExamName",Exam);
+        param.put("NoChamps",NumberOfChamps);
+        if(!(Activation.equalsIgnoreCase("3"))){
             param.put("bgImage", report_bg);
-        } else {
+        }else{
             param.put("bgImage", null);
         }
-
-        reportTitle = "Form " + Form + " Subject CHampions";
-        showReport(param);
+        
+        reportTitle = "Form "+Form+" Subject CHampions";
+        showReport(param);  
     }
-
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -1137,6 +1094,9 @@ public class ReportsFrm extends javax.swing.JFrame {
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
+            }
+            public void windowDeactivated(java.awt.event.WindowEvent evt) {
+                formWindowDeactivated(evt);
             }
         });
 
@@ -1395,9 +1355,9 @@ public class ReportsFrm extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(62, 62, 62)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton13, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(31, 31, 31)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cmbNumberOfChamps, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1543,370 +1503,373 @@ public class ReportsFrm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        Form = comboForm.getSelectedItem().toString();
-        Year = cmbYear.getSelectedItem().toString();
-        Term = comboTerm.getSelectedItem().toString();
-        Exam = "END TERM";
-        if (Form.equalsIgnoreCase("Select Form")) {
-            JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            lblStatus.setText("Preparing the Endterm subject perfomance...");
-            Report_Request = "ensubper";
-            ReportDlg.pack();
-            ReportDlg.setLocationRelativeTo(this);
-            ReportDlg.setVisible(true);
-        }
+       Form=comboForm.getSelectedItem().toString();
+       Year=cmbYear.getSelectedItem().toString();
+       Term=comboTerm.getSelectedItem().toString();
+       Exam = "END TERM";
+       if(Form.equalsIgnoreCase("Select Form")){
+           JOptionPane.showMessageDialog(null, "Select the Class","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Year.equalsIgnoreCase("")){
+           JOptionPane.showMessageDialog(null, "Select the Year of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else{
+           lblStatus.setText("Preparing the Endterm subject perfomance...");           
+           Report_Request= "ensubper";
+           ReportDlg.pack();
+           ReportDlg.setLocationRelativeTo(this);
+           ReportDlg.setVisible(true);
+       }
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        Form = comboForm.getSelectedItem().toString();
-        if (Form.equalsIgnoreCase("Select Form")) {
-            JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            lblStatus.setText("Preparing the marks sheet...");
-            Report_Request = "ms";
-            ReportDlg.pack();
-            ReportDlg.setLocationRelativeTo(this);
-            ReportDlg.setVisible(true);
-        }
+        Form=comboForm.getSelectedItem().toString();        
+       if(Form.equalsIgnoreCase("Select Form")){
+           JOptionPane.showMessageDialog(null, "Select the Class","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else{
+           lblStatus.setText("Preparing the marks sheet...");
+           Report_Request = "ms";
+           ReportDlg.pack();
+           ReportDlg.setLocationRelativeTo(this);
+           ReportDlg.setVisible(true);
+       }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        Form = comboForm.getSelectedItem().toString();
-        Year = cmbYear.getSelectedItem().toString();
-        Term = comboTerm.getSelectedItem().toString();
-        Exam = comboExam.getSelectedItem().toString();
-        if (Form.equalsIgnoreCase("Select Form")) {
-            JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Exam.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Level of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            Report_Request = "mcs";
-            lblStatus.setText("Preparing the marks confirmation sheets...");
-            ReportDlg.pack();
-            ReportDlg.setLocationRelativeTo(this);
-            ReportDlg.setVisible(true);
-        }
+       Form=comboForm.getSelectedItem().toString();
+       Year=cmbYear.getSelectedItem().toString();
+       Term=comboTerm.getSelectedItem().toString();
+       Exam=comboExam.getSelectedItem().toString();
+       if(Form.equalsIgnoreCase("Select Form")){
+           JOptionPane.showMessageDialog(null, "Select the Class","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Year.equalsIgnoreCase("")){
+           JOptionPane.showMessageDialog(null, "Select the Year of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Term.equalsIgnoreCase("SELECT")){
+           JOptionPane.showMessageDialog(null, "Select the Term of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Exam.equalsIgnoreCase("SELECT")){
+           JOptionPane.showMessageDialog(null, "Select the Level of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else{
+           Report_Request = "mcs";
+           lblStatus.setText("Preparing the marks confirmation sheets...");
+           ReportDlg.pack();
+           ReportDlg.setLocationRelativeTo(this);
+           ReportDlg.setVisible(true);
+       }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        Form = comboForm.getSelectedItem().toString();
-        Year = cmbYear.getSelectedItem().toString();
-        Term = comboTerm.getSelectedItem().toString();
-        Exam = comboExam.getSelectedItem().toString();
-        if (Form.equalsIgnoreCase("Select Form")) {
-            JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Exam.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Level of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            lblStatus.setText("Preparing the result slip...");
+       Form=comboForm.getSelectedItem().toString();
+       Year=cmbYear.getSelectedItem().toString();
+       Term=comboTerm.getSelectedItem().toString();
+       Exam=comboExam.getSelectedItem().toString();
+       if(Form.equalsIgnoreCase("Select Form")){
+           JOptionPane.showMessageDialog(null, "Select the Class","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Year.equalsIgnoreCase("")){
+           JOptionPane.showMessageDialog(null, "Select the Year of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Term.equalsIgnoreCase("SELECT")){
+           JOptionPane.showMessageDialog(null, "Select the Term of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Exam.equalsIgnoreCase("SELECT")){
+           JOptionPane.showMessageDialog(null, "Select the Level of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else{
+           lblStatus.setText("Preparing the result slip...");
             Report_Request = "rs";
             ReportDlg.pack();
             ReportDlg.setLocationRelativeTo(this);
             ReportDlg.setVisible(true);
-        }
+       }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        Form = comboForm.getSelectedItem().toString();
-        Year = cmbYear.getSelectedItem().toString();
-        Term = comboTerm.getSelectedItem().toString();
-        Exam = comboExam.getSelectedItem().toString();
-        if (Form.equalsIgnoreCase("Select Form")) {
-            JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Exam.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Level of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            lblStatus.setText("Preparing the Exam stream ranking list...");
-            Report_Request = "exsr";
-            ReportDlg.pack();
-            ReportDlg.setLocationRelativeTo(this);
-            ReportDlg.setVisible(true);
-        }
+       Form=comboForm.getSelectedItem().toString();
+       Year=cmbYear.getSelectedItem().toString();
+       Term=comboTerm.getSelectedItem().toString();
+       Exam=comboExam.getSelectedItem().toString();
+       if(Form.equalsIgnoreCase("Select Form")){
+           JOptionPane.showMessageDialog(null, "Select the Class","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Year.equalsIgnoreCase("")){
+           JOptionPane.showMessageDialog(null, "Select the Year of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Term.equalsIgnoreCase("SELECT")){
+           JOptionPane.showMessageDialog(null, "Select the Term of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Exam.equalsIgnoreCase("SELECT")){
+           JOptionPane.showMessageDialog(null, "Select the Level of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else{
+           lblStatus.setText("Preparing the Exam stream ranking list...");
+           Report_Request = "exsr";
+           ReportDlg.pack();
+           ReportDlg.setLocationRelativeTo(this);
+           ReportDlg.setVisible(true);
+       }
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        Form = comboForm.getSelectedItem().toString();
-        Year = cmbYear.getSelectedItem().toString();
-        Term = comboTerm.getSelectedItem().toString();
-        Exam = comboExam.getSelectedItem().toString();
-        ExamFormLevel = Form.replaceAll(" ", "").substring(0, 1);
-        if (Form.equalsIgnoreCase("Select Form")) {
-            JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Exam.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Level of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            lblStatus.setText("Preparing the exam overall ranking list...");
-            Report_Request = "exor";
+       Form=comboForm.getSelectedItem().toString();
+       Year=cmbYear.getSelectedItem().toString();
+       Term=comboTerm.getSelectedItem().toString();
+       Exam=comboExam.getSelectedItem().toString();
+       ExamFormLevel = Form.replaceAll(" ", "").substring(0, 1);
+       if(Form.equalsIgnoreCase("Select Form")){
+           JOptionPane.showMessageDialog(null, "Select the Class","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Year.equalsIgnoreCase("")){
+           JOptionPane.showMessageDialog(null, "Select the Year of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Term.equalsIgnoreCase("SELECT")){
+           JOptionPane.showMessageDialog(null, "Select the Term of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Exam.equalsIgnoreCase("SELECT")){
+           JOptionPane.showMessageDialog(null, "Select the Level of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else{
+           lblStatus.setText("Preparing the exam overall ranking list...");
+            Report_Request="exor";
             ReportDlg.pack();
             ReportDlg.setLocationRelativeTo(this);
             ReportDlg.setVisible(true);
-        }
+       }
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        Form = comboForm.getSelectedItem().toString();
-        Year = cmbYear.getSelectedItem().toString();
-        Term = comboTerm.getSelectedItem().toString();
-        if (Form.equalsIgnoreCase("Select Form")) {
-            JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            lblStatus.setText("Preparing the endterm ranking list...");
-            Report_Request = "ensr";
-            ReportDlg.pack();
-            ReportDlg.setLocationRelativeTo(this);
-            ReportDlg.setVisible(true);
-        }
+       Form=comboForm.getSelectedItem().toString();
+       Year=cmbYear.getSelectedItem().toString();
+       Term=comboTerm.getSelectedItem().toString();
+       if(Form.equalsIgnoreCase("Select Form")){
+           JOptionPane.showMessageDialog(null, "Select the Class","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Year.equalsIgnoreCase("")){
+           JOptionPane.showMessageDialog(null, "Select the Year of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Term.equalsIgnoreCase("SELECT")){
+           JOptionPane.showMessageDialog(null, "Select the Term of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else{
+           lblStatus.setText("Preparing the endterm ranking list...");
+           Report_Request = "ensr";
+           ReportDlg.pack();
+           ReportDlg.setLocationRelativeTo(this);
+           ReportDlg.setVisible(true);
+       }
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
-        Form = comboForm.getSelectedItem().toString();
-        Year = cmbYear.getSelectedItem().toString();
-        Term = comboTerm.getSelectedItem().toString();
-        String Exam = "END TERM";
-        String ExamFormLevel = Form.replaceAll(" ", "").substring(0, 1);
-        if (Form.equalsIgnoreCase("Select Form")) {
-            JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            lblStatus.setText("Preparing the Endterm class ranking...");
-            Report_Request = "enclassper";
-            ReportDlg.pack();
-            ReportDlg.setLocationRelativeTo(this);
-            ReportDlg.setVisible(true);
-        }
+       Form=comboForm.getSelectedItem().toString();
+       Year=cmbYear.getSelectedItem().toString();
+       Term=comboTerm.getSelectedItem().toString();
+       String Exam="END TERM";
+       String ExamFormLevel = Form.replaceAll(" ", "").substring(0, 1);
+       if(Form.equalsIgnoreCase("Select Form")){
+           JOptionPane.showMessageDialog(null, "Select the Class","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Year.equalsIgnoreCase("")){
+           JOptionPane.showMessageDialog(null, "Select the Year of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Term.equalsIgnoreCase("SELECT")){
+           JOptionPane.showMessageDialog(null, "Select the Term of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else{
+           lblStatus.setText("Preparing the Endterm class ranking...");
+           Report_Request="enclassper";
+           ReportDlg.pack();
+           ReportDlg.setLocationRelativeTo(this);
+           ReportDlg.setVisible(true);
+       }
     }//GEN-LAST:event_jButton12ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        Form = comboForm.getSelectedItem().toString();
-        Year = cmbYear.getSelectedItem().toString();
-        Term = comboTerm.getSelectedItem().toString();
-        ExamFormLevel = Form.replaceAll(" ", "").substring(0, 1);
-        if (Form.equalsIgnoreCase("Select Form")) {
-            JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            lblStatus.setText("Preparing the Endterm Overall ranking...");
-            Report_Request = "enor";
-            ReportDlg.pack();
-            ReportDlg.setLocationRelativeTo(this);
-            ReportDlg.setVisible(true);
-        }
+       Form=comboForm.getSelectedItem().toString();
+       Year=cmbYear.getSelectedItem().toString();
+       Term=comboTerm.getSelectedItem().toString();
+       ExamFormLevel = Form.replaceAll(" ", "").substring(0, 1);
+       if(Form.equalsIgnoreCase("Select Form")){
+           JOptionPane.showMessageDialog(null, "Select the Class","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Year.equalsIgnoreCase("")){
+           JOptionPane.showMessageDialog(null, "Select the Year of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Term.equalsIgnoreCase("SELECT")){
+           JOptionPane.showMessageDialog(null, "Select the Term of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else{
+           lblStatus.setText("Preparing the Endterm Overall ranking...");
+           Report_Request="enor";
+           ReportDlg.pack();
+           ReportDlg.setLocationRelativeTo(this);
+           ReportDlg.setVisible(true);
+       }
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        Form = comboForm.getSelectedItem().toString();
-        Year = cmbYear.getSelectedItem().toString();
-        Term = comboTerm.getSelectedItem().toString();
-        if (Form.equalsIgnoreCase("Select Form")) {
-            JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            lblStatus.setText("Preparing the report Forms...");
-            Report_Request = "rf";
-            ReportDlg.pack();
-            ReportDlg.setLocationRelativeTo(this);
-            ReportDlg.setVisible(true);
-        }
+       Form=comboForm.getSelectedItem().toString();
+       Year=cmbYear.getSelectedItem().toString();
+       Term=comboTerm.getSelectedItem().toString();
+       if(Form.equalsIgnoreCase("Select Form")){
+           JOptionPane.showMessageDialog(null, "Select the Class","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Year.equalsIgnoreCase("")){
+           JOptionPane.showMessageDialog(null, "Select the Year of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Term.equalsIgnoreCase("SELECT")){
+           JOptionPane.showMessageDialog(null, "Select the Term of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else{
+           lblStatus.setText("Preparing the report Forms...");
+           Report_Request="rf";
+           ReportDlg.pack();
+           ReportDlg.setLocationRelativeTo(this);
+           ReportDlg.setVisible(true);
+       }
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        Form = comboForm.getSelectedItem().toString();
-        Year = cmbYear.getSelectedItem().toString();
-        Term = comboTerm.getSelectedItem().toString();
-        Exam = comboExam.getSelectedItem().toString();
-        if (Form.equalsIgnoreCase("Select Form")) {
-            JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            lblStatus.setText("Preparing the exam Subject perfomance");
-            Report_Request = "exsubper";
-            ReportDlg.pack();
-            ReportDlg.setLocationRelativeTo(this);
-            ReportDlg.setVisible(true);
-        }
+       Form=comboForm.getSelectedItem().toString();
+       Year=cmbYear.getSelectedItem().toString();
+       Term=comboTerm.getSelectedItem().toString();
+       Exam=comboExam.getSelectedItem().toString();
+       if(Form.equalsIgnoreCase("Select Form")){
+           JOptionPane.showMessageDialog(null, "Select the Class","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Year.equalsIgnoreCase("")){
+           JOptionPane.showMessageDialog(null, "Select the Year of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Term.equalsIgnoreCase("SELECT")){
+           JOptionPane.showMessageDialog(null, "Select the Term of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else{
+           lblStatus.setText("Preparing the exam Subject perfomance");
+           Report_Request="exsubper";
+           ReportDlg.pack();
+           ReportDlg.setLocationRelativeTo(this);
+           ReportDlg.setVisible(true);
+       }
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-        Form = comboForm.getSelectedItem().toString();
-        Year = cmbYear.getSelectedItem().toString();
-        Term = comboTerm.getSelectedItem().toString();
-        Exam = comboExam.getSelectedItem().toString();
-        ExamFormLevel = Form.replaceAll(" ", "").substring(0, 1);
-        if (Form.equalsIgnoreCase("Select Form")) {
-            JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            lblStatus.setText("Preparing the Exam class ranking...");
-            Report_Request = "exclassper";
-            ReportDlg.pack();
-            ReportDlg.setLocationRelativeTo(this);
-            ReportDlg.setVisible(true);
-        }
+       Form=comboForm.getSelectedItem().toString();
+       Year=cmbYear.getSelectedItem().toString();
+       Term=comboTerm.getSelectedItem().toString();
+       Exam=comboExam.getSelectedItem().toString();
+       ExamFormLevel = Form.replaceAll(" ", "").substring(0, 1);
+       if(Form.equalsIgnoreCase("Select Form")){
+           JOptionPane.showMessageDialog(null, "Select the Class","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Year.equalsIgnoreCase("")){
+           JOptionPane.showMessageDialog(null, "Select the Year of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Term.equalsIgnoreCase("SELECT")){
+           JOptionPane.showMessageDialog(null, "Select the Term of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else{
+           lblStatus.setText("Preparing the Exam class ranking...");
+           Report_Request="exclassper";
+           ReportDlg.pack();
+           ReportDlg.setLocationRelativeTo(this);
+           ReportDlg.setVisible(true);
+       }
     }//GEN-LAST:event_jButton11ActionPerformed
 
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
-        Form = comboForm.getSelectedItem().toString();
-        Year = cmbYear.getSelectedItem().toString();
-        Term = comboTerm.getSelectedItem().toString();
-        Exam = comboExam.getSelectedItem().toString();
-        NumberOfChamps = cmbNumberOfChamps.getSelectedItem().toString();
-        if (Form.equalsIgnoreCase("Select Form")) {
-            JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            lblStatus.setText("Preparing the Exam subject champions...");
-            Report_Request = "extop";
-            ReportDlg.pack();
-            ReportDlg.setLocationRelativeTo(this);
-            ReportDlg.setVisible(true);
-        }
+       Form=comboForm.getSelectedItem().toString();
+       Year=cmbYear.getSelectedItem().toString();
+       Term=comboTerm.getSelectedItem().toString();
+       Exam=comboExam.getSelectedItem().toString();
+       NumberOfChamps = cmbNumberOfChamps.getSelectedItem().toString();
+       if(Form.equalsIgnoreCase("Select Form")){
+           JOptionPane.showMessageDialog(null, "Select the Class","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Year.equalsIgnoreCase("")){
+           JOptionPane.showMessageDialog(null, "Select the Year of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Term.equalsIgnoreCase("SELECT")){
+           JOptionPane.showMessageDialog(null, "Select the Term of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else{
+           lblStatus.setText("Preparing the Exam subject champions...");
+           Report_Request="extop";
+           ReportDlg.pack();
+           ReportDlg.setLocationRelativeTo(this);
+           ReportDlg.setVisible(true);
+       }
     }//GEN-LAST:event_jButton13ActionPerformed
 
     private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
-        Form = comboForm.getSelectedItem().toString();
-        Year = cmbYear.getSelectedItem().toString();
-        Term = comboTerm.getSelectedItem().toString();
-        Exam = "END TERM";
-        NumberOfChamps = cmbNumberOfChamps.getSelectedItem().toString();
-        if (Form.equalsIgnoreCase("Select Form")) {
-            JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            lblStatus.setText("Preparing the Endterm subject champions...");
-            Report_Request = "entop";
-            ReportDlg.pack();
-            ReportDlg.setLocationRelativeTo(this);
-            ReportDlg.setVisible(true);
-        }
+       Form=comboForm.getSelectedItem().toString();
+       Year=cmbYear.getSelectedItem().toString();
+       Term=comboTerm.getSelectedItem().toString();
+       Exam="END TERM";
+       NumberOfChamps = cmbNumberOfChamps.getSelectedItem().toString();
+       if(Form.equalsIgnoreCase("Select Form")){
+           JOptionPane.showMessageDialog(null, "Select the Class","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Year.equalsIgnoreCase("")){
+           JOptionPane.showMessageDialog(null, "Select the Year of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else if(Term.equalsIgnoreCase("SELECT")){
+           JOptionPane.showMessageDialog(null, "Select the Term of examination","acme",JOptionPane.INFORMATION_MESSAGE);
+       }else{
+           lblStatus.setText("Preparing the Endterm subject champions...");
+           Report_Request="entop";
+           ReportDlg.pack();
+           ReportDlg.setLocationRelativeTo(this);
+           ReportDlg.setVisible(true);
+       }
     }//GEN-LAST:event_jButton14ActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        try {
+        try{
             if (!conn.isClosed()) {
-                conn.close();
+                conn.close();                
             }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
+       }catch(SQLException e){
+           System.out.println(e);
+       }
         this.dispose();
         new AdminPanelFrm().setVisible(true);
     }//GEN-LAST:event_formWindowClosing
 
     private void ReportDlgWindowGainedFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_ReportDlgWindowGainedFocus
-        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+        SwingWorker<Void,Void> worker  = new SwingWorker<Void,Void>(){
             @Override
             protected Void doInBackground() throws Exception {
-                switch (Report_Request) {
+                switch(Report_Request){
                     case "ms":
-                        printMarksSheet(Form);
+                        printMarksSheet(Form);      
                         break;
                     case "mcs":
-                        printMarksConfirmationSheet(Form, Year, Term, Exam);
+                        printMarksConfirmationSheet(Form,Year,Term,Exam);
                         break;
                     case "rs":
-                        printResultSlips(Form, Year, Term, Exam);
+                        printResultSlips(Form,Year,Term,Exam);
                         break;
                     case "exsr":
-                        printExamStreamRankingList(Form, Year, Term, Exam);
+                        printExamStreamRankingList(Form,Year,Term,Exam);
                         break;
                     case "exor":
-                        printExamOverallRankingList(Form, Year, Term, Exam, ExamFormLevel);
+                        printExamOverallRankingList(Form,Year,Term,Exam,ExamFormLevel);
                         break;
                     case "ensr":
-                        printTermStreamRankingList(Form, Year, Term);
+                        printTermStreamRankingList(Form,Year,Term);
                         break;
                     case "enor":
-                        printTermOverallRankingList(Form, Year, Term, ExamFormLevel);
+                        printTermOverallRankingList(Form,Year,Term,ExamFormLevel);
                         break;
                     case "rf":
-                        printReportForms(Form, Year, Term, Activation);
+                        printReportForms(Form,Year,Term,Activation);
                         break;
                     case "exsubper":
-                        AnalyseSubjectPerformance(Form, Year, Term, Exam);
+                        AnalyseSubjectPerformance(Form,Year,Term,Exam);
                         setTheSubjectPosition();
-                        printExamSubjectPerfomance(Form, Year, Term, Exam);
+                        printExamSubjectPerfomance(Form,Year,Term,Exam);
                         break;
                     case "ensubper":
-                        AnalyseSubjectPerformance(Form, Year, Term, Exam);
+                        AnalyseSubjectPerformance(Form,Year,Term,Exam);
                         setTheSubjectPosition();
-                        printExamSubjectPerfomance(Form, Year, Term, Exam);
+                        printExamSubjectPerfomance(Form,Year,Term,Exam);
                         break;
                     case "exclassper":
-                        AnalyzeClassesPerfomance(Form, Year, Term, Exam, ExamFormLevel);
+                        AnalyzeClassesPerfomance(Form,Year,Term,Exam,ExamFormLevel);
                         setTheClassPosition(ExamFormLevel);
-                        printClassPerformance(ExamFormLevel, Year, Term, Exam);
+                        printClassPerformance(ExamFormLevel,Year,Term,Exam);
                         break;
                     case "enclassper":
-                        AnalyzeClassesPerfomance(Form, Year, Term, Exam, ExamFormLevel);
+                        AnalyzeClassesPerfomance(Form,Year,Term,Exam,ExamFormLevel);
                         setTheClassPosition(ExamFormLevel);
-                        printClassPerformance(ExamFormLevel, Year, Term, Exam);
+                        printClassPerformance(ExamFormLevel,Year,Term,Exam);
                         break;
                     case "extop":
-                        AnalyzeSubjectChampions(Form, Year, Term, Exam, NumberOfChamps);
-                        printSubjectCHamps(Form, Year, Term, Exam, NumberOfChamps);
+                        AnalyzeSubjectChampions(Form,Year,Term,Exam,NumberOfChamps);
+                        printSubjectCHamps(Form,Year,Term,Exam,NumberOfChamps);
                         break;
                     case "entop":
-                        AnalyzeSubjectChampions(Form, Year, Term, Exam, NumberOfChamps);
-                        printSubjectCHamps(Form, Year, Term, Exam, NumberOfChamps);
+                        AnalyzeSubjectChampions(Form,Year,Term,Exam,NumberOfChamps);
+                        printSubjectCHamps(Form,Year,Term,Exam,NumberOfChamps);
                         break;
                     default:
-                        JOptionPane.showMessageDialog(null, "Selected report CODE does not exits", "Error", 1);
+                        JOptionPane.showMessageDialog(null,"Selected report CODE does not exits","Error",1);
                         break;
                 }
                 return null;
             }
-
             @Override
-            protected void done() {
+            protected void done(){
                 ReportDlg.setVisible(false);
             }
         };
         worker.execute();
     }//GEN-LAST:event_ReportDlgWindowGainedFocus
+
+    private void formWindowDeactivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowDeactivated
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formWindowDeactivated
 
     /**
      * @param args the command line arguments
@@ -1928,7 +1891,7 @@ public class ReportsFrm extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(ReportsFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        
         //</editor-fold>
 
         /* Create and display the form */

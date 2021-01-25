@@ -25,9 +25,6 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         updateRunningDate();
         getNumberOfPersons();
         getSchool();
-        
-        system_level = new ConfigFileClass().isNewInstallation()?"new":"update";
-        activated = new ConfigFileClass().activeState(3);
     }
 
 
@@ -936,27 +933,9 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
-        try {
-            if (!activated) {
-                int res = JOptionPane.showConfirmDialog(null, "This system is not activated, Do you want to activate it ?", "Activate System", JOptionPane.YES_NO_OPTION);
-                if (res == JOptionPane.YES_OPTION) {
-                    closeConnection();
-                    this.dispose();
-                    new ActivationFrm(system_level).setVisible(true);
-                } else {
-                    closeConnection();
-                    this.dispose();
-                    new ReportsFrm().setVisible(true);
-                }
-            } else {
-                closeConnection();
-                this.dispose();
-                new ReportsFrm().setVisible(true);
-            }
-        } catch (HeadlessException e) {
-            JOptionPane.showMessageDialog(null, "System Error - " + e.getMessage(), "System Error", 0);
-            e.printStackTrace();
-        }
+        closeConnection();
+        this.dispose();
+        new ReportsFrm().setVisible(true);
     }//GEN-LAST:event_jButton13ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed

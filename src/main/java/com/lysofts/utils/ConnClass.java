@@ -13,13 +13,17 @@ public class ConnClass {
     private static ResultSet rs;
     private static String url;
 
-    private final static boolean DEBUG = true;
+    private final static boolean DEBUG = false;
+    
+    public static String API_END = DEBUG?
+            "http://localhost:8000/accounts/":
+            "https://acme-accounts.herokuapp.com/accounts/";
     
     public static Connection connectDB() {
         try {
             url = DEBUG? 
                     "jdbc:sqlite::resource:database/ExamsDB.db": 
-                    "jdbc:sqlite:C:/Acme/Exam System/ExamsDB.db";
+                    "jdbc:sqlite::resource:database/ExamsDB.db";
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection(url);
         } catch (ClassNotFoundException | SQLException e) {
