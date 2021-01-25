@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Exam 2 Result Slip" language="groovy" pageWidth="595" pageHeight="842" columnWidth="567" leftMargin="14" rightMargin="14" topMargin="14" bottomMargin="14" isTitleNewPage="true" whenResourceMissingType="Empty" uuid="31e3a7d3-0410-41b9-b280-40db0b81e192">
 	<property name="ireport.zoom" value="1.0"/>
-	<property name="ireport.x" value="1"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<style name="table">
 		<box>
@@ -39,7 +39,6 @@
 	<queryString>
 		<![CDATA[SELECT tblschool.*,student_details.*,students_exams.*,tblClasses.* FROM tblschool inner join((student_details inner join students_exams on student_details.student_id=students_exams.SE_student_id)inner join tblClasses on tblClasses.class_name=student_details.Student_class) WHERE(students_exams.SE_StudentClass=$P{ExamForm} AND students_exams.Year=$P{ExamYear} AND students_exams.Term=$P{ExamTerm}) ORDER BY (Students_exams.Exam2TotalMarks +0) DESC]]>
 	</queryString>
-	<field name="School_Code" class="java.lang.Object"/>
 	<field name="School_id" class="java.lang.Object"/>
 	<field name="School_name" class="java.lang.Object"/>
 	<field name="School_Posta" class="java.lang.Object"/>

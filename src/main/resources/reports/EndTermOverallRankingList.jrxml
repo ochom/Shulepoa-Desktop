@@ -58,7 +58,6 @@
 	<field name="CODE12" class="java.lang.Object"/>
 	<field name="CODE13" class="java.lang.Object"/>
 	<field name="CODE14" class="java.lang.Object"/>
-	<field name="School_Code" class="java.lang.Object"/>
 	<field name="School_id" class="java.lang.Object"/>
 	<field name="School_name" class="java.lang.Object"/>
 	<field name="School_Posta" class="java.lang.Object"/>
@@ -110,7 +109,7 @@
 	<field name="F4T2P" class="java.lang.Object"/>
 	<field name="F4T3M" class="java.lang.Object"/>
 	<field name="F4T3P" class="java.lang.Object"/>
-	<field name="School_code:1" class="java.lang.Object"/>
+	
 	<field name="SE_Student_id" class="java.lang.Object"/>
 	<field name="SE_StudentClass" class="java.lang.Object"/>
 	<field name="Year" class="java.lang.Object"/>

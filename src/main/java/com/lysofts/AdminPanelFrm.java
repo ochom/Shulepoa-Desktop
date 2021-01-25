@@ -2,8 +2,13 @@ package com.lysofts;
 
 import com.lysofts.utils.ConnClass;
 import com.jtattoo.plaf.DecorationHelper;
+import com.lysofts.dao.ClassroomDAO;
+import com.lysofts.dao.HouseDAO;
+import com.lysofts.dao.SchoolDAO;
+import com.lysofts.dao.SubjectDAO;
+import com.lysofts.dao.TeacherDAO;
+import com.lysofts.entities.School;
 import java.awt.*;
-import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -12,19 +17,17 @@ import java.util.GregorianCalendar;
 
 public class AdminPanelFrm extends javax.swing.JFrame {
 
-    Connection Conn = ConnClass.connectDB();
-    PreparedStatement pst = null;
-    ResultSet rs = null;
-    String system_level = null;
-    boolean activated = false;
+    School school = null;    
 
     public AdminPanelFrm() {
+        this.school = new SchoolDAO().get();
+        
         initComponents();
         
         new ConnClass().setFrameIcon(this);
         updateRunningDate();
         getNumberOfPersons();
-        getSchool();
+        updateUI();
     }
 
 
@@ -58,54 +61,34 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         worker.execute();
     }
 
-    private void getSchool() {
-        try {
-            String sql = "SELECT * FROM tblschool";
-            pst = Conn.prepareStatement(sql);
-            rs = pst.executeQuery();
-            if (rs.next()) {
-                this.setTitle(rs.getString("School_name") + " Examination Manager");
-                txtSchoolName.setText(rs.getString("School_name"));
-                txtClDate.setText(rs.getString("ClosingDate"));
-                txtOpDate.setText(rs.getString("OpeningDate"));
-                String cd = rs.getString("ClosingDate");
-                String op = rs.getString("OpeningDate");
-                txtCD.setText(cd);
-                txtOP.setText(op);
-                if (rs.getString("Full_purchase").equals("3")) {
-                    activated = true;
-                }
-            } else {
-                this.setTitle("School Examination Manager");
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
+    private void updateUI() {
+        if(school!=null){
+            this.setTitle(school.getName() + " Examination Manager");
+            txtSchoolName.setText(school.getName());
+            txtClDate.setText(school.getClosingDate());
+            txtOpDate.setText(school.getOpeningDate());
+            txtCD.setText(school.getClosingDate());
+            txtOP.setText(school.getOpeningDate());
+        }else{
+            this.setTitle("School Examination Manager");
         }
     }
 
     private void getNumberOfPersons() {
-        try {
-            String sql = "SELECT (SELECT count(*) FROM tblteachers) AS Teachers,(SELECT count(*) FROM tblclasses) AS Classes,(SELECT count(*) FROM Subjects) AS Subjects,(SELECT count(*) FROM student_details) AS Students,(SELECT count(*) FROM user) AS Users";
-            pst = Conn.prepareStatement(sql);
-            rs = pst.executeQuery();
-            if (rs.next()) {
-                txtNumberOfTeachers.setText(rs.getString("Teachers"));
-                txtNumberOfClasses.setText(rs.getString("Classes"));
-                txtNumberOfSubjects.setText(rs.getString("Subjects"));
-                txtNumberofStudents.setText(rs.getString("Students"));
-                txtnumberOfusers.setText(rs.getString("Users"));
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-    }
-    
-    private void closeConnection(){
-        try {
-            Conn.close();
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
+        txtNumberOfTeachers.setText(String.valueOf(new TeacherDAO().get().size()));
+        txtNumberOfClasses.setText(String.valueOf(new ClassroomDAO().get().size()));
+        txtNumberOfSubjects.setText(String.valueOf(new SubjectDAO().get().size()));
+        txtnumberOfHouses.setText(String.valueOf(new HouseDAO().get().size()));
+//        try {
+//            String sql = "SELECT (SELECT count(*) FROM tblteachers) AS Teachers,(SELECT count(*) FROM tblclasses) AS Classes,(SELECT count(*) FROM Subjects) AS Subjects,(SELECT count(*) FROM student_details) AS Students,(SELECT count(*) FROM user) AS Users";
+//            pst = Conn.prepareStatement(sql);
+//            rs = pst.executeQuery();
+//            if (rs.next()) {
+//                txtNumberofStudents.setText(rs.getString("Students"));
+//            }
+//        } catch (SQLException e) {
+//            System.out.println(e);
+//        }
     }
     
     @SuppressWarnings("unchecked")
@@ -132,8 +115,8 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         txtTerm3 = new javax.swing.JLabel();
         txtNumberOfSubjects = new javax.swing.JLabel();
         jPanel13 = new javax.swing.JPanel();
-        txtTerm5 = new javax.swing.JLabel();
-        txtnumberOfusers = new javax.swing.JLabel();
+        jText5 = new javax.swing.JLabel();
+        txtnumberOfHouses = new javax.swing.JLabel();
         jPanel14 = new javax.swing.JPanel();
         txtTerm2 = new javax.swing.JLabel();
         txtNumberOfClasses = new javax.swing.JLabel();
@@ -165,9 +148,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jPanel9 = new javax.swing.JPanel();
         jButton15 = new javax.swing.JButton();
-        jButton14 = new javax.swing.JButton();
         jButton27 = new javax.swing.JButton();
-        jButton19 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -184,10 +165,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         DialogDates.setResizable(false);
         DialogDates.setType(java.awt.Window.Type.UTILITY);
 
-        jButton20.setBackground(new java.awt.Color(60, 45, 115));
-        jButton20.setForeground(new java.awt.Color(254, 254, 254));
         jButton20.setText("Save Dates");
-        jButton20.setContentAreaFilled(false);
         jButton20.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton20ActionPerformed(evt);
@@ -408,31 +386,31 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         jPanel13.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanel13.setForeground(new java.awt.Color(0, 153, 0));
 
-        txtTerm5.setFont(new java.awt.Font("Cambria", 3, 18)); // NOI18N
-        txtTerm5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        txtTerm5.setText("Users");
+        jText5.setFont(new java.awt.Font("Cambria", 3, 18)); // NOI18N
+        jText5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jText5.setText("Houses");
 
-        txtnumberOfusers.setFont(new java.awt.Font("Script MT Bold", 1, 36)); // NOI18N
-        txtnumberOfusers.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        txtnumberOfusers.setText("0");
+        txtnumberOfHouses.setFont(new java.awt.Font("Script MT Bold", 1, 36)); // NOI18N
+        txtnumberOfHouses.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        txtnumberOfHouses.setText("0");
 
         javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
         jPanel13.setLayout(jPanel13Layout);
         jPanel13Layout.setHorizontalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(txtTerm5, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
+            .addComponent(jText5, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
             .addGroup(jPanel13Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(txtnumberOfusers, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(txtnumberOfHouses, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel13Layout.setVerticalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel13Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(txtnumberOfusers, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtnumberOfHouses, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtTerm5)
+                .addComponent(jText5)
                 .addContainerGap())
         );
 
@@ -445,7 +423,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         txtTerm2.setFont(new java.awt.Font("Cambria", 3, 18)); // NOI18N
         txtTerm2.setForeground(new java.awt.Color(153, 0, 0));
         txtTerm2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        txtTerm2.setText("Classes");
+        txtTerm2.setText("Classrooms");
 
         txtNumberOfClasses.setFont(new java.awt.Font("Script MT Bold", 1, 36)); // NOI18N
         txtNumberOfClasses.setForeground(new java.awt.Color(153, 0, 0));
@@ -563,7 +541,8 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jToolBar1.add(jButton3);
 
-    jButton5.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Science-Classroom-icon.png"))); // NOI18N
+    jButton5.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Science-Classroom-icon.png"))
+    );
     jButton5.setText("Classes");
     jButton5.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     jButton5.setFocusable(false);
@@ -577,7 +556,8 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jToolBar1.add(jButton5);
 
-    jButton7.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Log Out_24x24.png"))); // NOI18N
+    jButton7.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Log Out_24x24.png"))
+    );
     jButton7.setText("Houses");
     jButton7.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     jButton7.setFocusable(false);
@@ -592,7 +572,8 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     jToolBar1.add(jButton7);
     jToolBar1.add(jSeparator3);
 
-    jButton2.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Teacher-icon.png"))); // NOI18N
+    jButton2.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Teacher-icon.png"))
+    );
     jButton2.setText("Students");
     jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     jButton2.setFocusable(false);
@@ -606,7 +587,8 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jToolBar1.add(jButton2);
 
-    jButton8.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Properties_24x24.png"))); // NOI18N
+    jButton8.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Properties_24x24.png"))
+    );
     jButton8.setText("Subject Alloc.");
     jButton8.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     jButton8.setFocusable(false);
@@ -621,7 +603,8 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     jToolBar1.add(jButton8);
     jToolBar1.add(jSeparator1);
 
-    jButton9.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Edit_24x24.png"))); // NOI18N
+    jButton9.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Edit_24x24.png"))
+    );
     jButton9.setText("Record");
     jButton9.setToolTipText("Record and update exams");
     jButton9.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -636,7 +619,8 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jToolBar1.add(jButton9);
 
-    jButton16.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Synchronize_24x24.png"))); // NOI18N
+    jButton16.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Synchronize_24x24.png"))
+    );
     jButton16.setText("Analysis");
     jButton16.setToolTipText("Record and update exams");
     jButton16.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -652,7 +636,8 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     jToolBar1.add(jButton16);
     jToolBar1.add(jSeparator2);
 
-    jButton18.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/sales-report-icon.png"))); // NOI18N
+    jButton18.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/sales-report-icon.png"))
+    );
     jButton18.setText("Fee Manager");
     jButton18.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     jButton18.setFocusable(false);
@@ -666,7 +651,8 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jToolBar1.add(jButton18);
 
-    jButton13.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Report Card_24px.png"))); // NOI18N
+    jButton13.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Report Card_24px.png"))
+    );
     jButton13.setText("Reports");
     jButton13.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     jButton13.setFocusable(false);
@@ -695,17 +681,17 @@ public class AdminPanelFrm extends javax.swing.JFrame {
 
     jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
     jLabel1.setText("Next Term Opens:");
-    getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 180, 100, -1));
+    getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 180, 220, -1));
 
     txtClDate.setText("Date");
-    getContentPane().add(txtClDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 160, 140, -1));
+    getContentPane().add(txtClDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 160, 250, -1));
 
     txtOpDate.setText("Date");
-    getContentPane().add(txtOpDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 180, 140, -1));
+    getContentPane().add(txtOpDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 180, 240, -1));
 
     jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
     jLabel4.setText("Closing Date:");
-    getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 160, 100, -1));
+    getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 160, 200, -1));
 
     jPanel2.setBackground(new java.awt.Color(0, 0, 102));
     jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 0, 0)));
@@ -727,7 +713,8 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("Tools"));
 
     jButton15.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-    jButton15.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/About_24px.png"))); // NOI18N
+    jButton15.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/About_24px.png"))
+    );
     jButton15.setText("About");
     jButton15.setToolTipText("Help information on the product");
     jButton15.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -741,22 +728,9 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         }
     });
 
-    jButton14.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-    jButton14.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/User_24x24.png"))); // NOI18N
-    jButton14.setText("Users");
-    jButton14.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-    jButton14.setFocusable(false);
-    jButton14.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    jButton14.setPreferredSize(new java.awt.Dimension(55, 40));
-    jButton14.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    jButton14.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jButton14ActionPerformed(evt);
-        }
-    });
-
     jButton27.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-    jButton27.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Download_24x24.png"))); // NOI18N
+    jButton27.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Download_24x24.png"))
+    );
     jButton27.setText("Back up");
     jButton27.setToolTipText("Help information on the product");
     jButton27.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -770,32 +744,14 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         }
     });
 
-    jButton19.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-    jButton19.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Training_24px.png"))); // NOI18N
-    jButton19.setText("KCSE");
-    jButton19.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-    jButton19.setFocusable(false);
-    jButton19.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    jButton19.setPreferredSize(new java.awt.Dimension(55, 40));
-    jButton19.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    jButton19.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jButton19ActionPerformed(evt);
-        }
-    });
-
     javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
     jPanel9.setLayout(jPanel9Layout);
     jPanel9Layout.setHorizontalGroup(
         jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(jPanel9Layout.createSequentialGroup()
-            .addContainerGap()
+        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
+            .addContainerGap(17, Short.MAX_VALUE)
             .addComponent(jButton27, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jButton14, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
-            .addComponent(jButton19, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(jButton15, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addContainerGap())
     );
@@ -803,19 +759,18 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
             .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                .addComponent(jButton14, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 53, Short.MAX_VALUE)
-                .addComponent(jButton15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton27, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton19, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 53, Short.MAX_VALUE))
+                .addComponent(jButton15, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE)
+                .addComponent(jButton27, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addContainerGap())
     );
 
-    getContentPane().add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 400, 420, 80));
+    getContentPane().add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 400, 220, 80));
 
     jMenu1.setText("Term Dates");
 
-    jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-    jMenuItem1.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Settings_16x16.png"))); // NOI18N
+    jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_MASK));
+    jMenuItem1.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Settings_16x16.png"))
+    );
     jMenuItem1.setText("Set Term Dates");
     jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -828,7 +783,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
 
     jMenu5.setText("Themes");
 
-    jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+    jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
     jMenuItem2.setText("Default (acme)");
     jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -837,7 +792,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jMenu5.add(jMenuItem2);
 
-    jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.ALT_DOWN_MASK));
+    jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.ALT_MASK));
     jMenuItem5.setText("Acryl (acme - Dark)");
     jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -846,7 +801,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jMenu5.add(jMenuItem5);
 
-    jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.ALT_DOWN_MASK));
+    jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.ALT_MASK));
     jMenuItem3.setText("Aero (acme)");
     jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -855,7 +810,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jMenu5.add(jMenuItem3);
 
-    jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M, java.awt.event.InputEvent.ALT_DOWN_MASK));
+    jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M, java.awt.event.InputEvent.ALT_MASK));
     jMenuItem4.setText("Mac (acme)");
     jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -878,50 +833,37 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
-        closeConnection();
-        this.dispose();
-        new UsersFrm().setVisible(true);
-    }//GEN-LAST:event_jButton14ActionPerformed
-
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        closeConnection();
         this.dispose();
         new MarksRecordFrm().setVisible(true);
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
-        closeConnection();
         this.dispose();
         new MarksAnalysisFrm().setVisible(true);
     }//GEN-LAST:event_jButton16ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        closeConnection();
         this.dispose();
         new TeachersFrm().setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        closeConnection();
         this.dispose();
         new SchoolFrm().setVisible(true);
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        closeConnection();
         this.dispose();
         new ClassesFrm().setVisible(true);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        closeConnection();
         this.dispose();
         new StudentRegistrationFrm().setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton17ActionPerformed
-        closeConnection();
         this.dispose();
         new SubjectsFrm().setVisible(true);
     }//GEN-LAST:event_jButton17ActionPerformed
@@ -933,13 +875,11 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
-        closeConnection();
         this.dispose();
         new ReportsFrm().setVisible(true);
     }//GEN-LAST:event_jButton13ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        closeConnection();
         this.dispose();
         new HousesFrm().setVisible(true);
     }//GEN-LAST:event_jButton7ActionPerformed
@@ -1003,20 +943,17 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     private void jButton20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton20ActionPerformed
         String OpeningDate = txtOP.getText();
         String ClosingDate = txtCD.getText();
-        try {
-            String sql = "UPDATE tblschool SET ClosingDate=?, OPeningDate=?";
-            pst = Conn.prepareStatement(sql);
-            pst.setString(1, ClosingDate);
-            pst.setString(2, OpeningDate);
-            pst.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Term dates saved", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } catch (HeadlessException | SQLException e) {
-            System.out.println(e);
+        if (school!=null) {
+            school.setClosingDate(ClosingDate);
+            school.setOpeningDate(OpeningDate);
+            boolean success = new SchoolDAO().update(school);
+            if (success) {
+                JOptionPane.showMessageDialog(null, "Term dates saved", "acme", JOptionPane.INFORMATION_MESSAGE);                
+            }
         }
     }//GEN-LAST:event_jButton20ActionPerformed
 
     private void jButton27ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton27ActionPerformed
-        closeConnection();
         this.dispose();
         new BackUpFrm().setVisible(true);
     }//GEN-LAST:event_jButton27ActionPerformed
@@ -1035,7 +972,6 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowClosing
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        closeConnection();
         this.dispose();
         new SubjectAllocationChoiceFrm().setVisible(true);
     }//GEN-LAST:event_jButton8ActionPerformed
@@ -1046,13 +982,6 @@ public class AdminPanelFrm extends javax.swing.JFrame {
 //        new FeePanelFrm().setVisible(true);
     }//GEN-LAST:event_jButton18ActionPerformed
     
-    private void jButton19ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton19ActionPerformed
-        JOptionPane.showMessageDialog(this,"KCSE Analysis module is yet to be released.\n \t We will update your system once the release is ready","Acme",1);
-        closeConnection();
-        this.dispose();
-        new KCSE_AnalysisFrm().setVisible(true);
-    }//GEN-LAST:event_jButton19ActionPerformed
-
     public static void main(String args[]) {
         try {
             com.jtattoo.plaf.acryl.AcrylLookAndFeel.setTheme("Default", "", "acme");
@@ -1075,12 +1004,10 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     private javax.swing.JMenu MenuDate;
     private javax.swing.JMenu MenuTime;
     private javax.swing.JButton jButton13;
-    private javax.swing.JButton jButton14;
     private javax.swing.JButton jButton15;
     private javax.swing.JButton jButton16;
     private javax.swing.JButton jButton17;
     private javax.swing.JButton jButton18;
-    private javax.swing.JButton jButton19;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton20;
     private javax.swing.JButton jButton27;
@@ -1117,6 +1044,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
     private javax.swing.JToolBar.Separator jSeparator4;
+    private javax.swing.JLabel jText5;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextArea2;
     private javax.swing.JToolBar jToolBar1;
@@ -1134,7 +1062,6 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     private javax.swing.JLabel txtTerm2;
     private javax.swing.JLabel txtTerm3;
     private javax.swing.JLabel txtTerm4;
-    private javax.swing.JLabel txtTerm5;
-    private javax.swing.JLabel txtnumberOfusers;
+    private javax.swing.JLabel txtnumberOfHouses;
     // End of variables declaration//GEN-END:variables
 }

@@ -39,7 +39,6 @@
 	<queryString>
 		<![CDATA[SELECT tblschool.*,ClassSubjectPerfomance.* FROM tblschool,ClassSubjectPerfomance WHERE(ClassSubjectPerfomance.Form=$P{ExamForm} AND ClassSubjectPerfomance.Year=$P{ExamYear} AND ClassSubjectPerfomance.Term=$P{ExamTerm}) ORDER BY (ClassSubjectPerfomance.SubjectMeanPoints +0) DESC]]>
 	</queryString>
-	<field name="School_Code" class="java.lang.Object"/>
 	<field name="School_id" class="java.lang.Object"/>
 	<field name="School_name" class="java.lang.Object"/>
 	<field name="School_Posta" class="java.lang.Object"/>
@@ -51,8 +50,6 @@
 	<field name="Principal_Signature" class="java.lang.Object"/>
 	<field name="ClosingDate" class="java.lang.Object"/>
 	<field name="OpeningDate" class="java.lang.Object"/>
-	<field name="Full_Purchase" class="java.lang.Object"/>
-	<field name="TrialDeadline" class="java.lang.Object"/>
 	<field name="Form" class="java.lang.Object"/>
 	<field name="Year" class="java.lang.Object"/>
 	<field name="Term" class="java.lang.Object"/>

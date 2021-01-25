@@ -26,9 +26,9 @@ public class LoginFrm extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "All fields are required", "Required", JOptionPane.INFORMATION_MESSAGE);
         } else {
             if (API.login(username, password)) {
+                JOptionPane.showMessageDialog(this, "Login successful");
                 this.dispose();
                 new RegisterExaminationsFrm().setVisible(true);
-                JOptionPane.showMessageDialog(this, "Login successful");
             } else {
                 JOptionPane.showMessageDialog(this, "Check credential and internet connect then try again", "Login failed", JOptionPane.INFORMATION_MESSAGE);
             }

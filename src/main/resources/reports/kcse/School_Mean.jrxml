@@ -144,7 +144,6 @@
 		) As o_MG
 FROM tblschool,tbl_kcse_marks WHERE project_title=$P{project_title} LIMIT 1;]]>
 	</queryString>
-	<field name="School_Code" class="java.lang.Object"/>
 	<field name="School_id" class="java.lang.Object"/>
 	<field name="School_name" class="java.lang.Object"/>
 	<field name="School_Posta" class="java.lang.Object"/>
@@ -156,8 +155,6 @@ FROM tblschool,tbl_kcse_marks WHERE project_title=$P{project_title} LIMIT 1;]]>
 	<field name="Principal_Signature" class="java.lang.Object"/>
 	<field name="ClosingDate" class="java.lang.Object"/>
 	<field name="OpeningDate" class="java.lang.Object"/>
-	<field name="Full_Purchase" class="java.lang.Object"/>
-	<field name="TrialDeadline" class="java.lang.Object"/>
 	<field name="b_total" class="java.lang.Object"/>
 	<field name="g_total" class="java.lang.Object"/>
 	<field name="o_total" class="java.lang.Object"/>

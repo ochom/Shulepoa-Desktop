@@ -22,8 +22,8 @@ public class ConnClass {
     public static Connection connectDB() {
         try {
             url = DEBUG? 
-                    "jdbc:sqlite::resource:database/ExamsDB.db": 
-                    "jdbc:sqlite::resource:database/ExamsDB.db";
+                    "jdbc:sqlite::resource:database/database.db": 
+                    "jdbc:sqlite::resource:database/database.db";
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection(url);
         } catch (ClassNotFoundException | SQLException e) {

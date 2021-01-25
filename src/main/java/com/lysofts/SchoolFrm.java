@@ -1,111 +1,96 @@
-
 package com.lysofts;
 
+import com.lysofts.dao.SchoolDAO;
+import com.lysofts.dao.TeacherDAO;
+import com.lysofts.entities.School;
+import com.lysofts.entities.Teacher;
 import com.lysofts.utils.ConnClass;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.sql.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.util.List;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-
 public class SchoolFrm extends javax.swing.JFrame {
-    Connection Conn = ConnClass.connectDB();
-    PreparedStatement pst = null;
-    ResultSet rs = null;
-    String sql=null,purchaseLevel,Logo = "",Sign = "",current_school_name;
+    String  Logo = "", Sign = "";
+    School school = null;
+    List<Teacher> teachers;
     
     public SchoolFrm() {
+        this.school = new SchoolDAO().get();
+        this.teachers = new TeacherDAO().get();
         initComponents();
-        
-        
+
         new ConnClass().setFrameIcon(this);
-        getSchoolDetails();
+        updateUI();
         getTeachers();
         getLogo();
-        getSignature(); 
+        getSignature();
     }
-    private void getTeachers(){
-        try{
-            sql="SELECT * FROM tblTeachers";
-            pst=Conn.prepareStatement(sql);
-            rs=pst.executeQuery();
-            while(rs.next()){
-                comboPrincipal.addItem(rs.getString("T_Name"));
+
+    private void getTeachers() {
+        teachers.forEach(teacher->{
+            comboPrincipal.addItem(teacher.getName());
+        });
+    }
+
+    private void updateUI() {
+        if (school != null) {
+            txtSchoolName.setText(school.getName());
+            txtPostalAddress.setText(school.getPostalAddress());
+            txtMotto.setText(school.getMotto());
+            if (school.getPrincipal()==null || school.getPrincipal().isEmpty()) {
+                comboPrincipal.setSelectedItem("Select");
+            } else {
+                comboPrincipal.setSelectedItem(school.getPrincipal());
             }
-        }
-        catch(SQLException e){
-            System.out.println(e);
-        }
-    }
-    private void getSchoolDetails(){
-        try{
-            sql= "select * from tblSchool";
-            pst = Conn.prepareStatement(sql);
-            rs = pst.executeQuery();
-            if(rs.next()){                
-                txtSchoolName.setText(rs.getString("School_name"));
-                txtPostalAddress.setText(rs.getString("School_posta"));
-                txtMotto.setText(rs.getString("School_motto"));
-                    if(rs.getString("Principal_name").isEmpty()){
-                        comboPrincipal.setSelectedItem("Select");
-                    }else{
-                        comboPrincipal.setSelectedItem(rs.getString("Principal_name"));
-                    }
-                Logo = rs.getString("School_logo");
-                Sign = rs.getString("Principal_signature");
-                current_school_name = rs.getString("School_name");
-                purchaseLevel = rs.getString("Full_purchase");
-            }          
-        }
-        catch(SQLException | HeadlessException ex){
-            JOptionPane.showMessageDialog(null, ex);
-        
+            Logo = school.getLogo();
+            Sign = school.getSignature();
         }
     }
-    private void getLogo(){
-        SwingWorker<Void,Void> worker = new SwingWorker<Void,Void>(){
+
+    private void getLogo() {
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
                 BufferedImage bi;
-                if(new File(Logo).exists()){
-                    try{
+                if (new File(Logo).exists()) {
+                    try {
                         bi = ImageIO.read(new File(Logo));
-                        Image dimg = bi.getScaledInstance(144,146, Image.SCALE_SMOOTH);
+                        Image dimg = bi.getScaledInstance(144, 146, Image.SCALE_SMOOTH);
                         ImageIcon img = new ImageIcon(dimg);
                         LogoImageLabel.setText("");
-                        LogoImageLabel.setIcon(img); 
-                    }
-                    catch(IOException e){
+                        LogoImageLabel.setIcon(img);
+                    } catch (IOException e) {
                         System.out.println(e);
-                    } 
+                    }
                 }
-            return null;
+                return null;
             }
         };
         worker.execute();
     }
-    private void getSignature(){
-        SwingWorker<Void,Void> worker = new SwingWorker<Void,Void>(){
+
+    private void getSignature() {
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
                 BufferedImage bi;
-                if(new File(Sign).exists()){
-                    try{
+                if (new File(Sign).exists()) {
+                    try {
                         bi = ImageIO.read(new File(Sign));
-                        Image dimg = bi.getScaledInstance(155,40, Image.SCALE_SMOOTH);
+                        Image dimg = bi.getScaledInstance(155, 40, Image.SCALE_SMOOTH);
                         ImageIcon img = new ImageIcon(dimg);
                         SignatureImageLabel.setText("");
                         SignatureImageLabel.setIcon(img);
-                    }
-                    catch(IOException e){
+                    } catch (IOException e) {
                         System.out.println(e);
-                    } 
+                    }
                 }
-            return null;
+                return null;
             }
         };
         worker.execute();
@@ -127,10 +112,9 @@ public class SchoolFrm extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         comboPrincipal = new javax.swing.JComboBox<>();
         LogoImageLabel = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("School Details");
         setResizable(false);
         setType(java.awt.Window.Type.UTILITY);
         addWindowFocusListener(new java.awt.event.WindowFocusListener() {
@@ -176,8 +160,9 @@ public class SchoolFrm extends javax.swing.JFrame {
         });
 
         btnSave.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnSave.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Check_16x16.png"))); // NOI18N
-        btnSave.setText("Update");
+        btnSave.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Check_16x16.png"))
+        );
+        btnSave.setText("Save");
         btnSave.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 204, 0), 1, true));
         btnSave.setContentAreaFilled(false);
         btnSave.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -207,82 +192,75 @@ public class SchoolFrm extends javax.swing.JFrame {
             }
         });
 
-        jPanel2.setBackground(new java.awt.Color(0, 204, 0));
-        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel1.setFont(new java.awt.Font("Old English Text MT", 3, 24)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Institution Details");
-        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(32, 0, 418, 40));
-
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 560, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(416, 416, 416)
+                .addComponent(SignatureImageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(31, Short.MAX_VALUE))
             .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(30, 30, 30)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(30, 30, 30)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(20, 20, 20)
-                                .addComponent(comboPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(6, 6, 6)
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtSchoolName, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtPostalAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtMotto, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(18, 18, 18)
-                        .addComponent(LogoImageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(252, 252, 252))
+                            .addComponent(txtSchoolName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(30, 30, 30)
+                        .addComponent(LogoImageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(47, 47, 47)
-                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(SignatureImageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtMotto, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(comboPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtPostalAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
+
+        jPanel3Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {comboPrincipal, txtMotto, txtPostalAddress, txtSchoolName});
+
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(32, 32, 32)
+                        .addGap(79, 79, 79)
                         .addComponent(LogoImageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(9, 9, 9)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(SignatureImageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
-                            .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(18, 18, 18)
+                        .addComponent(SignatureImageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(15, 15, 15)
-                                .addComponent(jLabel3)
-                                .addGap(15, 15, 15)
-                                .addComponent(jLabel4))
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(txtSchoolName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(9, 9, 9)
-                                .addComponent(txtPostalAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(9, 9, 9)
-                                .addComponent(txtMotto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(46, 46, 46)
+                        .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7)
-                            .addComponent(comboPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(16, Short.MAX_VALUE))
+                        .addComponent(txtSchoolName, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtPostalAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtMotto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel7)
+                        .addGap(18, 18, 18)
+                        .addComponent(comboPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(20, 20, 20)
+                .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 46, Short.MAX_VALUE))
         );
+
+        jPanel3Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {comboPrincipal, txtMotto, txtPostalAddress, txtSchoolName});
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -292,7 +270,7 @@ public class SchoolFrm extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -300,21 +278,30 @@ public class SchoolFrm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
-        try{
-            sql = "Update tblSchool SET School_name=?,School_posta=?,School_motto=?,school_logo=?,Principal_name=?,Principal_signature=?";
-                pst = Conn.prepareStatement(sql);
-                pst.setString(1, txtSchoolName.getText());
-                pst.setString(2, txtPostalAddress.getText());
-                pst.setString(3, txtMotto.getText());
-                pst.setString(4, Logo);
-                pst.setString(5, comboPrincipal.getSelectedItem().toString());
-                pst.setString(6, Sign);
-                pst.setString(7, "0");
-                pst.executeUpdate();
-                JOptionPane.showMessageDialog(null, "School details updated succesfully");  
-            }
-        catch(SQLException | HeadlessException e){
-            JOptionPane.showMessageDialog(null, e.getMessage(),"System error",0);
+        SchoolDAO dao = new SchoolDAO();
+        boolean success;
+        if (school == null) {
+            school = new School();
+            school.setName(txtSchoolName.getText());
+            school.setPostalAddress(txtPostalAddress.getText());
+            school.setMotto(txtMotto.getText());
+            school.setLogo(Logo);
+            school.setPrincipal(comboPrincipal.getSelectedItem().toString());
+            school.setSignature(Sign);
+            success = dao.add(school);
+        }else{
+            school.setName(txtSchoolName.getText());
+            school.setPostalAddress(txtPostalAddress.getText());
+            school.setMotto(txtMotto.getText());
+            school.setLogo(Logo);
+            school.setPrincipal(comboPrincipal.getSelectedItem().toString());
+            school.setSignature(Sign);
+            success = dao.update(school);
+        }
+        if (success) {
+            JOptionPane.showMessageDialog(null, "School details set succesfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "School details not updated.", "Error", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_btnSaveActionPerformed
 
@@ -323,70 +310,63 @@ public class SchoolFrm extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowLostFocus
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        try{
-            Conn.close();
-       }catch(SQLException e){
-           System.out.println(e);
-       }
         this.dispose();
         new AdminPanelFrm().setVisible(true);
     }//GEN-LAST:event_formWindowClosing
 
     private void SignatureImageLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SignatureImageLabelMouseClicked
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files","jpg","png","jpeg"); 
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "png", "jpeg");
         JFileChooser fc = new JFileChooser();
         fc.setFileFilter(filter);
-        int option=fc.showOpenDialog(null);  
-        if(option==JFileChooser.APPROVE_OPTION){
+        int option = fc.showOpenDialog(null);
+        if (option == JFileChooser.APPROVE_OPTION) {
             File f = fc.getSelectedFile();
             String filepath = f.getAbsolutePath();
 
-            filepath=filepath.replace("\\", "/");
+            filepath = filepath.replace("\\", "/");
             Sign = filepath;
-            if(!(filepath.equalsIgnoreCase(null))){
+            if (!(filepath.equalsIgnoreCase(null))) {
                 //Load Image to label
                 BufferedImage bi;
-                try{
-                    bi=ImageIO.read(new File(filepath));
-                    Image dimg = bi.getScaledInstance(SignatureImageLabel.getWidth(),SignatureImageLabel.getHeight(), Image.SCALE_SMOOTH);
+                try {
+                    bi = ImageIO.read(new File(filepath));
+                    Image dimg = bi.getScaledInstance(SignatureImageLabel.getWidth(), SignatureImageLabel.getHeight(), Image.SCALE_SMOOTH);
                     ImageIcon img = new ImageIcon(dimg);
                     SignatureImageLabel.setText("");
-                    SignatureImageLabel.setIcon(img); 
-                }
-                catch(IOException e){
+                    SignatureImageLabel.setIcon(img);
+                } catch (IOException e) {
                     System.out.println(e);
                 }
             }
-            
-        }        
+
+        }
     }//GEN-LAST:event_SignatureImageLabelMouseClicked
 
     private void LogoImageLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LogoImageLabelMouseClicked
-       FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files","jpg","png","jpeg"); 
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "png", "jpeg");
         JFileChooser fc = new JFileChooser();
         fc.setFileFilter(filter);
-        int option=fc.showOpenDialog(null);  
-        if(option==JFileChooser.APPROVE_OPTION){
+        int option = fc.showOpenDialog(null);
+        if (option == JFileChooser.APPROVE_OPTION) {
             File f = fc.getSelectedFile();
             String filepath = f.getAbsolutePath();
 
-            filepath=filepath.replace("\\", "/");
+            filepath = filepath.replace("\\", "/");
             Logo = filepath;
-            if(!(filepath.equalsIgnoreCase(null))){
+            if (!(filepath.equalsIgnoreCase(null))) {
                 //Load Image to label
                 BufferedImage bi;
-                try{
-                    bi=ImageIO.read(new File(filepath));
-                    Image dimg = bi.getScaledInstance(LogoImageLabel.getWidth(),LogoImageLabel.getHeight(), Image.SCALE_SMOOTH);
+                try {
+                    bi = ImageIO.read(new File(filepath));
+                    Image dimg = bi.getScaledInstance(LogoImageLabel.getWidth(), LogoImageLabel.getHeight(), Image.SCALE_SMOOTH);
                     ImageIcon img = new ImageIcon(dimg);
                     LogoImageLabel.setText("");
-                    LogoImageLabel.setIcon(img); 
-                }
-                catch(IOException e){
+                    LogoImageLabel.setIcon(img);
+                } catch (IOException e) {
                     System.out.println(e);
                 }
-            }            
-        }     
+            }
+        }
     }//GEN-LAST:event_LogoImageLabelMouseClicked
 
     public static void main(String args[]) {
@@ -425,12 +405,10 @@ public class SchoolFrm extends javax.swing.JFrame {
     private javax.swing.JLabel SignatureImageLabel;
     private javax.swing.JButton btnSave;
     private javax.swing.JComboBox<String> comboPrincipal;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JTextField txtMotto;
     private javax.swing.JTextField txtPostalAddress;

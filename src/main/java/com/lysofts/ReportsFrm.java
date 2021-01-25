@@ -25,7 +25,6 @@ public class ReportsFrm extends javax.swing.JFrame {
     PreparedStatement pst = null;
     ResultSet rs = null;
     
-    String Activation = "";
     String sql = null,report_bg=null, reportTitle="";
     String Form,Year,Term, Exam, ExamFormLevel, NumberOfChamps, Report_Request="";
     String reportName;
@@ -35,7 +34,6 @@ public class ReportsFrm extends javax.swing.JFrame {
         new ConnClass().setFrameIcon(ReportsFrm.this);
         
         GetAcedmicYears();
-        getSchoolActivation();
         getFormNames();
         
     }
@@ -68,20 +66,6 @@ public class ReportsFrm extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
         }
     }
-    private void getSchoolActivation(){
-        try{
-            sql = "SELECT * FROM tblschool";
-            pst = conn.prepareStatement(sql);
-            rs = pst.executeQuery();
-                if(rs.next()){
-                   Activation = rs.getString("Full_purchase");               
-                }
-            }
-            catch(SQLException e){
-                JOptionPane.showMessageDialog(null,"System Err : "+e,"Error",0);
-        } 	
-    }
- 
     
     private void showReport(HashMap params){
         try {
@@ -120,11 +104,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         reportName = "MarkSheet";
         HashMap param=new HashMap();
          param.put("ExamForm", Form);
-         if(!(Activation.equalsIgnoreCase("3"))){
-             param.put("bgImage", report_bg);
-         }else{
              param.put("bgImage", null);
-         }
          reportTitle = "Form "+Form+" Marksheet";
          showReport(param);           
     }
@@ -141,11 +121,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
-        if(!(Activation.equalsIgnoreCase("3"))){
-            param.put("bgImage", report_bg);
-        }else{
-            param.put("bgImage", null);
-        }
+        param.put("bgImage", null);
 
         reportTitle = "Form "+Form+" Marks Confirmation Sheet";
         showReport(param);       
@@ -163,11 +139,7 @@ public class ReportsFrm extends javax.swing.JFrame {
          param.put("ExamForm", Form);
          param.put("ExamYear", Year);
          param.put("ExamTerm", Term);
-         if(!(Activation.equalsIgnoreCase("3"))){
-             param.put("bgImage", report_bg);
-         }else{
-             param.put("bgImage", null);
-         }
+        param.put("bgImage", null);
             
         reportTitle = "Form "+Form+" Result Slips";
         showReport(param);    
@@ -191,11 +163,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
-        if(!(Activation.equalsIgnoreCase("3"))){
-            param.put("bgImage", report_bg);
-        }else{
-            param.put("bgImage", null);
-        }
+        param.put("bgImage", null);
             
         reportTitle = "Form "+Form+" "+Exam+" Ranking List";
         showReport(param);  
@@ -221,11 +189,7 @@ public class ReportsFrm extends javax.swing.JFrame {
          param.put("ExamYear", Year);
          param.put("ExamTerm", Term);
          param.put("ExamFormLevel",ExamFormLevel);
-         if(!(Activation.equalsIgnoreCase("3"))){
-             param.put("bgImage", report_bg);
-         }else{
-             param.put("bgImage", null);
-         }
+        param.put("bgImage", null);
             
         reportTitle = "Form "+Form+" "+Exam+" Ranking List";
         showReport(param);  
@@ -238,11 +202,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
-        if(!(Activation.equalsIgnoreCase("3"))){
-            param.put("bgImage", report_bg);
-        }else{
-            param.put("bgImage", null);
-        }
+        param.put("bgImage", null);
 
         reportTitle = "Form "+Form+" "+" End Term Ranking List";
         showReport(param);  
@@ -256,29 +216,20 @@ public class ReportsFrm extends javax.swing.JFrame {
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
         param.put("ExamFormLevel", ExamFormLevel);
-        if(!(Activation.equalsIgnoreCase("3"))){
-            param.put("bgImage", report_bg);
-        }else{
-            param.put("bgImage", null);
-        }
+        param.put("bgImage", null);
 
         reportTitle = "Form "+ExamFormLevel+" "+" End Term Ranking List";
         showReport(param);  
     }
     
-    private void printReportForms(String Form,String Year,String Term,String Activation){
+    private void printReportForms(String Form,String Year,String Term){
         reportName = "ReportForm"; 
           
         HashMap param=new HashMap();
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
-        if(!(Activation.equalsIgnoreCase("3"))){
-            param.put("bgImage", report_bg);
-        }else{
-            param.put("bgImage", null);
-        }
-
+        param.put("bgImage", null);
         reportTitle = "Form "+Form+" report Form";
         showReport(param);  
     }
@@ -642,12 +593,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
         param.put("ExamName",Exam);
-        if(!(Activation.equalsIgnoreCase("3"))){
-            param.put("bgImage", report_bg);
-        }else{
-            param.put("bgImage", null);
-        }
-        
+        param.put("bgImage", null);
         reportTitle = "Form "+Form+" Marksheet";
         showReport(param);  
     }
@@ -736,12 +682,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
         param.put("ExamName",Exam);
-        if(!(Activation.equalsIgnoreCase("3"))){
-            param.put("bgImage", report_bg);
-        }else{
-            param.put("bgImage", null);
-        }
-        
+        param.put("bgImage", null);
         reportTitle = "Form "+ExamFormLevel+" Marksheet";
         showReport(param);  
     }
@@ -1007,11 +948,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         param.put("ExamTerm", Term);
         param.put("ExamName",Exam);
         param.put("NoChamps",NumberOfChamps);
-        if(!(Activation.equalsIgnoreCase("3"))){
-            param.put("bgImage", report_bg);
-        }else{
-            param.put("bgImage", null);
-        }
+        param.put("bgImage", null);
         
         reportTitle = "Form "+Form+" Subject CHampions";
         showReport(param);  
@@ -1823,7 +1760,7 @@ public class ReportsFrm extends javax.swing.JFrame {
                         printTermOverallRankingList(Form,Year,Term,ExamFormLevel);
                         break;
                     case "rf":
-                        printReportForms(Form,Year,Term,Activation);
+                        printReportForms(Form,Year,Term);
                         break;
                     case "exsubper":
                         AnalyseSubjectPerformance(Form,Year,Term,Exam);

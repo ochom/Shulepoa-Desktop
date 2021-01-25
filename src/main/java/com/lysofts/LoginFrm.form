@@ -120,11 +120,9 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="47" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="btnLogin" linkSize="2" alignment="0" pref="253" max="32767" attributes="0"/>
-                              <Component id="jButton2" linkSize="2" max="32767" attributes="0"/>
-                              <Component id="jLabel4" linkSize="2" alignment="0" max="32767" attributes="0"/>
-                          </Group>
+                          <Component id="btnLogin" linkSize="2" alignment="0" pref="253" max="32767" attributes="0"/>
+                          <Component id="jButton2" linkSize="2" max="32767" attributes="0"/>
+                          <Component id="jLabel4" linkSize="2" alignment="0" max="32767" attributes="0"/>
                           <Component id="jLabel2" linkSize="2" max="32767" attributes="0"/>
                           <Component id="txtPassword" linkSize="2" alignment="0" max="32767" attributes="0"/>
                           <Component id="txtUsername" linkSize="2" pref="261" max="32767" attributes="0"/>

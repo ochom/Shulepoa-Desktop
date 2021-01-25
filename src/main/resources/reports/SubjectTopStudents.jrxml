@@ -41,7 +41,6 @@
 	<queryString>
 		<![CDATA[SELECT tblSchool.*,SubjectChampions.* FROM SubjectChampions INNER JOIN tblSchool]]>
 	</queryString>
-	<field name="School_Code" class="java.lang.Object"/>
 	<field name="School_id" class="java.lang.Object"/>
 	<field name="School_name" class="java.lang.Object"/>
 	<field name="School_Posta" class="java.lang.Object"/>
@@ -53,8 +52,6 @@
 	<field name="Principal_Signature" class="java.lang.Object"/>
 	<field name="ClosingDate" class="java.lang.Object"/>
 	<field name="OpeningDate" class="java.lang.Object"/>
-	<field name="Full_Purchase" class="java.lang.Object"/>
-	<field name="TrialDeadline" class="java.lang.Object"/>
 	<field name="SubjectName" class="java.lang.Object"/>
 	<field name="StudentID" class="java.lang.Object"/>
 	<field name="StudentName" class="java.lang.Object"/>

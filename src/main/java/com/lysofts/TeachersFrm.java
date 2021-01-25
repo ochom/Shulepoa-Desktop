@@ -1,29 +1,30 @@
-
 package com.lysofts;
 
+import com.lysofts.dao.TeacherDAO;
+import com.lysofts.entities.Teacher;
 import com.lysofts.utils.ConnClass;
-import java.awt.*;
-import java.sql.*;
 import java.util.ArrayList;
 import javax.swing.*;
+import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
 public class TeachersFrm extends javax.swing.JFrame {
 
-    Connection Conn = ConnClass.connectDB();
-    PreparedStatement pst=null;
-    ResultSet rs =null;
-    String sql = null;
-    
-    private ArrayList<String> sal;
+    private List<String> sal;
+    private List<Teacher> teachers;
+    private TeacherDAO teacherDAO;
+    private Teacher selectedTeacher = null;
+
     public TeachersFrm() {
+        teacherDAO = new TeacherDAO();
         initComponents();
-        
+
         new ConnClass().setFrameIcon(this);
         initializeSalutations();
-        Refresh_Table();
+        updateUI();
     }
-    private void initializeSalutations(){
+
+    private void initializeSalutations() {
         sal = new ArrayList<>();
         sal.add("sir");
         sal.add("hon");
@@ -36,111 +37,101 @@ public class TeachersFrm extends javax.swing.JFrame {
         sal.add("mrs.");
         sal.add("ms.");
     }
-    private void Create_Initials(){
-        try{
+
+    private void Create_Initials() {
+        try {
             String fullname = txtName.getText();
             String[] parts = fullname.split(" ");
             int tparts = parts.length;
             String abbre = "";
             int i = 0;
-            if(tparts>1){
-                if(sal.contains(parts[0].toLowerCase())){
+            if (tparts > 1) {
+                if (sal.contains(parts[0].toLowerCase())) {
                     i = 1;
                 }
             }
-            if(tparts>1){
-                while(i<parts.length){
-                    abbre += parts[i].substring(0,1).toUpperCase()+".";
+            if (tparts > 1) {
+                while (i < parts.length) {
+                    abbre += parts[i].substring(0, 1).toUpperCase() + ".";
                     i++;
                 }
             }
-            
-            txtInitials.setText(abbre);        
-        }catch(Exception e){
+
+            txtInitials.setText(abbre);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    private void AddTeacher(){
-        String Tname = txtName.getText();
-        String Tno = txtNO.getText();
-        String Tinit = txtInitials.getText();
-        String Tgender  =comboGender.getSelectedItem().toString();
-        String Tphone  = txtPhone.getText();
-        if(Tno.isEmpty()){
-            JOptionPane.showMessageDialog(null, "Enter the Teacher's Staff Number","acme",1);
-        }else if(Tname.isEmpty()){
-            JOptionPane.showMessageDialog(null, "Enter the Teacher's Name","acme",1);
-        }else if(Tinit.isEmpty()){
-            JOptionPane.showMessageDialog(null, "Enter the Teacher's INITIALS","acme",1);
-        }else if(Tgender.equalsIgnoreCase("Select")){
-            JOptionPane.showMessageDialog(null, "Select the Teachers Gender","acme",1);
-        }else{
-       try{
-           sql = "SELECT Count(*) FROM tblTeachers WHERE T_code='"+Tno+"'";
-           pst=Conn.prepareStatement(sql);
-           rs = pst.executeQuery();
-           if(rs.next()){
-           int Count = Integer.parseInt(rs.getString("Count(*)"));
-           if(Count>0){
-               int res = JOptionPane.showConfirmDialog(null, "This Teacher's details are already saved. Do you want to update them?","acme",JOptionPane.YES_NO_OPTION);
-               if(res==JOptionPane.YES_OPTION){
-                    sql = "UPDATE tblteachers SET T_name=?,T_initials=?,T_phone=?,T_gender=?,T_Password=? WHERE T_code ='"+txtNO.getText()+"' ";
-                    pst=Conn.prepareStatement(sql);
-                    pst.setString(1, txtName.getText());
-                    pst.setString(2, txtInitials.getText());
-                    pst.setString(3, txtPhone.getText());
-                    pst.setString(4, comboGender.getSelectedItem().toString());
-                    pst.setString(5, txtPhone.getText());
-                    pst.executeUpdate();
-                    JOptionPane.showMessageDialog(null, "Details updated succesfully","Succes", 1);
-               }
-           }else{
-                sql = "INSERT INTO tblteachers(T_code,T_name,T_initials,T_phone,T_gender,T_Password)VALUES(?,?,?,?,?,?)";               
-                 pst=Conn.prepareStatement(sql);
-                 pst.setString(1,Tno);
-                 pst.setString(2, Tname);
-                 pst.setString(3, Tinit);
-                 pst.setString(4, Tphone);
-                 pst.setString(5, Tgender);
-                 pst.setString(6, Tphone);
-                 pst.executeUpdate();
-                 JOptionPane.showMessageDialog(null, "Teacher details succesfully saved","Succes", 1);
-             }
-             }
-           }catch(HeadlessException | SQLException e){
-                 JOptionPane.showMessageDialog(null,"Error"+ e.getMessage(),"System Error",0);
-             }
-            
-        }
-        Refresh_Table();
-    }
-    private void Refresh_Table(){
-        DefaultTableModel model = (DefaultTableModel)Table_Teachers.getModel();
-        model.setRowCount(0);
-        try{
-            String sql = "SELECT T_code AS SNo,T_name AS Name,T_initials AS Initials FROM tblteachers ORDER BY SNo ASC";
-            pst = Conn.prepareStatement(sql);
-            rs = pst.executeQuery();
-            while(rs.next()){
-                String SNo = rs.getString("SNo");
-                String Name = rs.getString("Name");
-                String Initials = rs.getString("Initials");
-                
-                model.addRow(new Object[]{SNo,Name,Initials});
+
+    private void AddTeacher() {
+        String name = txtName.getText();
+        String staffNumber = txtNO.getText();
+        String initials = txtInitials.getText();
+        String gender = comboGender.getSelectedItem().toString();
+        String phone = txtPhone.getText();
+        if (name.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Enter the Teacher's Name", "acme", 1);
+        } else if (staffNumber.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Enter the Teacher's Staff Number", "acme", 1);
+        } else if (gender.equalsIgnoreCase("Select")) {
+            JOptionPane.showMessageDialog(null, "Select the Teachers Gender", "acme", 1);
+        } else if (initials.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Enter the Teacher's INITIALS", "acme", 1);
+        } else {
+            if (selectedTeacher == null) {
+                Teacher teacher = new Teacher();
+                teacher.setName(name);
+                teacher.setStaffNumber(staffNumber);
+                teacher.setGender(gender);
+                teacher.setPhone(phone);
+                teacher.setInitials(initials);
+                boolean success = teacherDAO.add(teacher);
+                if (success) {
+                    JOptionPane.showMessageDialog(null, "Teacher details succesfully saved", "Succes", 1);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Error occcured while saving the data", "Error", 0);
+                }
+
+            } else {
+                Teacher teacher = selectedTeacher;
+                teacher.setName(name);
+                teacher.setStaffNumber(staffNumber);
+                teacher.setGender(gender);
+                teacher.setPhone(phone);
+                teacher.setInitials(initials);
+                boolean success = teacherDAO.update(teacher);
+                if (success) {
+                    JOptionPane.showMessageDialog(null, "Teacher details succesfully updated", "Succes", 1);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Error occcured while updating the data", "Error", 0);
+                }
             }
-        }
-        catch(SQLException e){
-            JOptionPane.showMessageDialog(null, e);
+            updateUI();
         }
     }
-    
+
+    private void updateUI() {
+        this.teachers = teacherDAO.get();
+        DefaultTableModel model = (DefaultTableModel) Table_Teachers.getModel();
+        model.setRowCount(0);
+        teachers.forEach(teacher -> {
+            model.addRow(new Object[]{teacher.getId(), teacher.getName(), teacher.getStaffNumber()});
+        });
+        Table_Teachers.setModel(model);
+
+        selectedTeacher = null;
+        txtName.setText("");
+        txtNO.setText("");
+        txtInitials.setText("");
+        txtPhone.setText("");
+        comboGender.setSelectedIndex(0);
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
         txtName = new javax.swing.JTextField();
         txtInitials = new javax.swing.JTextField();
         txtPhone = new javax.swing.JTextField();
@@ -158,6 +149,7 @@ public class TeachersFrm extends javax.swing.JFrame {
         comboGender = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Teachers");
         setResizable(false);
         setSize(new java.awt.Dimension(490, 320));
         setType(java.awt.Window.Type.UTILITY);
@@ -168,26 +160,6 @@ public class TeachersFrm extends javax.swing.JFrame {
         });
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-
-        jPanel2.setBackground(new java.awt.Color(0, 204, 0));
-
-        jLabel4.setFont(new java.awt.Font("Old English Text MT", 1, 24)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("Register Teachers");
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 453, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(136, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
-        );
 
         txtName.setFont(new java.awt.Font("Cambria", 1, 13)); // NOI18N
         txtName.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -213,7 +185,7 @@ public class TeachersFrm extends javax.swing.JFrame {
 
             },
             new String [] {
-                "SNo", "Name", "Initials"
+                "PK", "Name", "Code"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -225,6 +197,7 @@ public class TeachersFrm extends javax.swing.JFrame {
             }
         });
         Table_Teachers.setGridColor(new java.awt.Color(0, 153, 0));
+        Table_Teachers.setRowHeight(20);
         Table_Teachers.getTableHeader().setReorderingAllowed(false);
         Table_Teachers.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -233,9 +206,9 @@ public class TeachersFrm extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(Table_Teachers);
         if (Table_Teachers.getColumnModel().getColumnCount() > 0) {
-            Table_Teachers.getColumnModel().getColumn(0).setPreferredWidth(30);
+            Table_Teachers.getColumnModel().getColumn(0).setPreferredWidth(20);
             Table_Teachers.getColumnModel().getColumn(1).setPreferredWidth(120);
-            Table_Teachers.getColumnModel().getColumn(2).setPreferredWidth(20);
+            Table_Teachers.getColumnModel().getColumn(2).setPreferredWidth(30);
         }
 
         lblPhone.setFont(new java.awt.Font("Cambria", 1, 12)); // NOI18N
@@ -296,86 +269,78 @@ public class TeachersFrm extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(15, 15, 15)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(41, 41, 41)
+                        .addGap(18, 18, 18)
                         .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(30, 30, 30)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtInitials, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(comboGender, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(txtPhone)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(lblInitials, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(lblPhone, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(lblNO, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(0, 0, Short.MAX_VALUE)))
-                                .addGap(37, 37, 37))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(txtNO)
-                                .addGap(18, 18, 18))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lblName, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lblInitials1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(164, 164, 164))
+                            .addComponent(lblInitials, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblPhone, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblNO, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(txtPhone, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(txtInitials, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(comboGender, 0, 244, Short.MAX_VALUE)
+                                .addComponent(lblName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(lblInitials1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtNO, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(txtName, javax.swing.GroupLayout.Alignment.LEADING)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 301, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
+
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {comboGender, txtInitials, txtNO, txtName, txtPhone});
+
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
+                        .addComponent(lblName)
+                        .addGap(5, 5, 5)
+                        .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(lblNO)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtNO, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblName)
-                        .addGap(5, 5, 5)
-                        .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(18, 18, 18)
                         .addComponent(lblInitials1)
-                        .addGap(16, 16, 16)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(comboGender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(18, 18, 18)
+                        .addComponent(lblPhone)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtPhone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(lblInitials)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtInitials, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lblPhone)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtPhone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE, false)
+                    .addComponent(btnNew, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnNew, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                    .addComponent(btnDelete))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {comboGender, txtInitials, txtNO, txtName, txtPhone});
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 609, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -385,27 +350,17 @@ public class TeachersFrm extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-    
+
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        String Tcode = (String)Table_Teachers.getValueAt(Table_Teachers.getSelectedRow(), 0);
-        String Tname = (String)Table_Teachers.getValueAt(Table_Teachers.getSelectedRow(), 1);
-        try{ 
-            int Response = JOptionPane.showConfirmDialog(null, Tname+"'s details will be deleted permanently. Do you want to Continue ?", "Delete", JOptionPane.YES_NO_OPTION);
-            if(Response == 0){
-             sql = "DELETE FROM tblteachers where T_code ='"+Tcode+"' "; 
-             pst = Conn.prepareStatement(sql);
-             pst.executeUpdate();
-             
-             sql = "DELETE FROM tblteachersToSubjects WHERE Teacher_id ='"+Tcode+"' ";
-             pst = Conn.prepareStatement(sql);             
-             pst.executeUpdate();
-             
-             JOptionPane.showMessageDialog(null, "Teacher details deleted from the System", "Deleted", 1);             
-             txtName.setText("");txtNO.setText("");txtPhone.setText("");txtInitials.setText("");
+        if (selectedTeacher == null) {
+            JOptionPane.showMessageDialog(null, "No Teacher selected");
+        } else {
+            int Response = JOptionPane.showConfirmDialog(null, selectedTeacher.getName() + "'s details will be deleted permanently. Do you want to Continue ?", "Delete", JOptionPane.YES_NO_OPTION);
+            if (Response == 0) {
+                teacherDAO.delete(selectedTeacher.getId());
+                JOptionPane.showMessageDialog(null, "Teacher details deleted from the System", "Deleted", 1);
+                updateUI();
             }
-        }
-        catch(HeadlessException | SQLException e){
-            System.out.println(e);;
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
@@ -414,29 +369,25 @@ public class TeachersFrm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewActionPerformed
-        txtName.setText("");txtNO.setText("");txtPhone.setText("");txtInitials.setText("");
+        selectedTeacher = null;
+        txtName.setText("");
+        txtNO.setText("");
+        txtPhone.setText("");
+        txtInitials.setText("");
         comboGender.setSelectedItem("Select");
     }//GEN-LAST:event_btnNewActionPerformed
 
     private void Table_TeachersMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Table_TeachersMouseClicked
-        int row =Table_Teachers.getSelectedRow();
-        String Tno  =Table_Teachers.getModel().getValueAt(row, 0).toString();
-        try{          
-            sql  ="SELECT * FROM tblteachers WHERE T_code ='"+Tno+"' ";
-            pst=Conn.prepareStatement(sql);
-            rs = pst.executeQuery();
-            if(rs.next()){
-                txtName.setText(rs.getString("T_name"));
-                txtNO.setText(rs.getString("T_code"));
-                comboGender.setSelectedItem(rs.getString("T_gender"));
-                txtInitials.setText(rs.getString("T_initials"));
-                txtPhone.setText(rs.getString("T_phone"));
-            }
+        int row = Table_Teachers.getSelectedRow();
+        int id = Integer.parseInt(Table_Teachers.getModel().getValueAt(row, 0).toString());
+        selectedTeacher = teacherDAO.get(id);
+        if (selectedTeacher != null) {
+            txtName.setText(selectedTeacher.getName());
+            txtNO.setText(selectedTeacher.getStaffNumber());
+            comboGender.setSelectedItem(selectedTeacher.getGender());
+            txtInitials.setText(selectedTeacher.getInitials());
+            txtPhone.setText(selectedTeacher.getPhone());
         }
-        catch(SQLException e){
-            System.out.println(e);
-        }
-        
     }//GEN-LAST:event_Table_TeachersMouseClicked
 
     private void txtNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNameKeyPressed
@@ -448,17 +399,12 @@ public class TeachersFrm extends javax.swing.JFrame {
     }//GEN-LAST:event_txtNameKeyReleased
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        try{
-            Conn.close();
-       }catch(SQLException e){
-           System.out.println(e);
-       }
         this.dispose();
         new AdminPanelFrm().setVisible(true);
     }//GEN-LAST:event_formWindowClosing
 
     private void txtNameFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNameFocusLost
-        
+
     }//GEN-LAST:event_txtNameFocusLost
 
     /**
@@ -502,9 +448,7 @@ public class TeachersFrm extends javax.swing.JFrame {
     private javax.swing.JButton btnNew;
     private javax.swing.JButton btnSave;
     private javax.swing.JComboBox<String> comboGender;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblInitials;
     private javax.swing.JLabel lblInitials1;
@@ -516,4 +460,5 @@ public class TeachersFrm extends javax.swing.JFrame {
     private javax.swing.JTextField txtName;
     private javax.swing.JTextField txtPhone;
     // End of variables declaration//GEN-END:variables
+
 }

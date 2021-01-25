@@ -7,10 +7,6 @@ package com.lysofts.dao;
 
 import com.lysofts.entities.MyEntityManager;
 import com.lysofts.entities.User;
-import com.lysofts.utils.ConnClass;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +25,7 @@ public class UserDAO {
 
     String SQL;
 
-    Connection conn;
-    PreparedStatement pst;
-    ResultSet rs;
-
     public UserDAO() {
-        conn = ConnClass.connectDB();
     }
 
     public User getUser(int id) {   
