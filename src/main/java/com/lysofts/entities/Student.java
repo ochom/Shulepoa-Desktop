@@ -6,51 +6,62 @@
 package com.lysofts.entities;
 
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  *
  * @author mspace-dev
  */
 @Entity
+@Table(name="student_details")
 public class Student implements Serializable {   
     
-    @Id
+    @Id            
+    @GeneratedValue(strategy = GenerationType.AUTO)
     int id;
-    String regNo;
+    
+    @Column(name = "Student_ID")
+    String regNumber;
+    
+    @Column(name = "Student_name")
     String name;
+    
+    @Column(name = "Student_Class")
     String classroom;
+    
+    @Column(name = "kcpe_marks")
     String kcpeMarks;
+    
+    @Column(name = "kcpe_grade")
     String kcpeGrade;
+    
+    @Column(name = "Picture")
     String passport;
+    
+    @Column(name = "DOA")
     String doa;
+    
+    @Column(name = "DOB")
     String dob;
-    String Sex;
-    String House;
+    
+    @Column(name = "Gender")
+    String sex;
+    
+    @Column(name = "House")
+    String house;
+    
+    @Column(name = "Father")
     String kinName;
+    
+    @Column(name = "Phone1")
     String kinPhone;
-    String kinRelationship;
-    String perfomanceHistory;
 
     public Student() {
-    }
-
-    public Student(String regNo, String name, String classroom, String kcpeMarks, String kcpeGrade, String passport, String doa, String dob, String Sex, String House, String kinName, String kinPhone, String kinRelationship, String perfomanceHistory) {
-        this.regNo = regNo;
-        this.name = name;
-        this.classroom = classroom;
-        this.kcpeMarks = kcpeMarks;
-        this.kcpeGrade = kcpeGrade;
-        this.passport = passport;
-        this.doa = doa;
-        this.dob = dob;
-        this.Sex = Sex;
-        this.House = House;
-        this.kinName = kinName;
-        this.kinPhone = kinPhone;
-        this.kinRelationship = kinRelationship;
-        this.perfomanceHistory = perfomanceHistory;
     }
 
     public int getId() {
@@ -61,12 +72,12 @@ public class Student implements Serializable {
         this.id = id;
     }
 
-    public String getRegNo() {
-        return regNo;
+    public String getRegNumber() {
+        return regNumber;
     }
 
-    public void setRegNo(String regNo) {
-        this.regNo = regNo;
+    public void setRegNumber(String regNumber) {
+        this.regNumber = regNumber;
     }
 
     public String getName() {
@@ -126,19 +137,19 @@ public class Student implements Serializable {
     }
 
     public String getSex() {
-        return Sex;
+        return sex;
     }
 
-    public void setSex(String Sex) {
-        this.Sex = Sex;
+    public void setSex(String sex) {
+        this.sex = sex;
     }
 
     public String getHouse() {
-        return House;
+        return house;
     }
 
-    public void setHouse(String House) {
-        this.House = House;
+    public void setHouse(String house) {
+        this.house = house;
     }
 
     public String getKinName() {
@@ -156,20 +167,5 @@ public class Student implements Serializable {
     public void setKinPhone(String kinPhone) {
         this.kinPhone = kinPhone;
     }
-
-    public String getKinRelationship() {
-        return kinRelationship;
-    }
-
-    public void setKinRelationship(String kinRelationship) {
-        this.kinRelationship = kinRelationship;
-    }
-
-    public String getPerfomanceHistory() {
-        return perfomanceHistory;
-    }
-
-    public void setPerfomanceHistory(String perfomanceHistory) {
-        this.perfomanceHistory = perfomanceHistory;
-    }
+    
 }

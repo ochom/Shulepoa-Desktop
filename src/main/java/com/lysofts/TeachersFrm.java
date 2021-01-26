@@ -11,12 +11,12 @@ import javax.swing.table.DefaultTableModel;
 public class TeachersFrm extends javax.swing.JFrame {
 
     private List<String> sal;
-    private List<Teacher> teachers;
-    private TeacherDAO teacherDAO;
+    private List<Teacher> teachers = new ArrayList<>();
+    private TeacherDAO teacherDAO = null;
     private Teacher selectedTeacher = null;
 
     public TeachersFrm() {
-        teacherDAO = new TeacherDAO();
+        this.teacherDAO = new TeacherDAO();
         initComponents();
 
         new ConnClass().setFrameIcon(this);
@@ -91,7 +91,6 @@ public class TeachersFrm extends javax.swing.JFrame {
                 } else {
                     JOptionPane.showMessageDialog(null, "Error occcured while saving the data", "Error", 0);
                 }
-
             } else {
                 Teacher teacher = selectedTeacher;
                 teacher.setName(name);

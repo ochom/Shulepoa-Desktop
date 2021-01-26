@@ -5,6 +5,7 @@ import com.jtattoo.plaf.DecorationHelper;
 import com.lysofts.dao.ClassroomDAO;
 import com.lysofts.dao.HouseDAO;
 import com.lysofts.dao.SchoolDAO;
+import com.lysofts.dao.StudentDAO;
 import com.lysofts.dao.SubjectDAO;
 import com.lysofts.dao.TeacherDAO;
 import com.lysofts.entities.School;
@@ -78,17 +79,8 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         txtNumberOfTeachers.setText(String.valueOf(new TeacherDAO().get().size()));
         txtNumberOfClasses.setText(String.valueOf(new ClassroomDAO().get().size()));
         txtNumberOfSubjects.setText(String.valueOf(new SubjectDAO().get().size()));
+        txtNumberofStudents.setText(String.valueOf(new StudentDAO().get().size()));
         txtnumberOfHouses.setText(String.valueOf(new HouseDAO().get().size()));
-//        try {
-//            String sql = "SELECT (SELECT count(*) FROM tblteachers) AS Teachers,(SELECT count(*) FROM tblclasses) AS Classes,(SELECT count(*) FROM Subjects) AS Subjects,(SELECT count(*) FROM student_details) AS Students,(SELECT count(*) FROM user) AS Users";
-//            pst = Conn.prepareStatement(sql);
-//            rs = pst.executeQuery();
-//            if (rs.next()) {
-//                txtNumberofStudents.setText(rs.getString("Students"));
-//            }
-//        } catch (SQLException e) {
-//            System.out.println(e);
-//        }
     }
     
     @SuppressWarnings("unchecked")
@@ -305,7 +297,6 @@ public class AdminPanelFrm extends javax.swing.JFrame {
                 formWindowClosing(evt);
             }
         });
-        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -488,11 +479,10 @@ public class AdminPanelFrm extends javax.swing.JFrame {
 
         jPanel1.add(jPanel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(478, 10, -1, 110));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 200, 790, 130));
-
         jToolBar1.setBackground(new java.awt.Color(204, 255, 204));
         jToolBar1.setRollover(true);
 
+        jButton4.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         jButton4.setIcon(new javax.swing.ImageIcon(
             getClass().getClassLoader().getResource("images/Categories-applications-education-school-icon.png")
         ));
@@ -509,6 +499,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         });
         jToolBar1.add(jButton4);
 
+        jButton17.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         jButton17.setIcon(new javax.swing.ImageIcon(
             getClass().getClassLoader().getResource("images/Categories-applications-education-science-icon.png"))
     );
@@ -526,6 +517,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     jToolBar1.add(jButton17);
     jToolBar1.add(jSeparator4);
 
+    jButton3.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     jButton3.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Science-Classroom-icon.png"))
     );
     jButton3.setText("Teachers");
@@ -541,6 +533,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jToolBar1.add(jButton3);
 
+    jButton5.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     jButton5.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Science-Classroom-icon.png"))
     );
     jButton5.setText("Classes");
@@ -556,6 +549,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jToolBar1.add(jButton5);
 
+    jButton7.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     jButton7.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Log Out_24x24.png"))
     );
     jButton7.setText("Houses");
@@ -572,6 +566,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     jToolBar1.add(jButton7);
     jToolBar1.add(jSeparator3);
 
+    jButton2.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     jButton2.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Teacher-icon.png"))
     );
     jButton2.setText("Students");
@@ -587,6 +582,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jToolBar1.add(jButton2);
 
+    jButton8.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     jButton8.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Properties_24x24.png"))
     );
     jButton8.setText("Subject Alloc.");
@@ -603,6 +599,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     jToolBar1.add(jButton8);
     jToolBar1.add(jSeparator1);
 
+    jButton9.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     jButton9.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Edit_24x24.png"))
     );
     jButton9.setText("Record");
@@ -619,6 +616,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jToolBar1.add(jButton9);
 
+    jButton16.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     jButton16.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Synchronize_24x24.png"))
     );
     jButton16.setText("Analysis");
@@ -636,6 +634,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     jToolBar1.add(jButton16);
     jToolBar1.add(jSeparator2);
 
+    jButton18.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     jButton18.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/sales-report-icon.png"))
     );
     jButton18.setText("Fee Manager");
@@ -651,6 +650,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jToolBar1.add(jButton18);
 
+    jButton13.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     jButton13.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Report Card_24px.png"))
     );
     jButton13.setText("Reports");
@@ -666,32 +666,24 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jToolBar1.add(jButton13);
 
-    getContentPane().add(jToolBar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 930, 70));
-
     txtSchoolName.setFont(new java.awt.Font("Script MT Bold", 1, 36)); // NOI18N
     txtSchoolName.setForeground(new java.awt.Color(0, 153, 0));
     txtSchoolName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
     txtSchoolName.setText("School Name");
-    getContentPane().add(txtSchoolName, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 820, 40));
 
     txtTerm.setFont(new java.awt.Font("Cambria", 3, 18)); // NOI18N
     txtTerm.setForeground(new java.awt.Color(255, 0, 0));
     txtTerm.setText("Term Dates:");
-    getContentPane().add(txtTerm, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 130, 110, -1));
 
     jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
     jLabel1.setText("Next Term Opens:");
-    getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 180, 220, -1));
 
     txtClDate.setText("Date");
-    getContentPane().add(txtClDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 160, 250, -1));
 
     txtOpDate.setText("Date");
-    getContentPane().add(txtOpDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 180, 240, -1));
 
     jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
     jLabel4.setText("Closing Date:");
-    getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 160, 200, -1));
 
     jPanel2.setBackground(new java.awt.Color(0, 0, 102));
     jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 0, 0)));
@@ -700,14 +692,12 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     jPanel2.setLayout(jPanel2Layout);
     jPanel2Layout.setHorizontalGroup(
         jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGap(0, 0, Short.MAX_VALUE)
+        .addGap(0, 828, Short.MAX_VALUE)
     );
     jPanel2Layout.setVerticalGroup(
         jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGap(0, 3, Short.MAX_VALUE)
     );
-
-    getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 120, 830, 5));
 
     jPanel9.setBackground(new java.awt.Color(0, 204, 51));
     jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("Tools"));
@@ -763,8 +753,6 @@ public class AdminPanelFrm extends javax.swing.JFrame {
                 .addComponent(jButton27, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addContainerGap())
     );
-
-    getContentPane().add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 400, 220, 80));
 
     jMenu1.setText("Term Dates");
 
@@ -829,7 +817,62 @@ public class AdminPanelFrm extends javax.swing.JFrame {
 
     setJMenuBar(jMenuBar1);
 
-    setSize(new java.awt.Dimension(917, 566));
+    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+    getContentPane().setLayout(layout);
+    layout.setHorizontalGroup(
+        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 930, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGroup(layout.createSequentialGroup()
+            .addGap(30, 30, 30)
+            .addComponent(txtSchoolName, javax.swing.GroupLayout.PREFERRED_SIZE, 820, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGroup(layout.createSequentialGroup()
+            .addGap(30, 30, 30)
+            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGroup(layout.createSequentialGroup()
+            .addGap(340, 340, 340)
+            .addComponent(txtTerm, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGroup(layout.createSequentialGroup()
+            .addGap(220, 220, 220)
+            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(10, 10, 10)
+            .addComponent(txtClDate, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGroup(layout.createSequentialGroup()
+            .addGap(200, 200, 200)
+            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(10, 10, 10)
+            .addComponent(txtOpDate, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGroup(layout.createSequentialGroup()
+            .addGap(60, 60, 60)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 790, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGroup(layout.createSequentialGroup()
+            .addGap(40, 40, 40)
+            .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+    );
+    layout.setVerticalGroup(
+        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(layout.createSequentialGroup()
+            .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(10, 10, 10)
+            .addComponent(txtSchoolName, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(0, 0, 0)
+            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(5, 5, 5)
+            .addComponent(txtTerm)
+            .addGap(8, 8, 8)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jLabel4)
+                .addComponent(txtClDate))
+            .addGap(5, 5, 5)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jLabel1)
+                .addComponent(txtOpDate))
+            .addGap(5, 5, 5)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(70, 70, 70)
+            .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+    );
+
+    setSize(new java.awt.Dimension(940, 566));
     setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -860,7 +903,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         this.dispose();
-        new StudentRegistrationFrm().setVisible(true);
+        new StudentsFrm().setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton17ActionPerformed
