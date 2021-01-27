@@ -142,7 +142,6 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
         setModalExclusionType(java.awt.Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
         setResizable(false);
         setSize(new java.awt.Dimension(479, 249));
-        setType(java.awt.Window.Type.POPUP);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosed(java.awt.event.WindowEvent evt) {
                 formWindowClosed(evt);
@@ -152,7 +151,7 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Update term details", 0, 0, new java.awt.Font("Dialog", 0, 12), new java.awt.Color(102, 102, 102))); // NOI18N
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Update term details", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 12), new java.awt.Color(102, 102, 102))); // NOI18N
         jPanel4.setOpaque(false);
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -296,7 +295,7 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
             com.jtattoo.plaf.acryl.AcrylLookAndFeel.setTheme("Green", "", "acme");
             UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");            
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            ex.printStackTrace();
+            ConnClass.printError(ex);
         }
 
         java.awt.EventQueue.invokeLater(new Runnable() {

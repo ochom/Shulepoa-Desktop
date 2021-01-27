@@ -7,6 +7,7 @@ package com.lysofts.dao;
 
 import com.lysofts.entities.MyEntityManager;
 import com.lysofts.entities.Classroom;
+import com.lysofts.utils.ConnClass;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -29,7 +30,7 @@ public class ClassroomDAO {
             classrooms = query.getResultList();
             em.getTransaction().commit();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            ConnClass.printError(ex);
         } finally {
             em.close();
         }
@@ -51,7 +52,7 @@ public class ClassroomDAO {
             em.getTransaction().commit();
             return true;
         } catch (Exception ex) {
-            ex.printStackTrace();
+            ConnClass.printError(ex);
             return false;
         } finally {
             em.close();
@@ -68,7 +69,7 @@ public class ClassroomDAO {
             em.getTransaction().commit();
             return true;
         } catch (Exception ex) {
-            ex.printStackTrace();
+            ConnClass.printError(ex);
             return false;
         } finally {
             em.close();

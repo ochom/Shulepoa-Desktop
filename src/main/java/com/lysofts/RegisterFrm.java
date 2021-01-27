@@ -2,15 +2,15 @@ package com.lysofts;
 
 import com.lysofts.utils.ConnClass;
 import com.jtattoo.plaf.DecorationHelper;
+import com.lysofts.dao.SchoolDAO;
+import com.lysofts.entities.School;
 import com.lysofts.utils.API;
 import java.awt.event.KeyEvent;
-import java.sql.*;
 import javax.swing.*;
 
 public class RegisterFrm extends javax.swing.JFrame {
-    PreparedStatement pst = null;
-    ResultSet rs = null;
-    String sql = null, schoolName, email, username, phone, password;
+
+    String schoolName, email, username, phone, password;
 
     public RegisterFrm() {
         initComponents();
@@ -20,22 +20,16 @@ public class RegisterFrm extends javax.swing.JFrame {
     private boolean isEmpty(String string) {
         return string == null || string.length() == 0;
     }
-    
-    private void updateSchoolDetails(){
-        Connection conn = ConnClass.connectDB();
-        sql = "UPDATE tblschool set School_name=?";
-        try{
-            pst = conn.prepareStatement(sql);
-            pst.setString(1, schoolName);
-            pst.executeUpdate();
-        }catch(SQLException ex){
-            ConnClass.printError(ex);
-        }finally{
-            try {
-                conn.close();
-            } catch (SQLException ex) {
-                ConnClass.printError(ex);
-            }
+
+    private void updateSchoolDetails() {
+        School school = new SchoolDAO().get();
+        if (school==null) {
+            school = new School();
+            school.setName(schoolName);
+            new SchoolDAO().add(school);            
+        }else{
+            school.setName(schoolName);
+            new SchoolDAO().update(school);
         }
     }
 
@@ -48,14 +42,26 @@ public class RegisterFrm extends javax.swing.JFrame {
         if (isEmpty(schoolName) || isEmpty(username) || isEmpty(email) || isEmpty(phone) || isEmpty(password)) {
             JOptionPane.showMessageDialog(this, "All fields are required", "Required", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            if (API.register(schoolName, username, email, phone, password)) {
-                updateSchoolDetails();
-                this.dispose();
-                new LoginFrm().setVisible(true);
-                JOptionPane.showMessageDialog(this, "Registration successful");
-            } else {
-                JOptionPane.showMessageDialog(this, "Registration failed, try again later");
-            }
+            processingDialog.pack();
+            processingDialog.setLocationRelativeTo(this);
+            processingDialog.setVisible(true);
+            SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+                @Override
+                protected Void doInBackground() throws Exception {
+                    if (new API().register(schoolName, username, email, phone, password)) {
+                        updateSchoolDetails();
+                        processingDialog.dispose();
+                        JOptionPane.showMessageDialog(RegisterFrm.this, "Registration successful");
+                        RegisterFrm.this.dispose();
+                        new LoginFrm().setVisible(true);
+                    } else {
+                        processingDialog.dispose();
+                        JOptionPane.showMessageDialog(RegisterFrm.this, "Error occured while submitting your data. Check your internet connection and try again.", "Registration failed", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    return null;
+                }
+            };
+            worker.execute();
         }
     }
 
@@ -63,6 +69,9 @@ public class RegisterFrm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        processingDialog = new javax.swing.JDialog();
+        jLabel3 = new javax.swing.JLabel();
+        jProgressBar1 = new javax.swing.JProgressBar();
         jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         btnLogin = new javax.swing.JButton();
@@ -80,6 +89,34 @@ public class RegisterFrm extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         txtYourPhone = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
+
+        processingDialog.setResizable(false);
+        processingDialog.setType(java.awt.Window.Type.POPUP);
+
+        jLabel3.setText("Submitting data...");
+
+        jProgressBar1.setIndeterminate(true);
+
+        javax.swing.GroupLayout processingDialogLayout = new javax.swing.GroupLayout(processingDialog.getContentPane());
+        processingDialog.getContentPane().setLayout(processingDialogLayout);
+        processingDialogLayout.setHorizontalGroup(
+            processingDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(processingDialogLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(processingDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 344, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        processingDialogLayout.setVerticalGroup(
+            processingDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(processingDialogLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(25, Short.MAX_VALUE))
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Login");
@@ -297,7 +334,7 @@ public class RegisterFrm extends javax.swing.JFrame {
             com.jtattoo.plaf.acryl.AcrylLookAndFeel.setTheme("Default", "", "acme");
             UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            ex.printStackTrace();
+            ConnClass.printError(ex);
         }
 
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -314,6 +351,7 @@ public class RegisterFrm extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -321,6 +359,8 @@ public class RegisterFrm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JProgressBar jProgressBar1;
+    private javax.swing.JDialog processingDialog;
     private javax.swing.JTextField txtSchoolName;
     private javax.swing.JTextField txtYourEmail;
     private javax.swing.JTextField txtYourName;

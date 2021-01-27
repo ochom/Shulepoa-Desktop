@@ -5,6 +5,8 @@
  */
 package com.lysofts.entities;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -14,14 +16,15 @@ import javax.persistence.Persistence;
  * @author mspace-dev
  */
 public class MyEntityManager {
+
     EntityManagerFactory emf;
     EntityManager em;
-    
-    public MyEntityManager(){
+
+    public MyEntityManager() {
         emf = Persistence.createEntityManagerFactory("DbPersistanceUnit");
     }
-    
-    public EntityManager getEm(){
+
+    public EntityManager getEm() {
         em = emf.createEntityManager();
         if (!em.getTransaction().isActive()) {
             em.getTransaction().begin();

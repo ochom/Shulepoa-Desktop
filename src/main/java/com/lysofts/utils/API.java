@@ -20,10 +20,11 @@ import java.util.Scanner;
  */
 public class API {
 
-    public static boolean register(String schoolName, String username, String email, String phone, String password) {
+    public boolean register(String schoolName, String username, String email, String phone, String password) {
         boolean success = false;
         try{            
             String json = "{\"schoolName\":\""+schoolName+"\",\"username\":\""+username+"\",\"email\":\""+email+"\",\"phone\":\""+phone+"\",\"password\":\""+password+"\"}";
+            System.out.println(json);
             byte[] out = json.getBytes();
             int length = out.length;
             
@@ -40,6 +41,12 @@ public class API {
                 os.write(out);
             }
             
+            try(InputStream is = http.getInputStream()) {            
+                Scanner s = new Scanner(is).useDelimiter("\\A");
+                String result = s.hasNext() ? s.next() : "";
+                //System.out.println(result);
+            }
+            
             return http.getResponseCode()==201;            
         }catch(IOException ex){
             ConnClass.printError(ex);
@@ -47,12 +54,12 @@ public class API {
         return success;
     }
 
-    public static boolean login(String username, String password) {
+    public boolean login(String username, String password) {
          boolean success = false;
         try{String json = "{\"username\":\""+username+"\",\"password\":\""+password+"\"}";
+            System.out.println(json);
             byte[] out = json.getBytes();
             int length = out.length;
-            //System.out.println(json);
             
             URL url = new URL(API_END+"login/");
             URLConnection con = url.openConnection();

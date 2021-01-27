@@ -7,6 +7,7 @@ package com.lysofts.dao;
 
 import com.lysofts.entities.MyEntityManager;
 import com.lysofts.entities.School;
+import com.lysofts.utils.ConnClass;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -21,18 +22,18 @@ public class SchoolDAO {
     }
 
     public School get() {
-        String SQL = "SELECT * FROM tblSchool";
+        String SQL = "SELECT t FROM School t";
         School school = null;
         EntityManager em = new MyEntityManager().getEm();
         try {
-            Query query = em.createNativeQuery(SQL, School.class);
+            Query query = em.createQuery(SQL, School.class);
             List<School> schools = query.getResultList();
             if (schools.size() > 0) {
                 school = schools.get(0);
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            ConnClass.printError(ex);
         } finally {
             em.close();
         }
@@ -54,7 +55,7 @@ public class SchoolDAO {
             em.getTransaction().commit();
             return true;
         } catch (Exception ex) {
-            ex.printStackTrace();
+            ConnClass.printError(ex);
             return false;
         } finally {
             em.close();
@@ -70,13 +71,14 @@ public class SchoolDAO {
             school.setMotto(data.getMotto());
             school.setContact(data.getContact());
             school.setPrincipal(data.getPrincipal());
+            school.setLogo(data.getLogo());
             school.setSignature(data.getSignature());
             school.setClosingDate(data.getClosingDate());
             school.setOpeningDate(data.getOpeningDate());
             em.getTransaction().commit();
             return true;
         } catch (Exception ex) {
-            ex.printStackTrace();
+            ConnClass.printError(ex);
             return false;
         } finally {
             em.close();

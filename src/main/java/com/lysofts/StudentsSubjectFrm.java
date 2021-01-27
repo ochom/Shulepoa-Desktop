@@ -1121,7 +1121,7 @@ public class StudentsSubjectFrm extends javax.swing.JFrame {
             UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
             
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            ex.printStackTrace();
+            ConnClass.printError(ex);
         }
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {

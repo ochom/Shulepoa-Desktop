@@ -16,39 +16,48 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class SchoolFrm extends javax.swing.JFrame {
     String  Logo = "", Sign = "";
-    School school = null;
+    School selectedSchool = null;
     List<Teacher> teachers;
     
     public SchoolFrm() {
-        this.school = new SchoolDAO().get();
+        this.selectedSchool = new SchoolDAO().get();
         this.teachers = new TeacherDAO().get();
         initComponents();
 
-        new ConnClass().setFrameIcon(this);
+        new ConnClass().setFrameIcon(SchoolFrm.this);
         updateUI();
-        getTeachers();
-        getLogo();
-        getSignature();
-    }
-
-    private void getTeachers() {
-        teachers.forEach(teacher->{
-            comboPrincipal.addItem(teacher.getName());
-        });
     }
 
     private void updateUI() {
-        if (school != null) {
-            txtSchoolName.setText(school.getName());
-            txtPostalAddress.setText(school.getPostalAddress());
-            txtMotto.setText(school.getMotto());
-            if (school.getPrincipal()==null || school.getPrincipal().isEmpty()) {
-                comboPrincipal.setSelectedItem("Select");
+        comboPrincipal.removeAllItems();
+        comboPrincipal.addItem("Select");
+        
+        teachers.forEach(teacher->{
+            comboPrincipal.addItem(teacher.getName());
+        });
+        
+        if (selectedSchool == null) {
+            txtSchoolName.setText("");
+            txtPostalAddress.setText("");
+            txtMotto.setText("");
+            comboPrincipal.setSelectedIndex(0);
+            Logo = "";
+            Sign = "";
+            getLogo();
+            getSignature();
+        }else{
+            txtSchoolName.setText(selectedSchool.getName());
+            txtPostalAddress.setText(selectedSchool.getPostalAddress());
+            txtMotto.setText(selectedSchool.getMotto());
+            if (selectedSchool.getPrincipal()==null || selectedSchool.getPrincipal().isEmpty()) {
+                comboPrincipal.setSelectedIndex(0);
             } else {
-                comboPrincipal.setSelectedItem(school.getPrincipal());
+                comboPrincipal.setSelectedItem(selectedSchool.getPrincipal());
             }
-            Logo = school.getLogo();
-            Sign = school.getSignature();
+            Logo = selectedSchool.getLogo();
+            Sign = selectedSchool.getSignature();
+            getLogo();
+            getSignature();            
         }
     }
 
@@ -177,7 +186,6 @@ public class SchoolFrm extends javax.swing.JFrame {
         jLabel7.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel7.setText("Principal's Name");
 
-        comboPrincipal.setEditable(true);
         comboPrincipal.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select" }));
 
         LogoImageLabel.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -204,27 +212,26 @@ public class SchoolFrm extends javax.swing.JFrame {
                 .addGap(30, 30, 30)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(252, 252, 252))
-                            .addComponent(txtSchoolName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(30, 30, 30)
-                        .addComponent(LogoImageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtMotto, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(comboPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtPostalAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(jPanel3Layout.createSequentialGroup()
+                                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(252, 252, 252))
+                                    .addComponent(txtSchoolName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(30, 30, 30)
+                                .addComponent(LogoImageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtMotto, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(comboPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
 
         jPanel3Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {comboPrincipal, txtMotto, txtPostalAddress, txtSchoolName});
@@ -279,8 +286,8 @@ public class SchoolFrm extends javax.swing.JFrame {
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         SchoolDAO dao = new SchoolDAO();
-        boolean success;
-        if (school == null) {
+        School school;
+        if (selectedSchool == null) {
             school = new School();
             school.setName(txtSchoolName.getText());
             school.setPostalAddress(txtPostalAddress.getText());
@@ -288,20 +295,24 @@ public class SchoolFrm extends javax.swing.JFrame {
             school.setLogo(Logo);
             school.setPrincipal(comboPrincipal.getSelectedItem().toString());
             school.setSignature(Sign);
-            success = dao.add(school);
+            if (dao.add(school)) {
+                JOptionPane.showMessageDialog(null, "School details saved succesfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Error occured while saving data", "Error", JOptionPane.WARNING_MESSAGE);
+            }
         }else{
+            school = selectedSchool;
             school.setName(txtSchoolName.getText());
             school.setPostalAddress(txtPostalAddress.getText());
             school.setMotto(txtMotto.getText());
             school.setLogo(Logo);
             school.setPrincipal(comboPrincipal.getSelectedItem().toString());
             school.setSignature(Sign);
-            success = dao.update(school);
-        }
-        if (success) {
-            JOptionPane.showMessageDialog(null, "School details set succesfully", "Success", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(null, "School details not updated.", "Error", JOptionPane.WARNING_MESSAGE);
+            if (dao.update(school)) {
+                JOptionPane.showMessageDialog(null, "School details updated succesfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Error occured while updating data", "Error", JOptionPane.WARNING_MESSAGE);
+            }
         }
     }//GEN-LAST:event_btnSaveActionPerformed
 

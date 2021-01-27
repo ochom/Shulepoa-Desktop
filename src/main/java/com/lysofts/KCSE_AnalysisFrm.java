@@ -1424,7 +1424,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
                             count++;
                             publish(count);
                         } catch (Exception ex) {
-                            ex.printStackTrace();
+                            ConnClass.printError(ex);
                             JOptionPane.showMessageDialog(null, ex.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
                         }
                     }

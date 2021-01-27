@@ -7,14 +7,15 @@ import java.awt.event.KeyEvent;
 import javax.swing.*;
 
 public class LoginFrm extends javax.swing.JFrame {
-    
-    String username, password;
 
+    String username, password;
+    
+    
     public LoginFrm() {
         initComponents();
         new ConnClass().setFrameIcon(LoginFrm.this);
     }
-    
+
     private boolean isEmpty(String string) {
         return string == null || string.length() == 0;
     }
@@ -22,16 +23,31 @@ public class LoginFrm extends javax.swing.JFrame {
     private void login() {
         username = txtUsername.getText();
         password = txtPassword.getText();
-        if (isEmpty(username) || isEmpty(password)) {
-            JOptionPane.showMessageDialog(this, "All fields are required", "Required", JOptionPane.INFORMATION_MESSAGE);
+        if (isEmpty(username)) {
+            JOptionPane.showMessageDialog(this, "Enter your email");
+        } else if (isEmpty(password)) {
+            JOptionPane.showMessageDialog(this, "Enter your password");
         } else {
-            if (API.login(username, password)) {
-                JOptionPane.showMessageDialog(this, "Login successful");
-                this.dispose();
-                new RegisterExaminationsFrm().setVisible(true);
-            } else {
-                JOptionPane.showMessageDialog(this, "Check credential and internet connect then try again", "Login failed", JOptionPane.INFORMATION_MESSAGE);
-            }
+            processingDialog.revalidate();
+            processingDialog.pack();
+            processingDialog.setLocationRelativeTo(this);
+            processingDialog.setVisible(true);
+            SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+                @Override
+                protected Void doInBackground() {
+                    if (new API().login(username, password)) {
+                        processingDialog.dispose();
+                        JOptionPane.showMessageDialog(LoginFrm.this, "Login successful");
+                        LoginFrm.this.dispose();
+                        new RegisterExaminationsFrm().setVisible(true);
+                    } else {
+                        processingDialog.dispose();
+                        JOptionPane.showMessageDialog(LoginFrm.this, "Check credential and internet connect then try again", "Login failed", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    return null;
+                }
+            };
+            worker.execute();
         }
     }
 
@@ -39,6 +55,9 @@ public class LoginFrm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        processingDialog = new javax.swing.JDialog();
+        jLabel3 = new javax.swing.JLabel();
+        jProgressBar1 = new javax.swing.JProgressBar();
         jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         btnLogin = new javax.swing.JButton();
@@ -50,6 +69,34 @@ public class LoginFrm extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         txtUsername = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
+
+        processingDialog.setResizable(false);
+        processingDialog.setType(java.awt.Window.Type.POPUP);
+
+        jLabel3.setText("Authenticating...");
+
+        jProgressBar1.setIndeterminate(true);
+
+        javax.swing.GroupLayout processingDialogLayout = new javax.swing.GroupLayout(processingDialog.getContentPane());
+        processingDialog.getContentPane().setLayout(processingDialogLayout);
+        processingDialogLayout.setHorizontalGroup(
+            processingDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(processingDialogLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(processingDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 344, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        processingDialogLayout.setVerticalGroup(
+            processingDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(processingDialogLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(25, Short.MAX_VALUE))
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Login");
@@ -138,10 +185,9 @@ public class LoginFrm extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(47, 47, 47)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(btnLogin, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnLogin, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(txtPassword)
                     .addComponent(txtUsername, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE))
@@ -243,14 +289,12 @@ public class LoginFrm extends javax.swing.JFrame {
             com.jtattoo.plaf.acryl.AcrylLookAndFeel.setTheme("Default", "", "acme");
             UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            ex.printStackTrace();
+            ConnClass.printError(ex);
         }
 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                DecorationHelper.decorateWindows(false);
-                new LoginFrm().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            DecorationHelper.decorateWindows(false);
+            new LoginFrm().setVisible(true);
         });
     }
 
@@ -260,10 +304,13 @@ public class LoginFrm extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JProgressBar jProgressBar1;
+    private javax.swing.JDialog processingDialog;
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables
