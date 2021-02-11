@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,6 +39,7 @@ public class BackUpFrm extends javax.swing.JFrame {
     ResultSet rs = null;
 
     String BackUpFolder, RestoreFile;
+    String databasePath = "database/database.db";
 
     public BackUpFrm() {
         initComponents();
@@ -55,31 +57,26 @@ public class BackUpFrm extends javax.swing.JFrame {
                 jLabel5.setVisible(true);
                 jProgressBar1.setVisible(true);
                 Date date = new Date();
-                SimpleDateFormat sdft = new SimpleDateFormat("dd-MM-yyyy_HMMSS");
+                SimpleDateFormat sdft = new SimpleDateFormat("YMMddHmmss");
                 String timestamp = sdft.format(date);
                 String backupFile = BackUpFolder + "/Backup" + timestamp + ".bak";
                 try {
                     FileOutputStream fos;
-                    FileInputStream fis;
                     byte[] b;
 
-                    String Db_path = "C:/Acme/Exam System/ExamsDB.db";
-
                     fos = new FileOutputStream(backupFile);
-                    fis = new FileInputStream(Db_path);
-                    b = new byte[1024];
-                    int i;
-                    while ((i = fis.read(b)) >= 0) {
-                        fos.write(b, 0, i);
-                        fos.flush();
+                    try (InputStream is = getClass().getClassLoader().getResourceAsStream(databasePath)) {
+                        b = new byte[1024];
+                        int i;
+                        while ((i = is.read(b)) >= 0) {
+                            fos.write(b, 0, i);
+                            fos.flush();
+                        }
+                        fos.close();
                     }
-                    fos.close();
-                    fis.close();
-                    Runtime runtime = Runtime.getRuntime();
-                    runtime.exec(new String[]{"cmd.exe", "/c", "compact /c /f " + backupFile});
                     JOptionPane.showMessageDialog(null, "Backup completed succesfully");
                 } catch (HeadlessException | IOException e) {
-                    e.printStackTrace();
+                    ConnClass.printError(e);
                 }
                 return null;
             }
@@ -98,55 +95,21 @@ public class BackUpFrm extends javax.swing.JFrame {
         SwingWorker<Void, Integer> worker = new SwingWorker<Void, Integer>() {
             @Override
             protected Void doInBackground() throws Exception {
-                //Start backup first
-                jLabel5.setText("Backing up data...");
-                jLabel5.setVisible(true);
-                jProgressBar1.setVisible(true);
-                Date date = new Date();
-                SimpleDateFormat sdft = new SimpleDateFormat("dd-MM-yyyy_HMMSS");
-                String timestamp = sdft.format(date);
-                String backupFile = BackUpFolder + "/Backup" + timestamp + ".bak";
-                try {
-                    FileOutputStream fos;
-                    FileInputStream fis;
-                    byte[] b;
-
-                    String Db_path = "C:/Acme/Exam System/ExamsDB.db";
-
-                    fos = new FileOutputStream(backupFile);
-                    fis = new FileInputStream(Db_path);
-                    b = new byte[1024];
-                    int i;
-                    while ((i = fis.read(b)) >= 0) {
-                        fos.write(b, 0, i);
-                        fos.flush();
-                    }
-                    fos.close();
-                    fis.close();
-                    Runtime runtime = Runtime.getRuntime();
-                    runtime.exec(new String[]{"cmd.exe", "/c", "compact /c /f " + backupFile});
-                    JOptionPane.showMessageDialog(null, "Backup completed succesfully");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                //end backup
                 jLabel5.setText("Restoring database...");
                 jLabel5.setVisible(true);
                 jProgressBar1.setVisible(true);
                 try {
-                    Runtime runtime = Runtime.getRuntime();
-                    runtime.exec(new String[]{"cmd.exe", "/c", "compact /u " + RestoreFile});
-                    Conn.close();
                     FileOutputStream fos;
                     FileInputStream fis;
-                    byte[] b;
-                    String old_db = "C:/Acme/Exam System/ExamsDB.db";
-                    new File(old_db).delete();
+                    
+                    String oldDB = getClass().getClassLoader().getResource(databasePath).getPath();
+                    System.out.print(oldDB);
+                    new File(oldDB).delete();
 
                     //Restore the database
-                    fos = new FileOutputStream(old_db);
+                    fos = new FileOutputStream(oldDB);
                     fis = new FileInputStream(RestoreFile);
-                    b = new byte[1024];
+                    byte[] b = new byte[1024];
                     int i;
                     while ((i = fis.read(b)) >= 0) {
                         fos.write(b, 0, i);
@@ -154,10 +117,9 @@ public class BackUpFrm extends javax.swing.JFrame {
                     }
                     fos.close();
                     fis.close();
-                    runtime.exec(new String[]{"cmd.exe", "/c", "compact /c /f " + RestoreFile});
                     JOptionPane.showMessageDialog(null, "Restoration completed succesfully");
-                } catch (HeadlessException | IOException | SQLException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    ConnClass.printError(e);
                 }
                 return null;
             }
@@ -481,7 +443,6 @@ public class BackUpFrm extends javax.swing.JFrame {
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         RestoreFile = jTextField1.getText();
         if (!RestoreFile.isEmpty()) {
-            BackUpFolder = FileSystemView.getFileSystemView().getDefaultDirectory().getPath() + "/Acme";
             RestoreDatabase();
         }
     }//GEN-LAST:event_jButton6ActionPerformed
@@ -490,7 +451,7 @@ public class BackUpFrm extends javax.swing.JFrame {
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Folder", "db");
         JFileChooser fc = new JFileChooser();
         fc.setFileFilter(filter);
-        fc.setDialogTitle("Select A folder to save you back ups");
+        fc.setDialogTitle("Select A folder to save your back ups");
         fc.setFileSelectionMode(2);
         fc.setCurrentDirectory(fc.getFileSystemView().getParentDirectory(new File("C:\\")));
         int option = fc.showSaveDialog(null);
