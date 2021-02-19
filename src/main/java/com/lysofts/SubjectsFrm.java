@@ -14,12 +14,9 @@ import javax.swing.table.DefaultTableModel;
 public class SubjectsFrm extends javax.swing.JFrame {
 
     List<Subject> subjects;
-    SubjectDAO subjectDAO;
     Subject selectedSubject;
 
     public SubjectsFrm() {
-        this.subjectDAO = new SubjectDAO();
-
         initComponents();
         new ConnClass().setFrameIcon(SubjectsFrm.this);
 
@@ -107,29 +104,36 @@ public class SubjectsFrm extends javax.swing.JFrame {
     }
 
     private void updateUI() {
-        List<Subject> subjects = subjectDAO.get();
-        DefaultTableModel model = (DefaultTableModel) tableSubjects.getModel();
-        model.setRowCount(0);
-        subjects.forEach(subject -> {
-            model.addRow(new Object[]{subject.getId(), subject.getNumber(), subject.getName(), subject.getCode()});
-        });
-        
-        selectedSubject=null;
-        txtNO.setSelectedIndex(0);
-        txtSUBJECT.setText("");
-        txtCODE.setText("");
-        txtGrade1.setText("");
-        txtGrade2.setText("");
-        txtGrade3.setText("");
-        txtGrade4.setText("");
-        txtGrade5.setText("");
-        txtGrade6.setText("");
-        txtGrade7.setText("");
-        txtGrade8.setText("");
-        txtGrade9.setText("");
-        txtGrade10.setText("");
-        txtGrade11.setText("");
-        txtGrade12.setText("");
+        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                subjects = SubjectDAO.get();
+                DefaultTableModel model = (DefaultTableModel) tableSubjects.getModel();
+                model.setRowCount(0);
+                subjects.forEach(subject -> {
+                    model.addRow(new Object[]{subject.getNumber(), subject.getName(), subject.getCode()});
+                });
+
+                selectedSubject = null;
+                txtNO.setSelectedIndex(0);
+                txtSUBJECT.setText("");
+                txtCODE.setText("");
+                txtGrade1.setText("");
+                txtGrade2.setText("");
+                txtGrade3.setText("");
+                txtGrade4.setText("");
+                txtGrade5.setText("");
+                txtGrade6.setText("");
+                txtGrade7.setText("");
+                txtGrade8.setText("");
+                txtGrade9.setText("");
+                txtGrade10.setText("");
+                txtGrade11.setText("");
+                txtGrade12.setText("");
+                return null;
+            }
+        };
+        swingWorker.run();
     }
 
     private void AddSubject() {
@@ -171,7 +175,7 @@ public class SubjectsFrm extends javax.swing.JFrame {
                 subject.setGrade10(txtGrade10.getText());
                 subject.setGrade11(txtGrade11.getText());
                 subject.setGrade12(txtGrade12.getText());
-                if (subjectDAO.add(subject)) {
+                if (SubjectDAO.add(subject)) {
                     addSubjectToSubjectNumbers(subject);
                     JOptionPane.showMessageDialog(null, "Subject details saved successfully");
                 } else {
@@ -194,7 +198,7 @@ public class SubjectsFrm extends javax.swing.JFrame {
                 subject.setGrade10(txtGrade10.getText());
                 subject.setGrade11(txtGrade11.getText());
                 subject.setGrade12(txtGrade12.getText());
-                if (subjectDAO.update(subject)) {
+                if (SubjectDAO.update(subject)) {
                     addSubjectToSubjectNumbers(subject);
                     JOptionPane.showMessageDialog(null, "Subject details updated successfully");
                 } else {
@@ -267,7 +271,6 @@ public class SubjectsFrm extends javax.swing.JFrame {
         setTitle("Subjects & Subject Ranking");
         setMinimumSize(new java.awt.Dimension(529, 430));
         setResizable(false);
-        setType(java.awt.Window.Type.UTILITY);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -279,14 +282,14 @@ public class SubjectsFrm extends javax.swing.JFrame {
 
             },
             new String [] {
-                "#", "Number", "Subject Name", "Code"
+                "#", "Subject", "Code"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -305,10 +308,9 @@ public class SubjectsFrm extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tableSubjects);
         if (tableSubjects.getColumnModel().getColumnCount() > 0) {
-            tableSubjects.getColumnModel().getColumn(0).setPreferredWidth(30);
-            tableSubjects.getColumnModel().getColumn(1).setPreferredWidth(20);
-            tableSubjects.getColumnModel().getColumn(2).setPreferredWidth(100);
-            tableSubjects.getColumnModel().getColumn(3).setPreferredWidth(30);
+            tableSubjects.getColumnModel().getColumn(0).setPreferredWidth(20);
+            tableSubjects.getColumnModel().getColumn(1).setPreferredWidth(150);
+            tableSubjects.getColumnModel().getColumn(2).setPreferredWidth(30);
         }
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 3, 12)); // NOI18N
@@ -576,25 +578,24 @@ public class SubjectsFrm extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(47, 47, 47)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(btnSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtSUBJECT, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtNO, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtCODE, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(44, 44, 44))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btnSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtSUBJECT, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNO, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtCODE, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {txtCODE, txtNO, txtSUBJECT});
@@ -603,8 +604,9 @@ public class SubjectsFrm extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel20)
                         .addGap(5, 5, 5)
@@ -621,14 +623,12 @@ public class SubjectsFrm extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
-                .addContainerGap())
+                .addContainerGap(17, Short.MAX_VALUE))
         );
 
         layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {txtCODE, txtNO, txtSUBJECT});
 
-        setSize(new java.awt.Dimension(605, 546));
+        setSize(new java.awt.Dimension(821, 376));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -638,8 +638,7 @@ public class SubjectsFrm extends javax.swing.JFrame {
 
     private void tableSubjectsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableSubjectsMouseClicked
         int row = tableSubjects.getSelectedRow();
-        int id = Integer.parseInt(tableSubjects.getModel().getValueAt(row, 0).toString());
-        selectedSubject = subjectDAO.get(id);
+        selectedSubject = subjects.get(row);
         if (selectedSubject != null) {
             txtNO.setSelectedItem(selectedSubject.getNumber());
             txtCODE.setText(selectedSubject.getCode());
@@ -662,7 +661,7 @@ public class SubjectsFrm extends javax.swing.JFrame {
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         int response = JOptionPane.showConfirmDialog(null, "The Subject will be deleted Permanently", "Delete", JOptionPane.YES_NO_OPTION);
         if (response == 0) {
-            subjectDAO.delete(selectedSubject.getId());
+            SubjectDAO.delete(selectedSubject.getId());
             JOptionPane.showMessageDialog(null, "Subject deleted");
             updateUI();
         }
@@ -674,11 +673,11 @@ public class SubjectsFrm extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowClosing
 
     private void txtSUBJECTMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtSUBJECTMouseClicked
-        
+
     }//GEN-LAST:event_txtSUBJECTMouseClicked
 
     private void txtCODEMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtCODEMouseClicked
-        
+
     }//GEN-LAST:event_txtCODEMouseClicked
 
     private void txtCODEKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCODEKeyTyped

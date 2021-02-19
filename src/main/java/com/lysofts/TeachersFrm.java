@@ -12,14 +12,12 @@ public class TeachersFrm extends javax.swing.JFrame {
 
     private List<String> sal;
     private List<Teacher> teachers = new ArrayList<>();
-    private TeacherDAO teacherDAO = null;
     private Teacher selectedTeacher = null;
 
     public TeachersFrm() {
-        this.teacherDAO = new TeacherDAO();
         initComponents();
 
-        new ConnClass().setFrameIcon(this);
+        new ConnClass().setFrameIcon(TeachersFrm.this);
         initializeSalutations();
         updateUI();
     }
@@ -85,7 +83,7 @@ public class TeachersFrm extends javax.swing.JFrame {
                 teacher.setGender(gender);
                 teacher.setPhone(phone);
                 teacher.setInitials(initials);
-                boolean success = teacherDAO.add(teacher);
+                boolean success = TeacherDAO.add(teacher);
                 if (success) {
                     JOptionPane.showMessageDialog(null, "Teacher details succesfully saved", "Succes", 1);
                 } else {
@@ -98,7 +96,7 @@ public class TeachersFrm extends javax.swing.JFrame {
                 teacher.setGender(gender);
                 teacher.setPhone(phone);
                 teacher.setInitials(initials);
-                boolean success = teacherDAO.update(teacher);
+                boolean success = TeacherDAO.update(teacher);
                 if (success) {
                     JOptionPane.showMessageDialog(null, "Teacher details succesfully updated", "Succes", 1);
                 } else {
@@ -110,20 +108,27 @@ public class TeachersFrm extends javax.swing.JFrame {
     }
 
     private void updateUI() {
-        this.teachers = teacherDAO.get();
-        DefaultTableModel model = (DefaultTableModel) Table_Teachers.getModel();
-        model.setRowCount(0);
-        teachers.forEach(teacher -> {
-            model.addRow(new Object[]{teacher.getId(), teacher.getName(), teacher.getStaffNumber()});
-        });
-        Table_Teachers.setModel(model);
+        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                teachers = TeacherDAO.get();
+                DefaultTableModel model = (DefaultTableModel) Table_Teachers.getModel();
+                model.setRowCount(0);
+                teachers.forEach(teacher -> {
+                    model.addRow(new Object[]{teacher.getName(), teacher.getStaffNumber()});
+                });
+                Table_Teachers.setModel(model);
 
-        selectedTeacher = null;
-        txtName.setText("");
-        txtNO.setText("");
-        txtInitials.setText("");
-        txtPhone.setText("");
-        comboGender.setSelectedIndex(0);
+                selectedTeacher = null;
+                txtName.setText("");
+                txtNO.setText("");
+                txtInitials.setText("");
+                txtPhone.setText("");
+                comboGender.setSelectedIndex(0);
+                return null;
+            }
+        };
+        swingWorker.run();
     }
 
     @SuppressWarnings("unchecked")
@@ -151,7 +156,6 @@ public class TeachersFrm extends javax.swing.JFrame {
         setTitle("Teachers");
         setResizable(false);
         setSize(new java.awt.Dimension(490, 320));
-        setType(java.awt.Window.Type.UTILITY);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -184,11 +188,11 @@ public class TeachersFrm extends javax.swing.JFrame {
 
             },
             new String [] {
-                "PK", "Name", "Code"
+                "Name", "Code"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -196,7 +200,6 @@ public class TeachersFrm extends javax.swing.JFrame {
             }
         });
         Table_Teachers.setGridColor(new java.awt.Color(0, 153, 0));
-        Table_Teachers.setRowHeight(20);
         Table_Teachers.getTableHeader().setReorderingAllowed(false);
         Table_Teachers.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -205,9 +208,8 @@ public class TeachersFrm extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(Table_Teachers);
         if (Table_Teachers.getColumnModel().getColumnCount() > 0) {
-            Table_Teachers.getColumnModel().getColumn(0).setPreferredWidth(20);
-            Table_Teachers.getColumnModel().getColumn(1).setPreferredWidth(120);
-            Table_Teachers.getColumnModel().getColumn(2).setPreferredWidth(30);
+            Table_Teachers.getColumnModel().getColumn(0).setPreferredWidth(120);
+            Table_Teachers.getColumnModel().getColumn(1).setPreferredWidth(30);
         }
 
         lblPhone.setFont(new java.awt.Font("Cambria", 1, 12)); // NOI18N
@@ -271,11 +273,11 @@ public class TeachersFrm extends javax.swing.JFrame {
                 .addGap(15, 15, 15)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblInitials, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -320,16 +322,15 @@ public class TeachersFrm extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(lblInitials)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtInitials, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(txtInitials, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE, false)
-                    .addComponent(btnNew, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnDelete))
+                    .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -343,7 +344,7 @@ public class TeachersFrm extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -356,7 +357,7 @@ public class TeachersFrm extends javax.swing.JFrame {
         } else {
             int Response = JOptionPane.showConfirmDialog(null, selectedTeacher.getName() + "'s details will be deleted permanently. Do you want to Continue ?", "Delete", JOptionPane.YES_NO_OPTION);
             if (Response == 0) {
-                teacherDAO.delete(selectedTeacher.getId());
+                TeacherDAO.delete(selectedTeacher.getId());
                 JOptionPane.showMessageDialog(null, "Teacher details deleted from the System", "Deleted", 1);
                 updateUI();
             }
@@ -378,8 +379,7 @@ public class TeachersFrm extends javax.swing.JFrame {
 
     private void Table_TeachersMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Table_TeachersMouseClicked
         int row = Table_Teachers.getSelectedRow();
-        int id = Integer.parseInt(Table_Teachers.getModel().getValueAt(row, 0).toString());
-        selectedTeacher = teacherDAO.get(id);
+        selectedTeacher = teachers.get(row);
         if (selectedTeacher != null) {
             txtName.setText(selectedTeacher.getName());
             txtNO.setText(selectedTeacher.getStaffNumber());

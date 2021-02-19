@@ -18,10 +18,7 @@ import javax.persistence.Query;
  */
 public class StudentDAO {
 
-    public StudentDAO() {
-    }
-
-    public List<Student> get() {
+    public static List<Student> get() {
         EntityManager em = new MyEntityManager().getEm();
         List<Student> students = null;
         try {
@@ -37,15 +34,15 @@ public class StudentDAO {
         return students;
     }
 
-    public List<Student> get(String searchText) {
+    public static List<Student> get(String searchText) {
         searchText = searchText.toUpperCase();
         EntityManager em = new MyEntityManager().getEm();
         List<Student> students = null;
         try {
             String SQL = "SELECT t FROM Student t WHERE t.regNumber LIKE UPPER(?1) OR t.name LIKE UPPER(?2)";
             Query query = em.createQuery(SQL, Student.class);
-            query.setParameter(1, "%"+searchText+"%");
-            query.setParameter(2, "%"+searchText+"%");
+            query.setParameter(1, "%" + searchText + "%");
+            query.setParameter(2, "%" + searchText + "%");
             students = query.getResultList();
             em.getTransaction().commit();
         } catch (Exception ex) {
@@ -56,7 +53,7 @@ public class StudentDAO {
         return students;
     }
 
-    public Student get(int id) {
+    public static Student get(int id) {
         EntityManager em = new MyEntityManager().getEm();
         Student student = em.find(Student.class, id);
         em.getTransaction().commit();
@@ -64,7 +61,7 @@ public class StudentDAO {
         return student;
     }
 
-    public boolean add(Student data) {
+    public static boolean add(Student data) {
         EntityManager em = new MyEntityManager().getEm();
         try {
             em.persist(data);
@@ -78,7 +75,7 @@ public class StudentDAO {
         }
     }
 
-    public boolean update(Student data) {
+    public static boolean update(Student data) {
         EntityManager em = new MyEntityManager().getEm();
         try {
             Student student = em.find(Student.class, data.getId());
@@ -104,7 +101,7 @@ public class StudentDAO {
         }
     }
 
-    public void delete(int pk) {
+    public static void delete(int pk) {
         EntityManager em = new MyEntityManager().getEm();
         Student student = em.find(Student.class, pk);
         em.remove(student);

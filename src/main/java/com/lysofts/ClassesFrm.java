@@ -20,19 +20,17 @@ public class ClassesFrm extends javax.swing.JFrame {
     String sign = "";
     List<Classroom> classrooms;
     Classroom selectedClass;
-    ClassroomDAO classroomDAO;
 
     public ClassesFrm() {
-        this.classroomDAO = new ClassroomDAO();
         initComponents();
 
-        new ConnClass().setFrameIcon(this);
+        new ConnClass().setFrameIcon(ClassesFrm.this);
         updateUI();
     }
 
     private void AddClass() {
         String form = comboForm.getSelectedIndex() > 0 ? comboForm.getSelectedItem().toString() : "";
-        String stream = txtStream.getText().isEmpty()?"": " "+txtStream.getText();
+        String stream = txtStream.getText().isEmpty() ? "" : " " + txtStream.getText();
         String teacher = comboTeacher.getSelectedIndex() > 0 ? comboTeacher.getSelectedItem().toString() : "";
 
         String name = form + stream;
@@ -47,7 +45,7 @@ public class ClassesFrm extends javax.swing.JFrame {
                 classroom.setName(name);
                 classroom.setClassTeacher(teacher);
                 classroom.setSignature(sign);
-                boolean success = classroomDAO.add(classroom);
+                boolean success = ClassroomDAO.add(classroom);
                 if (success) {
                     JOptionPane.showMessageDialog(null, "Classroom details succesfully saved", "Succes", 1);
                 } else {
@@ -58,7 +56,7 @@ public class ClassesFrm extends javax.swing.JFrame {
                 classroom.setName(name);
                 classroom.setClassTeacher(teacher);
                 classroom.setSignature(sign);
-                boolean success = classroomDAO.update(classroom);
+                boolean success = ClassroomDAO.update(classroom);
                 if (success) {
                     JOptionPane.showMessageDialog(null, "Classroom details succesfully updated", "Succes", 1);
                 } else {
@@ -70,29 +68,35 @@ public class ClassesFrm extends javax.swing.JFrame {
     }
 
     private void updateUI() {
-        this.classrooms = classroomDAO.get();
-        List<Teacher> teachers = new TeacherDAO().get();
-        comboTeacher.removeAllItems();
-        comboTeacher.addItem("Select");
-        teachers.forEach(teacher -> {
-            comboTeacher.addItem(teacher.getName());
-        });
+        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                classrooms = ClassroomDAO.get();
+                List<Teacher> teachers = TeacherDAO.get();
+                comboTeacher.removeAllItems();
+                comboTeacher.addItem("Select");
+                teachers.forEach(teacher -> {
+                    comboTeacher.addItem(teacher.getName());
+                });
 
-        DefaultTableModel model = new DefaultTableModel(new String[]{"PK", "Class", "Class Teacher"}, 0);
-        classrooms.forEach(classroom -> {
-            model.addRow(new Object[]{classroom.getId(), classroom.getName(), classroom.getClassTeacher()});
-        });
-        Table_Classes.setModel(model);
-        Table_Classes.getColumn("PK").setPreferredWidth(20);
-        Table_Classes.getColumn("Class").setPreferredWidth(50);
-        Table_Classes.getColumn("Class Teacher").setPreferredWidth(100);
-        
-        selectedClass = null;
-        comboForm.setSelectedIndex(0);
-        txtStream.setText("");
-        comboTeacher.setSelectedIndex(0);
-        sign = "";
-        signaturePic.setIcon(null);
+                DefaultTableModel model = new DefaultTableModel(new String[]{"Class", "Class Teacher"}, 0);
+                classrooms.forEach(classroom -> {
+                    model.addRow(new Object[]{classroom.getName(), classroom.getClassTeacher()});
+                });
+                Table_Classes.setModel(model);
+                Table_Classes.getColumn("Class").setPreferredWidth(50);
+                Table_Classes.getColumn("Class Teacher").setPreferredWidth(100);
+
+                selectedClass = null;
+                comboForm.setSelectedIndex(0);
+                txtStream.setText("");
+                comboTeacher.setSelectedIndex(0);
+                sign = "";
+                signaturePic.setIcon(null);
+                return null;
+            }
+        };
+        swingWorker.run();
     }
 
     private void getsignature() {
@@ -132,7 +136,6 @@ public class ClassesFrm extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Classrooms");
         setResizable(false);
-        setType(java.awt.Window.Type.UTILITY);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -245,27 +248,31 @@ public class ClassesFrm extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 710, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(comboTeacher, 0, 180, Short.MAX_VALUE)
-                        .addComponent(btnUpload, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(signaturePic, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
-                        .addComponent(comboForm, 0, 277, Short.MAX_VALUE)
-                        .addComponent(txtStream)
-                        .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 710, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(10, 10, 10)
-                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(10, 10, 10)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(20, 20, 20)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(comboTeacher, 0, 180, Short.MAX_VALUE)
+                                    .addComponent(btnUpload, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(signaturePic, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
+                                    .addComponent(comboForm, 0, 277, Short.MAX_VALUE)
+                                    .addComponent(txtStream)
+                                    .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(12, 12, 12)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(10, 10, 10)
+                                .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnUpload, comboForm, comboTeacher, signaturePic});
@@ -275,7 +282,7 @@ public class ClassesFrm extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -291,14 +298,15 @@ public class ClassesFrm extends javax.swing.JFrame {
                         .addGap(24, 24, 24)
                         .addComponent(btnUpload, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(10, 10, 10)
-                        .addComponent(signaturePic, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 401, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(17, Short.MAX_VALUE))
+                        .addComponent(signaturePic, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
 
         jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {comboForm, comboTeacher});
@@ -321,8 +329,7 @@ public class ClassesFrm extends javax.swing.JFrame {
     private void Table_ClassesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Table_ClassesMouseClicked
         signaturePic.setIcon(null);
         int row = Table_Classes.getSelectedRow();
-        int id = Integer.parseInt(String.valueOf(Table_Classes.getModel().getValueAt(row, 0).toString()));
-        selectedClass = classroomDAO.get(id);
+        selectedClass = classrooms.get(row);
         if (selectedClass != null) {
             String parts[] = selectedClass.getName().split(" ");
             int partCount = parts.length;
@@ -336,7 +343,7 @@ public class ClassesFrm extends javax.swing.JFrame {
                 txtStream.setText("");
             }
             comboTeacher.setSelectedItem(selectedClass.getClassTeacher());
-            sign = selectedClass.getSignature();            
+            sign = selectedClass.getSignature();
             getsignature();
         }
     }//GEN-LAST:event_Table_ClassesMouseClicked
@@ -347,7 +354,7 @@ public class ClassesFrm extends javax.swing.JFrame {
         } else {
             int res = JOptionPane.showConfirmDialog(null, "Do you want to delete this Classroom permanently ?", "Delete", JOptionPane.YES_NO_OPTION);
             if (res == 0) {
-                classroomDAO.delete(selectedClass.getId());
+                ClassroomDAO.delete(selectedClass.getId());
                 JOptionPane.showMessageDialog(null, "Classroom data deleted");
                 updateUI();
             }

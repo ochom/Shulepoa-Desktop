@@ -4,7 +4,9 @@ import com.lysofts.dao.HouseDAO;
 import com.lysofts.entities.House;
 import com.lysofts.utils.ConnClass;
 import java.util.List;
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 
 public class HousesFrm extends javax.swing.JFrame {
@@ -22,16 +24,22 @@ public class HousesFrm extends javax.swing.JFrame {
     }
 
     private void updateUI() {
-        houses = houseDAO.get();
-        DefaultTableModel model = new DefaultTableModel(new String[]{"Number", "House name"}, 0);
-        houses.forEach(house -> {
-            model.addRow(new Object[]{house.getId(), house.getName()});
-        });
+        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                houses = houseDAO.get();
+                DefaultListModel listModel = new DefaultListModel();
+                houses.forEach(house -> {
+                    listModel.addElement(house.getName());
+                });
 
-        tableHouses.setModel(model);
-        tableHouses.getColumn("House name").setPreferredWidth(100);
-        selectedHouse = null;
-        txtName.setText("");
+                listDorms.setModel(listModel);
+                selectedHouse = null;
+                txtName.setText("");
+                return  null;
+            }
+        };
+        swingWorker.run();
     }
 
     @SuppressWarnings("unchecked")
@@ -41,14 +49,13 @@ public class HousesFrm extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         txtName = new javax.swing.JTextField();
         btnSave = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tableHouses = new javax.swing.JTable();
         btnDelete = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        listDorms = new javax.swing.JList<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Houses & Dormitories");
         setResizable(false);
-        setType(java.awt.Window.Type.UTILITY);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -67,33 +74,6 @@ public class HousesFrm extends javax.swing.JFrame {
             }
         });
 
-        tableHouses.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "ID", "House Name"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tableHouses.getTableHeader().setReorderingAllowed(false);
-        tableHouses.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tableHousesMouseClicked(evt);
-            }
-        });
-        jScrollPane1.setViewportView(tableHouses);
-        if (tableHouses.getColumnModel().getColumnCount() > 0) {
-            tableHouses.getColumnModel().getColumn(1).setPreferredWidth(200);
-        }
-
         btnDelete.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Delete_16x16.png"))
         );
         btnDelete.setText("Delete");
@@ -102,6 +82,15 @@ public class HousesFrm extends javax.swing.JFrame {
                 btnDeleteActionPerformed(evt);
             }
         });
+
+        listDorms.setBorder(javax.swing.BorderFactory.createTitledBorder("Dormitories"));
+        listDorms.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listDorms.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listDormsMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(listDorms);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -117,30 +106,28 @@ public class HousesFrm extends javax.swing.JFrame {
                     .addComponent(txtName)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(27, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(42, 42, 42)
+                .addComponent(jLabel2)
+                .addGap(3, 3, 3)
+                .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(23, Short.MAX_VALUE)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 382, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(42, 42, 42)
-                        .addComponent(jLabel2)
-                        .addGap(3, 3, 3)
-                        .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(39, 39, 39))
+                .addContainerGap(22, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(28, 28, 28))
         );
 
-        setSize(new java.awt.Dimension(537, 474));
+        setSize(new java.awt.Dimension(494, 370));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -171,15 +158,6 @@ public class HousesFrm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnSaveActionPerformed
 
-    private void tableHousesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableHousesMouseClicked
-        int row = tableHouses.getSelectedRow();
-        int id = Integer.parseInt(String.valueOf(tableHouses.getValueAt(row, 0).toString()));
-        selectedHouse = houseDAO.get(id);
-        if (selectedHouse != null) {
-            txtName.setText(selectedHouse.getName());
-        }
-    }//GEN-LAST:event_tableHousesMouseClicked
-
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         this.dispose();
         new AdminPanelFrm().setVisible(true);
@@ -197,6 +175,11 @@ public class HousesFrm extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void listDormsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listDormsMouseClicked
+        selectedHouse = houses.get(listDorms.getSelectedIndex());
+        txtName.setText(selectedHouse.getName());
+    }//GEN-LAST:event_listDormsMouseClicked
 
     /**
      * @param args the command line arguments
@@ -237,8 +220,8 @@ public class HousesFrm extends javax.swing.JFrame {
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnSave;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tableHouses;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JList<String> listDorms;
     private javax.swing.JTextField txtName;
     // End of variables declaration//GEN-END:variables
 }

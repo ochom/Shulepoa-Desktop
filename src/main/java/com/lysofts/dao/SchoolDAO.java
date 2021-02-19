@@ -18,10 +18,7 @@ import javax.persistence.Query;
  */
 public class SchoolDAO {
 
-    public SchoolDAO() {
-    }
-
-    public School get() {
+    public static School get() {
         String SQL = "SELECT t FROM School t";
         School school = null;
         EntityManager em = new MyEntityManager().getEm();
@@ -40,7 +37,7 @@ public class SchoolDAO {
         return school;
     }
 
-    public School get(int id) {
+    public static School get(int id) {
         EntityManager em = new MyEntityManager().getEm();
         School school = em.find(School.class, id);
         em.getTransaction().commit();
@@ -48,7 +45,7 @@ public class SchoolDAO {
         return school;
     }
 
-    public boolean add(School data) {
+    public static boolean add(School data) {
         EntityManager em = new MyEntityManager().getEm();
         try {
             em.persist(data);
@@ -62,7 +59,7 @@ public class SchoolDAO {
         }
     }
 
-    public boolean update(School data) {
+    public static boolean update(School data) {
         EntityManager em = new MyEntityManager().getEm();
         try {
             School school = em.find(School.class, data.getId());

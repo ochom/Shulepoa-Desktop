@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Student Payament Receipt" pageWidth="297" pageHeight="421" whenNoDataType="BlankPage" columnWidth="269" leftMargin="14" rightMargin="14" topMargin="14" bottomMargin="14" whenResourceMissingType="Empty" uuid="911ff491-5d46-46ff-b5de-3bd30536b471">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#FFFFFF"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="student_id" class="java.lang.String"/>
+	<parameter name="academic_year" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT tblSchool.*,Student_details.*,tbl_fee_register.*,
+(SELECT sum(debit) FROM tbl_fee_register WHERE adm=Student_ID AND academic_year=$P{academic_year}) AS Required,
+(SELECT sum(credit) FROM tbl_fee_register WHERE adm=Student_ID AND academic_year=$P{academic_year}) AS Paid,
+(SELECT sum(debit)-sum(credit) FROM tbl_fee_register WHERE adm=Student_ID AND academic_year=$P{academic_year}) AS Balance
+FROM tblSchool,Student_details INNER JOIN tbl_fee_register ON Student_ID=adm 
+WHERE Student_ID=$P{student_id}
+ORDER BY ID DESC
+LIMIT 1;]]>
+	</queryString>
+	<field name="School_Code" class="java.lang.Object"/>
+	<field name="School_id" class="java.lang.Object"/>
+	<field name="School_name" class="java.lang.Object"/>
+	<field name="School_Posta" class="java.lang.Object"/>
+	<field name="School_logo" class="java.lang.Object"/>
+	<field name="School_Motto" class="java.lang.Object"/>
+	<field name="School_Email" class="java.lang.Object"/>
+	<field name="School_Contact" class="java.lang.Object"/>
+	<field name="Principal_name" class="java.lang.Object"/>
+	<field name="Principal_Signature" class="java.lang.Object"/>
+	<field name="ClosingDate" class="java.lang.Object"/>
+	<field name="OpeningDate" class="java.lang.Object"/>
+	<field name="Full_Purchase" class="java.lang.Object"/>
+	<field name="TrialDeadline" class="java.lang.Object"/>
+	<field name="Student_ID" class="java.lang.Object"/>
+	<field name="Student_name" class="java.lang.Object"/>
+	<field name="Student_Class" class="java.lang.Object"/>
+	<field name="kcpe_marks" class="java.lang.Object"/>
+	<field name="kcpe_grade" class="java.lang.Object"/>
+	<field name="Picture" class="java.lang.Object"/>
+	<field name="DOA" class="java.lang.Object"/>
+	<field name="DOB" class="java.lang.Object"/>
+	<field name="Gender" class="java.lang.Object"/>
+	<field name="Mode_of_study" class="java.lang.Object"/>
+	<field name="House" class="java.lang.Object"/>
+	<field name="Father" class="java.lang.Object"/>
+	<field name="Mother" class="java.lang.Object"/>
+	<field name="Phone1" class="java.lang.Object"/>
+	<field name="Phone2" class="java.lang.Object"/>
+	<field name="SubjectEntries" class="java.lang.Object"/>
+	<field name="F1T1M" class="java.lang.Object"/>
+	<field name="F1T1P" class="java.lang.Object"/>
+	<field name="F1T2M" class="java.lang.Object"/>
+	<field name="F1T2P" class="java.lang.Object"/>
+	<field name="F1T3M" class="java.lang.Object"/>
+	<field name="F1T3P" class="java.lang.Object"/>
+	<field name="F2T1M" class="java.lang.Object"/>
+	<field name="F2T1P" class="java.lang.Object"/>
+	<field name="F2T2M" class="java.lang.Object"/>
+	<field name="F2T2P" class="java.lang.Object"/>
+	<field name="F2T3M" class="java.lang.Object"/>
+	<field name="F2T3P" class="java.lang.Object"/>
+	<field name="F3T1M" class="java.lang.Object"/>
+	<field name="F3T1P" class="java.lang.Object"/>
+	<field name="F3T2M" class="java.lang.Object"/>
+	<field name="F3T2P" class="java.lang.Object"/>
+	<field name="F3T3M" class="java.lang.Object"/>
+	<field name="F3T3P" class="java.lang.Object"/>
+	<field name="F4T1M" class="java.lang.Object"/>
+	<field name="F4T1P" class="java.lang.Object"/>
+	<field name="F4T2M" class="java.lang.Object"/>
+	<field name="F4T2P" class="java.lang.Object"/>
+	<field name="F4T3M" class="java.lang.Object"/>
+	<field name="F4T3P" class="java.lang.Object"/>
+	<field name="F1T1MG" class="java.lang.Object"/>
+	<field name="F1T1OP" class="java.lang.Object"/>
+	<field name="F1T2MG" class="java.lang.Object"/>
+	<field name="F1T2OP" class="java.lang.Object"/>
+	<field name="F1T3MG" class="java.lang.Object"/>
+	<field name="F1T3OP" class="java.lang.Object"/>
+	<field name="F2T1MG" class="java.lang.Object"/>
+	<field name="F2T1OP" class="java.lang.Object"/>
+	<field name="F2T2MG" class="java.lang.Object"/>
+	<field name="F2T2OP" class="java.lang.Object"/>
+	<field name="F2T3MG" class="java.lang.Object"/>
+	<field name="F2T3OP" class="java.lang.Object"/>
+	<field name="F3T1MG" class="java.lang.Object"/>
+	<field name="F3T1OP" class="java.lang.Object"/>
+	<field name="F3T2MG" class="java.lang.Object"/>
+	<field name="F3T2OP" class="java.lang.Object"/>
+	<field name="F3T3MG" class="java.lang.Object"/>
+	<field name="F3T3OP" class="java.lang.Object"/>
+	<field name="F4T1MG" class="java.lang.Object"/>
+	<field name="F4T1OP" class="java.lang.Object"/>
+	<field name="F4T2MG" class="java.lang.Object"/>
+	<field name="F4T2OP" class="java.lang.Object"/>
+	<field name="F4T3MG" class="java.lang.Object"/>
+	<field name="F4T3OP" class="java.lang.Object"/>
+	<field name="FeeRequired" class="java.lang.Object"/>
+	<field name="FeePaid" class="java.lang.Object"/>
+	<field name="FeeBalance" class="java.lang.Object"/>
+	<field name="id" class="java.lang.Object"/>
+	<field name="academic_year" class="java.lang.Object"/>
+	<field name="adm" class="java.lang.Object"/>
+	<field name="code" class="java.lang.Object"/>
+	<field name="debit" class="java.lang.Object"/>
+	<field name="credit" class="java.lang.Object"/>
+	<field name="register_date" class="java.lang.Object"/>
+	<field name="mode_of_payment" class="java.lang.Object"/>
+	<field name="served_by" class="java.lang.Object"/>
+	<field name="amount_in_words" class="java.lang.Object"/>
+	<field name="receipt_no" class="java.lang.Object"/>
+	<field name="Required" class="java.lang.Object"/>
+	<field name="Paid" class="java.lang.Object"/>
+	<field name="Balance" class="java.lang.Object"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="380" splitType="Stretch">
+			<textField>
+				<reportElement x="35" y="0" width="187" height="20" uuid="b1186b2f-393f-4225-8d1b-bfec4c6fe84f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{School_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="35" y="20" width="187" height="11" uuid="f314adc6-e757-4beb-8e8a-3f0e656867fd"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{School_Posta}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="35" y="31" width="187" height="11" uuid="c571e657-ca9b-430c-8004-dbafa4c25539"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{School_Motto}]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame" isUsingCache="true" onErrorType="Blank">
+				<reportElement x="0" y="0" width="40" height="40" uuid="12f35bd3-c25a-4cd8-ae25-1d425df0f2ad"/>
+				<imageExpression><![CDATA[$F{School_logo}]]></imageExpression>
+			</image>
+			<image scaleImage="FillFrame" isUsingCache="true" onErrorType="Blank">
+				<reportElement x="229" y="0" width="40" height="40" uuid="52a77612-5d56-4f98-8294-f07ee79e5e2a"/>
+				<imageExpression><![CDATA[$F{School_logo}]]></imageExpression>
+			</image>
+			<line>
+				<reportElement x="3" y="42" width="250" height="1" uuid="5d44c42d-c812-4456-99ba-a52a5c660c8a"/>
+			</line>
+			<textField>
+				<reportElement x="35" y="43" width="187" height="17" uuid="ac389ba3-249a-4955-9fab-faff7238c5f9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Cambria" size="11" isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Fee Payment Receipt"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="24" y="60" width="120" height="24" forecolor="#FF0000" uuid="b0f10afa-28a7-4e7a-816b-849580bc60ba"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Cambria Math" size="17" isBold="true" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{receipt_no}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="4" y="60" width="82" height="17" forecolor="#0000FF" uuid="606799e7-9199-46f5-bbca-c0a4aaab536a"/>
+				<textElement>
+					<font fontName="Cambria Math" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Receipt No.]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="7" y="84" width="250" height="64" forecolor="#FFFFFF" uuid="2033e36b-9c76-44bd-bb31-ba8221e4463f"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#0000CC"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="7" y="162" width="250" height="104" forecolor="#000099" uuid="c049916e-c59d-4415-a168-55ce0733f251"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement style="table" x="7" y="162" width="120" height="86" uuid="a4e0148c-5786-4fcc-91d0-e16612230746"/>
+				<textElement textAlignment="Center">
+					<font isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Votehead]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table" x="127" y="162" width="130" height="86" uuid="0850361c-c2d0-4cf9-bb29-e03fbad163d0"/>
+				<textElement textAlignment="Center">
+					<font isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Amount]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="7" y="85" width="189" height="14" uuid="c2a6fc8e-1b87-4f38-9864-b9ff71bff767"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA["NAME: "+$F{Student_name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="7" y="113" width="189" height="14" uuid="7c470bea-afa9-4b83-8b5a-63ff0d58bb05"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CLASS: "+$F{Student_Class}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="7" y="99" width="189" height="14" uuid="14fd03ad-4d8a-4ae6-8802-fa52aa7454b6"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ADM NO: "+$F{Student_ID}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="7" y="127" width="189" height="14" uuid="a5f9f26a-87d9-43c1-9cfa-f0155960ec0e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA["STUDY MODE: "+$F{Mode_of_study}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="7" y="270" width="250" height="38" uuid="79a975e0-0945-4e51-a65b-c236b2f575af"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="Calibri" size="10" isItalic="true" isUnderline="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Amount in words: Ksh. \n"+$F{amount_in_words}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="123" y="322" width="130" height="14" forecolor="#FF0000" uuid="afd6f4fd-5c17-4584-866c-266dcf84d660"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true" isItalic="false" isUnderline="true"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Paid Ksh. "+$F{Paid}+".00"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="123" y="336" width="130" height="14" forecolor="#FF0000" uuid="670058a8-894c-4e7a-b2b8-bcfde6e7055e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true" isItalic="false" isUnderline="true"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Balance Ksh."+$F{Balance}+".00"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="50" y="358" width="146" height="12" uuid="85708775-9780-4701-93d2-f99ea6aaf8bf"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false" isItalic="false" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Served By: "+$F{served_by}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="24" y="83" width="113" height="1" uuid="21df0351-c1c8-44ee-95dc-007640d354df"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="180" y="70" width="89" height="14" uuid="9966f335-4691-4180-8f66-b9bf3a11d8b1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{register_date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="149" y="70" width="31" height="14" uuid="49f9e39d-2d6c-4900-98e6-9298f5097ea7"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<text><![CDATA[Date:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table" x="127" y="248" width="130" height="18" forecolor="#000000" uuid="51af8b9d-4ebb-4a43-9d8c-a300aa8a17cf"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true" isItalic="false" isUnderline="true"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{credit}+".00"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="123" y="308" width="130" height="14" forecolor="#FF0000" uuid="98409339-863b-4b2a-a317-da42d9d79edb"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true" isItalic="false" isUnderline="true"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Required Ksh. "+$F{Required}+".00"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table" x="7" y="248" width="120" height="18" uuid="152c0171-5442-4c5f-889b-ef2ec8ffeb70"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="13" splitType="Stretch">
+			<staticText>
+				<reportElement x="3" y="0" width="250" height="10" forecolor="#666666" uuid="4f35c07e-efed-42f1-a127-90d8e056d535"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Cambria" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[amce Developed and Supported by lySOFTS]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

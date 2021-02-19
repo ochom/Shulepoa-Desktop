@@ -18,10 +18,7 @@ import javax.persistence.Query;
  */
 public class HouseDAO {
 
-    public HouseDAO() {
-    }
-
-    public List<House> get() {
+    public static List<House> get() {
         EntityManager em = new MyEntityManager().getEm();
         List<House> house = null;
         try {
@@ -37,7 +34,7 @@ public class HouseDAO {
         return house;
     }
 
-    public House get(int id) {
+    public static House get(int id) {
         EntityManager em = new MyEntityManager().getEm();
         House classroom = em.find(House.class, id);
         em.getTransaction().commit();
@@ -45,7 +42,7 @@ public class HouseDAO {
         return classroom;
     }
 
-    public boolean add(House data) {
+    public static boolean add(House data) {
         EntityManager em = new MyEntityManager().getEm();
         try {
             em.persist(data);
@@ -59,7 +56,7 @@ public class HouseDAO {
         }
     }
 
-    public boolean update(House data) {
+    public static boolean update(House data) {
         EntityManager em = new MyEntityManager().getEm();
         try {
             House classroom = em.find(House.class, data.getId());
@@ -74,7 +71,7 @@ public class HouseDAO {
         }
     }
 
-    public void delete(int pk) {
+    public static void delete(int pk) {
         EntityManager em = new MyEntityManager().getEm();
         House classroom = em.find(House.class, pk);
         em.remove(classroom);

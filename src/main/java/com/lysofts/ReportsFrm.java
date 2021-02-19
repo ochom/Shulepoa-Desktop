@@ -72,17 +72,9 @@ public class ReportsFrm extends javax.swing.JFrame {
             String fileName = String.format("reports/%s.jrxml", reportName);
             System.out.println("FILE IS:  "+fileName);
             InputStream report = getClass().getClassLoader().getResourceAsStream(fileName);
-            if (report != null) {
-                System.out.println("Report file loaded");
-            }else{
-                System.out.println("Report file NOT loaded");
-                return;
-            }
-            JasperDesign jd = JRXmlLoader.load(getClass().getClassLoader().getResourceAsStream(fileName));
-            System.out.println("JasperDesign loaded");
+            JasperDesign jd = JRXmlLoader.load(report);
             
-            JasperReport jr = JasperCompileManager.compileReport(jd); 
-            System.out.println("JasperReport compiled"+jr);           
+            JasperReport jr = JasperCompileManager.compileReport(jd);      
             JasperPrint jp  = JasperFillManager.fillReport(jr, params, conn);
             JRViewer jv     = new JRViewer(jp);
 

@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,19 +33,13 @@ public class StudentsFrm extends javax.swing.JFrame {
 
     String filepath = null;
     private java.util.List<Student> students = new ArrayList<>();
-    private StudentDAO studentDAO = null;
     private Student selectedStudent = null;
 
     private java.util.List<Classroom> classrooms = new ArrayList<>();
-    private ClassroomDAO classroomDAO = null;
     private Classroom selectedClassroom = null;
 
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
     public StudentsFrm() {
-        this.studentDAO = new StudentDAO();
-        this.classroomDAO = new ClassroomDAO();
-        this.classrooms = classroomDAO.get();
+        this.classrooms = ClassroomDAO.get();
 
         initComponents();
         new ConnClass().setFrameIcon(StudentsFrm.this);
@@ -55,67 +48,81 @@ public class StudentsFrm extends javax.swing.JFrame {
     }
 
     private void updateMainUI() {
-        comboHouse.removeAllItems();
-        comboHouse.addItem("Select");
-        new HouseDAO().get().forEach(house -> {
-            comboHouse.addItem(house.getName());
-        });
+        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                comboHouse.removeAllItems();
+                comboHouse.addItem("Select");
+                HouseDAO.get().forEach(house -> {
+                    comboHouse.addItem(house.getName());
+                });
 
-        DefaultTableModel model = (DefaultTableModel) tableClassrooms.getModel();
-        model.setRowCount(0);
-        txtClass.removeAllItems();
-        comboClassFromPromotion.removeAllItems();
-        comboClassToPromotion.removeAllItems();
+                DefaultTableModel model = (DefaultTableModel) tableClassrooms.getModel();
+                model.setRowCount(0);
+                txtClass.removeAllItems();
+                comboClassFromPromotion.removeAllItems();
+                comboClassToPromotion.removeAllItems();
 
-        txtClass.addItem("Select");
-        comboClassFromPromotion.addItem("Select");
-        comboClassToPromotion.addItem("Select");
-        classrooms.forEach(classroom -> {
-            model.addRow(new Object[]{classroom.getName()});
-            txtClass.addItem(classroom.getName());
-            comboClassFromPromotion.addItem(classroom.getName());
-            comboClassToPromotion.addItem(classroom.getName());
-        });
-        comboClassFromPromotion.addItem("Completed");
-        comboClassToPromotion.addItem("Completed");
+                txtClass.addItem("Select");
+                comboClassFromPromotion.addItem("Select");
+                comboClassToPromotion.addItem("Select");
+                classrooms.forEach(classroom -> {
+                    model.addRow(new Object[]{classroom.getName()});
+                    txtClass.addItem(classroom.getName());
+                    comboClassFromPromotion.addItem(classroom.getName());
+                    comboClassToPromotion.addItem(classroom.getName());
+                });
+                comboClassFromPromotion.addItem("Completed");
+                comboClassToPromotion.addItem("Completed");
 
-        DefaultTableModel model2 = (DefaultTableModel) tableStudents.getModel();
-        model2.setRowCount(0);
-        students.forEach(student -> {
-            model2.addRow(new Object[]{student.getRegNumber(), student.getName(), student.getClassroom()});
-        });
+                DefaultTableModel model2 = (DefaultTableModel) tableStudents.getModel();
+                model2.setRowCount(0);
+                students.forEach(student -> {
+                    model2.addRow(new Object[]{student.getRegNumber(), student.getName(), student.getClassroom()});
+                });
+                return null;
+            }
+        };
+        swingWorker.run();
     }
 
     private void updateStudentUI() {
-        if (selectedStudent == null) {
-            txtClass.setSelectedItem(selectedClassroom.getName());
-            txtName.setText("");
-            txtADMNO.setText("");
-            txtKCPE.setText("");
-            txtKcpeGrade.setText("");
-            txtDOA.setDate(null);
-            txtDOB.setDate(null);
-            txtFather.setText("");
-            txtPhone1.setText("");
-            cmbGender.setSelectedIndex(0);
-            comboHouse.setSelectedIndex(0);
-            filepath = "";
-            profilePic.setIcon(null);
-        } else {
-            txtClass.setSelectedItem(selectedStudent.getClassroom());
-            txtName.setText(selectedStudent.getName());
-            txtADMNO.setText(selectedStudent.getRegNumber());
-            txtKCPE.setText(selectedStudent.getKcpeMarks());
-            txtKcpeGrade.setText(selectedStudent.getKcpeGrade());
-            ((JTextField) txtDOA.getDateEditor().getUiComponent()).setText(selectedStudent.getDoa());
-            ((JTextField) txtDOB.getDateEditor().getUiComponent()).setText(selectedStudent.getDob());
-            cmbGender.setSelectedItem(selectedStudent.getSex());
-            comboHouse.setSelectedItem(selectedStudent.getHouse());
-            txtFather.setText(selectedStudent.getKinName());
-            txtPhone1.setText(selectedStudent.getKinPhone());
-            filepath = selectedStudent.getPassport();
-            getProfilePic();
-        }
+        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                if (selectedStudent == null) {
+                    txtClass.setSelectedItem(selectedClassroom.getName());
+                    txtName.setText("");
+                    txtADMNO.setText("");
+                    txtKCPE.setText("");
+                    txtKcpeGrade.setText("");
+                    txtDOA.setDate(null);
+                    txtDOB.setDate(null);
+                    txtFather.setText("");
+                    txtPhone1.setText("");
+                    cmbGender.setSelectedIndex(0);
+                    comboHouse.setSelectedIndex(0);
+                    filepath = "";
+                    profilePic.setIcon(null);
+                } else {
+                    txtClass.setSelectedItem(selectedStudent.getClassroom());
+                    txtName.setText(selectedStudent.getName());
+                    txtADMNO.setText(selectedStudent.getRegNumber());
+                    txtKCPE.setText(selectedStudent.getKcpeMarks());
+                    txtKcpeGrade.setText(selectedStudent.getKcpeGrade());
+                    ((JTextField) txtDOA.getDateEditor().getUiComponent()).setText(selectedStudent.getDoa());
+                    ((JTextField) txtDOB.getDateEditor().getUiComponent()).setText(selectedStudent.getDob());
+                    cmbGender.setSelectedItem(selectedStudent.getSex());
+                    comboHouse.setSelectedItem(selectedStudent.getHouse());
+                    txtFather.setText(selectedStudent.getKinName());
+                    txtPhone1.setText(selectedStudent.getKinPhone());
+                    filepath = selectedStudent.getPassport();
+                    getProfilePic();
+                }
+                return null;
+            }
+        };
+        swingWorker.run();
     }
 
     private void AddStudent() {
@@ -139,7 +146,7 @@ public class StudentsFrm extends javax.swing.JFrame {
                 student.setHouse(comboHouse.getSelectedIndex() > 0 ? comboHouse.getSelectedItem().toString() : "");
                 student.setKinName(txtFather.getText());
                 student.setKinPhone(txtPhone1.getText());
-                if (studentDAO.add(student)) {
+                if (StudentDAO.add(student)) {
                     JOptionPane.showMessageDialog(null, "Student details succesfully saved", "Succes", 1);
                 } else {
                     JOptionPane.showMessageDialog(null, "Error occcured while saving the data", "Error", 0);
@@ -158,7 +165,7 @@ public class StudentsFrm extends javax.swing.JFrame {
                 student.setHouse(comboHouse.getSelectedIndex() > 0 ? comboHouse.getSelectedItem().toString() : "");
                 student.setKinName(txtFather.getText());
                 student.setKinPhone(txtPhone1.getText());
-                if (studentDAO.update(student)) {
+                if (StudentDAO.update(student)) {
                     JOptionPane.showMessageDialog(null, "Student details succesfully updated", "Succes", 1);
                 } else {
                     JOptionPane.showMessageDialog(null, "Error occcured while updating the data", "Error", 0);
@@ -274,19 +281,18 @@ public class StudentsFrm extends javax.swing.JFrame {
         jLabel20 = new javax.swing.JLabel();
         jLabel21 = new javax.swing.JLabel();
         cmbFamditted = new javax.swing.JComboBox<>();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        tableClassrooms = new javax.swing.JTable();
-        btnOpenStudentsDialog1 = new javax.swing.JButton();
+        dlgProcessing = new javax.swing.JDialog();
+        jLabel1 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tableStudents = new javax.swing.JTable();
         txtSearch = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
         btnOpenStudentsDialog = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        tableClassrooms = new javax.swing.JTable();
+        btnOpenStudentsDialog1 = new javax.swing.JButton();
 
         StudentDetailsDialog.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         StudentDetailsDialog.setTitle("Student Registration");
@@ -562,6 +568,7 @@ public class StudentsFrm extends javax.swing.JFrame {
         );
 
         PromotionDlg.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        PromotionDlg.setTitle("Promote Students");
         PromotionDlg.setModal(true);
         PromotionDlg.setResizable(false);
         PromotionDlg.setType(java.awt.Window.Type.UTILITY);
@@ -672,18 +679,19 @@ public class StudentsFrm extends javax.swing.JFrame {
         jPanel9Layout.setHorizontalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(comboClassFromPromotion, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(8, 8, 8)
-                .addComponent(jLabel19)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(comboClassToPromotion, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, 524, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(comboClassFromPromotion, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(8, 8, 8)
+                        .addComponent(jLabel19)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(comboClassToPromotion, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, 524, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel9Layout.setVerticalGroup(
@@ -831,74 +839,45 @@ public class StudentsFrm extends javax.swing.JFrame {
             .addComponent(jPanel16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
+        dlgProcessing.setResizable(false);
+        dlgProcessing.setType(java.awt.Window.Type.POPUP);
+
+        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel1.setText("Creating certificate. Please wait...");
+
+        javax.swing.GroupLayout dlgProcessingLayout = new javax.swing.GroupLayout(dlgProcessing.getContentPane());
+        dlgProcessing.getContentPane().setLayout(dlgProcessingLayout);
+        dlgProcessingLayout.setHorizontalGroup(
+            dlgProcessingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, dlgProcessingLayout.createSequentialGroup()
+                .addGap(0, 14, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 386, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        dlgProcessingLayout.setVerticalGroup(
+            dlgProcessingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Students Management");
         setResizable(false);
         setSize(new java.awt.Dimension(210, 266));
-        setType(java.awt.Window.Type.UTILITY);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
         });
 
-        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-
-        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Select Class", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12), new java.awt.Color(255, 0, 0))); // NOI18N
-        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        tableClassrooms.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Classrooms"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tableClassrooms.getTableHeader().setReorderingAllowed(false);
-        tableClassrooms.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tableClassroomsMouseClicked(evt);
-            }
-        });
-        jScrollPane4.setViewportView(tableClassrooms);
-        if (tableClassrooms.getColumnModel().getColumnCount() > 0) {
-            tableClassrooms.getColumnModel().getColumn(0).setPreferredWidth(50);
-        }
-
-        jPanel3.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 140, 290));
-
-        btnOpenStudentsDialog1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        btnOpenStudentsDialog1.setForeground(new java.awt.Color(255, 0, 0));
-        btnOpenStudentsDialog1.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Stock Index Up_16x16.png"))
-        );
-        btnOpenStudentsDialog1.setText("Promotion");
-        btnOpenStudentsDialog1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 204, 0)));
-        btnOpenStudentsDialog1.setIconTextGap(10);
-        btnOpenStudentsDialog1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOpenStudentsDialog1ActionPerformed(evt);
-            }
-        });
-        jPanel3.add(btnOpenStudentsDialog1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 320, 140, 30));
-
         jPanel5.setBackground(new java.awt.Color(153, 255, 153));
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Students List", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12), new java.awt.Color(204, 0, 0))); // NOI18N
 
+        tableStudents.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         tableStudents.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Reg Number", "Name", "Classroom"
+                "Reg", "Name", "Classroom"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -963,15 +942,17 @@ public class StudentsFrm extends javax.swing.JFrame {
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(4, 4, 4)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 606, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
                         .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, 0)
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(260, 260, 260)
-                        .addComponent(btnOpenStudentsDialog, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnOpenStudentsDialog, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 443, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
@@ -982,61 +963,75 @@ public class StudentsFrm extends javax.swing.JFrame {
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnOpenStudentsDialog, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 443, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
         );
 
-        jPanel1.setBackground(new java.awt.Color(0, 204, 0));
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Select Class", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12), new java.awt.Color(255, 0, 0))); // NOI18N
+        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setFont(new java.awt.Font("Old English Text MT", 1, 24)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Student Registration");
+        tableClassrooms.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(44, 44, 44)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 652, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(164, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
-        );
+            },
+            new String [] {
+                "Classrooms"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false
+            };
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(44, 44, 44))
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tableClassrooms.getTableHeader().setReorderingAllowed(false);
+        tableClassrooms.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableClassroomsMouseClicked(evt);
+            }
+        });
+        jScrollPane4.setViewportView(tableClassrooms);
+        if (tableClassrooms.getColumnModel().getColumnCount() > 0) {
+            tableClassrooms.getColumnModel().getColumn(0).setPreferredWidth(50);
+        }
+
+        jPanel3.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 140, 290));
+
+        btnOpenStudentsDialog1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        btnOpenStudentsDialog1.setForeground(new java.awt.Color(255, 0, 0));
+        btnOpenStudentsDialog1.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Stock Index Up_16x16.png"))
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
+        btnOpenStudentsDialog1.setText("Promotion");
+        btnOpenStudentsDialog1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 204, 0)));
+        btnOpenStudentsDialog1.setIconTextGap(10);
+        btnOpenStudentsDialog1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOpenStudentsDialog1ActionPerformed(evt);
+            }
+        });
+        jPanel3.add(btnOpenStudentsDialog1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 320, 140, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -1048,7 +1043,7 @@ public class StudentsFrm extends javax.swing.JFrame {
             int row = tableClassrooms.getSelectedRow();
             this.selectedClassroom = classrooms.get(row);
             this.students = new ArrayList<>();
-            studentDAO.get().forEach(student -> {
+            StudentDAO.get().forEach(student -> {
                 if (student.getClassroom().equals(selectedClassroom.getName())) {
                     students.add(student);
                 }
@@ -1063,9 +1058,9 @@ public class StudentsFrm extends javax.swing.JFrame {
         } else {
             int Response = JOptionPane.showConfirmDialog(null, selectedStudent.getName() + "'s details will be deleted permanently. Do you want to Continue ?", "Delete", JOptionPane.YES_NO_OPTION);
             if (Response == 0) {
-                studentDAO.delete(selectedStudent.getId());
+                StudentDAO.delete(selectedStudent.getId());
                 this.students = new ArrayList<>();
-                studentDAO.get().forEach(student -> {
+                StudentDAO.get().forEach(student -> {
                     if (student.getClassroom().equals(selectedClassroom.getName())) {
                         students.add(student);
                     }
@@ -1080,7 +1075,7 @@ public class StudentsFrm extends javax.swing.JFrame {
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         AddStudent();
         this.students = new ArrayList<>();
-        studentDAO.get().forEach(student -> {
+        StudentDAO.get().forEach(student -> {
             if (student.getClassroom().equals(selectedClassroom.getName())) {
                 students.add(student);
             }
@@ -1121,7 +1116,7 @@ public class StudentsFrm extends javax.swing.JFrame {
 
     private void txtSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchKeyReleased
         String searchText = txtSearch.getText();
-        students = studentDAO.get(searchText);
+        students = StudentDAO.get(searchText);
         updateMainUI();
     }//GEN-LAST:event_txtSearchKeyReleased
 
@@ -1139,7 +1134,7 @@ public class StudentsFrm extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) promotionTable.getModel();
         model.setRowCount(0);
         String className = comboClassFromPromotion.getSelectedIndex() > 0 ? comboClassFromPromotion.getSelectedItem().toString() : "";
-        students = studentDAO.get();
+        students = StudentDAO.get();
         students.forEach(student -> {
             if (student.getClassroom().equals(className)) {
                 model.addRow(new Object[]{bool, student.getRegNumber(), student.getName(), student.getClassroom()});
@@ -1178,7 +1173,7 @@ public class StudentsFrm extends javax.swing.JFrame {
                 int rowCount = promotionTable.getRowCount();
                 for (int i = 0; i < rowCount; i++) {
                     if ((boolean) promotionTable.getValueAt(i, 0)) {
-                        Student student = studentDAO.get(i);
+                        Student student = StudentDAO.get(i);
                         student.setClassroom(toClassroom);
                     }
                 }
@@ -1218,84 +1213,73 @@ public class StudentsFrm extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         String searchText = txtSearch.getText();
-        students = studentDAO.get(searchText);
+        students = StudentDAO.get(searchText);
         updateMainUI();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        String name, idno, doa, dob, fadmited, leavedate, remarks;
-        InputStream Report, logo = getClass().getClassLoader().getResourceAsStream("/main/images/kenya.png");
-        //extract the court of arm logo
-        String fileLocation = FileSystemView.getFileSystemView().getDefaultDirectory().getPath() + "/Acme";
-        String filename = fileLocation + "/logo.png";
-        File lg = new File(filename);
-        if (lg.exists()) {
-            lg.delete();
-            //ystem.out.println("File found and deleted");
-        }
-        try {
+        dlgProcessing.pack();
+        dlgProcessing.setLocationRelativeTo(this);
+        dlgProcessing.setVisible(true);
+        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                String fadmited, leavedate, remarks;
+                InputStream report, logo;
+                
+                logo = getClass().getClassLoader().getResourceAsStream("images/kenya.png");                
+                BufferedImage image = null;
+                if (logo != null) {
+                    image = ImageIO.read(logo);
+                }else{
+                    System.out.print("Image not Found");
+                }
+                
+                fadmited = cmbFamditted.getSelectedItem().toString();
+                leavedate = ((JTextField) txtLeaveDate.getDateEditor().getUiComponent()).getText();
+                remarks = taRmarks.getText();
+                
+                try {
+                    HashMap param = new HashMap();
+                    param.put("idno", selectedStudent.getRegNumber());
+                    param.put("sname", selectedStudent.getName());
+                    param.put("doa", selectedStudent.getDoa());
+                    param.put("dob", selectedStudent.getDob());
+                    param.put("fadmitted", fadmited);
+                    param.put("leavedate", leavedate);
+                    param.put("remarks", remarks);
+                    param.put("courtOfArm", image);
 
-            FileOutputStream fos = new FileOutputStream(filename);
-            byte[] b = new byte[1024];
-            int i;
-            while ((i = logo.read(b)) >= 0) {
-                fos.write(b, 0, i);
-                fos.flush();
+                    report = getClass().getClassLoader().getResourceAsStream("reports/LeavingCert.jrxml");
+                    JasperDesign jd = JRXmlLoader.load(report);
+                    JasperReport jr = JasperCompileManager.compileReport(jd);
+                    JasperPrint jp = JasperFillManager.fillReport(jr, param, ConnClass.connectDB());
+                    JRViewer jv = new JRViewer(jp);
+
+                    JFrame jf = new JFrame("Students Leaving Certificate: " + selectedStudent.getRegNumber());
+                    jf.getContentPane().add(jv);
+                    jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
+                    jf.setType(Type.NORMAL);
+                    jf.validate();
+                    jf.setSize(new Dimension(900, 650));
+                    jf.setLocationRelativeTo(StudentsFrm.this);
+                    jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    jf.setVisible(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
             }
-            //System.out.println("File extracted Succesfully to :"+filename);
-            fos.close();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        idno = txtADMNO.getText();
-        name = txtName.getText();
-        doa = ((JTextField) txtDOA.getDateEditor().getUiComponent()).getText();
-        dob = ((JTextField) txtDOB.getDateEditor().getUiComponent()).getText();
-        fadmited = cmbFamditted.getSelectedItem().toString();
-        leavedate = ((JTextField) txtLeaveDate.getDateEditor().getUiComponent()).getText();
-        remarks = taRmarks.getText();
-        try {
+            @Override
+            protected void done() {
+                dlgProcessing.setVisible(false);
+                RemarksDlg.dispose();
+                StudentDetailsDialog.dispose();
+            }
+        };
+        swingWorker.run();
 
-            Report = getClass().getClassLoader().getResourceAsStream("Reports/LeavingCert.jrxml");
-            String C_arm = filename;
-
-            HashMap param = new HashMap();
-            param.put("idno", idno);
-            param.put("sname", name);
-            param.put("doa", doa);
-            param.put("dob", dob);
-            param.put("fadmitted", fadmited);
-            param.put("leavedate", leavedate);
-            param.put("remarks", remarks);
-            param.put("C_arm", C_arm);
-
-            JasperDesign jd = JRXmlLoader.load(Report);
-            JasperReport jr = JasperCompileManager.compileReport(jd);
-            java.sql.Connection conn = ConnClass.connectDB();
-            JasperPrint jp = JasperFillManager.fillReport(jr, param, conn);
-            JRViewer jv = new JRViewer(jp);
-            RemarksDlg.setVisible(false);
-            StudentDetailsDialog.setVisible(false);
-            JFrame jf = new JFrame();
-            jf.getContentPane().add(jv);
-            jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
-            jf.setType(Type.UTILITY);
-            jf.validate();
-            jf.setVisible(true);
-            jf.setResizable(true);
-            jf.setSize(new Dimension(900, 650));
-            jf.setLocationRelativeTo(this);
-            jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            jf.setTitle("Students Leaving Certificate for: " + name);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        //Delete file after loading it to the report
-        if (lg.exists()) {
-            lg.delete();
-            System.out.println("File found and deleted");
-        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void tableStudentsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableStudentsMouseClicked
@@ -1342,6 +1326,7 @@ public class StudentsFrm extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> comboClassFromPromotion;
     private javax.swing.JComboBox<String> comboClassToPromotion;
     private javax.swing.JComboBox<String> comboHouse;
+    private javax.swing.JDialog dlgProcessing;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -1364,14 +1349,12 @@ public class StudentsFrm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel9;

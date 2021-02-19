@@ -15,13 +15,12 @@ import java.util.List;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class SchoolFrm extends javax.swing.JFrame {
-    String  Logo = "", Sign = "";
+
+    String Logo = "", Sign = "";
     School selectedSchool = null;
     List<Teacher> teachers;
-    
+
     public SchoolFrm() {
-        this.selectedSchool = new SchoolDAO().get();
-        this.teachers = new TeacherDAO().get();
         initComponents();
 
         new ConnClass().setFrameIcon(SchoolFrm.this);
@@ -29,36 +28,45 @@ public class SchoolFrm extends javax.swing.JFrame {
     }
 
     private void updateUI() {
-        comboPrincipal.removeAllItems();
-        comboPrincipal.addItem("Select");
-        
-        teachers.forEach(teacher->{
-            comboPrincipal.addItem(teacher.getName());
-        });
-        
-        if (selectedSchool == null) {
-            txtSchoolName.setText("");
-            txtPostalAddress.setText("");
-            txtMotto.setText("");
-            comboPrincipal.setSelectedIndex(0);
-            Logo = "";
-            Sign = "";
-            getLogo();
-            getSignature();
-        }else{
-            txtSchoolName.setText(selectedSchool.getName());
-            txtPostalAddress.setText(selectedSchool.getPostalAddress());
-            txtMotto.setText(selectedSchool.getMotto());
-            if (selectedSchool.getPrincipal()==null || selectedSchool.getPrincipal().isEmpty()) {
-                comboPrincipal.setSelectedIndex(0);
-            } else {
-                comboPrincipal.setSelectedItem(selectedSchool.getPrincipal());
+        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                selectedSchool = SchoolDAO.get();
+                teachers = TeacherDAO.get();
+                comboPrincipal.removeAllItems();
+                comboPrincipal.addItem("Select");
+
+                teachers.forEach(teacher -> {
+                    comboPrincipal.addItem(teacher.getName());
+                });
+
+                if (selectedSchool == null) {
+                    txtSchoolName.setText("");
+                    txtPostalAddress.setText("");
+                    txtMotto.setText("");
+                    comboPrincipal.setSelectedIndex(0);
+                    Logo = "";
+                    Sign = "";
+                    getLogo();
+                    getSignature();
+                } else {
+                    txtSchoolName.setText(selectedSchool.getName());
+                    txtPostalAddress.setText(selectedSchool.getPostalAddress());
+                    txtMotto.setText(selectedSchool.getMotto());
+                    if (selectedSchool.getPrincipal() == null || selectedSchool.getPrincipal().isEmpty()) {
+                        comboPrincipal.setSelectedIndex(0);
+                    } else {
+                        comboPrincipal.setSelectedItem(selectedSchool.getPrincipal());
+                    }
+                    Logo = selectedSchool.getLogo();
+                    Sign = selectedSchool.getSignature();
+                    getLogo();
+                    getSignature();
+                }
+                return null;
             }
-            Logo = selectedSchool.getLogo();
-            Sign = selectedSchool.getSignature();
-            getLogo();
-            getSignature();            
-        }
+        };
+        swingWorker.run();
     }
 
     private void getLogo() {
@@ -125,7 +133,6 @@ public class SchoolFrm extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("School Details");
         setResizable(false);
-        setType(java.awt.Window.Type.UTILITY);
         addWindowFocusListener(new java.awt.event.WindowFocusListener() {
             public void windowGainedFocus(java.awt.event.WindowEvent evt) {
             }
@@ -285,7 +292,6 @@ public class SchoolFrm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
-        SchoolDAO dao = new SchoolDAO();
         School school;
         if (selectedSchool == null) {
             school = new School();
@@ -295,12 +301,12 @@ public class SchoolFrm extends javax.swing.JFrame {
             school.setLogo(Logo);
             school.setPrincipal(comboPrincipal.getSelectedItem().toString());
             school.setSignature(Sign);
-            if (dao.add(school)) {
+            if (SchoolDAO.add(school)) {
                 JOptionPane.showMessageDialog(null, "School details saved succesfully", "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(null, "Error occured while saving data", "Error", JOptionPane.WARNING_MESSAGE);
             }
-        }else{
+        } else {
             school = selectedSchool;
             school.setName(txtSchoolName.getText());
             school.setPostalAddress(txtPostalAddress.getText());
@@ -308,7 +314,7 @@ public class SchoolFrm extends javax.swing.JFrame {
             school.setLogo(Logo);
             school.setPrincipal(comboPrincipal.getSelectedItem().toString());
             school.setSignature(Sign);
-            if (dao.update(school)) {
+            if (SchoolDAO.update(school)) {
                 JOptionPane.showMessageDialog(null, "School details updated succesfully", "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(null, "Error occured while updating data", "Error", JOptionPane.WARNING_MESSAGE);

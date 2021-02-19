@@ -16,12 +16,9 @@ import javax.persistence.Query;
  *
  * @author mspace-dev
  */
-public class SubjectDAO {
+public  class SubjectDAO {
 
-    public SubjectDAO() {
-    }
-
-    public List<Subject> get() {
+    public static List<Subject> get() {
         EntityManager em = new MyEntityManager().getEm();
         List<Subject> subjects = null;
         try {
@@ -37,7 +34,7 @@ public class SubjectDAO {
         return subjects;
     }
 
-    public Subject get(int id) {
+    public static Subject get(int id) {
         EntityManager em = new MyEntityManager().getEm();
         Subject subject = em.find(Subject.class, id);
         em.getTransaction().commit();
@@ -45,7 +42,7 @@ public class SubjectDAO {
         return subject;
     }
 
-    public boolean add(Subject data) {
+    public static boolean add(Subject data) {
         EntityManager em = new MyEntityManager().getEm();
         try {
             em.persist(data);
@@ -59,7 +56,7 @@ public class SubjectDAO {
         }
     }
 
-    public boolean update(Subject data) {
+    public static boolean update(Subject data) {
         EntityManager em = new MyEntityManager().getEm();
         try {
             Subject subject = em.find(Subject.class, data.getId());
@@ -88,7 +85,7 @@ public class SubjectDAO {
         }
     }
 
-    public void delete(int pk) {
+    public static void delete(int pk) {
         EntityManager em = new MyEntityManager().getEm();
         Subject subject = em.find(Subject.class, pk);
         em.remove(subject);

@@ -17,11 +17,8 @@ import javax.persistence.Query;
  * @author mspace-dev
  */
 public class TeacherDAO {
-
-    public TeacherDAO() {
-    }
-
-    public List<Teacher> get() {
+    
+    public static List<Teacher> get() {
         EntityManager em = new MyEntityManager().getEm();
         List<Teacher> teachers = null;
         try {
@@ -37,7 +34,7 @@ public class TeacherDAO {
         return teachers;
     }
 
-    public Teacher get(int id) {
+    public static Teacher get(int id) {
         EntityManager em = new MyEntityManager().getEm();
         Teacher teacher = em.find(Teacher.class, id);
         em.getTransaction().commit();
@@ -45,7 +42,7 @@ public class TeacherDAO {
         return teacher;
     }
 
-    public boolean add(Teacher data) {
+    public static boolean add(Teacher data) {
         EntityManager em = new MyEntityManager().getEm();
         try {
             em.persist(data);
@@ -59,7 +56,7 @@ public class TeacherDAO {
         }
     }
 
-    public boolean update(Teacher data) {
+    public static boolean update(Teacher data) {
         EntityManager em = new MyEntityManager().getEm();
         try {
             Teacher teacher = em.find(Teacher.class, data.getId());
@@ -78,7 +75,7 @@ public class TeacherDAO {
         }
     }
 
-    public void delete(int pk) {
+    public static void delete(int pk) {
         EntityManager em = new MyEntityManager().getEm();
         Teacher teacher = em.find(Teacher.class, pk);
         em.remove(teacher);

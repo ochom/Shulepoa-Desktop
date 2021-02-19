@@ -13,76 +13,45 @@ import java.awt.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 public class AdminPanelFrm extends javax.swing.JFrame {
 
-    School school = null;    
+    School school = null;
 
     public AdminPanelFrm() {
-        this.school = new SchoolDAO().get();
-        
         initComponents();
-        
-        new ConnClass().setFrameIcon(this);
-        updateRunningDate();
-        getNumberOfPersons();
+
+        new ConnClass().setFrameIcon(AdminPanelFrm.this);
         updateUI();
     }
 
-
-    private void updateRunningDate() {
-        SwingWorker<Void, Integer> worker = new SwingWorker<Void, Integer>() {
-
+    private void updateUI() {
+        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                for (int i = 0; i < 1000000; i++) {
-                    Thread.sleep(1000);
-                    Calendar cal = new GregorianCalendar();
-                    int day = cal.get(Calendar.DAY_OF_MONTH);
-                    int month = cal.get(Calendar.MONTH)+1;
-                    int year = cal.get(Calendar.YEAR);
-                    MenuDate.setText(day + "/" + month + "/" + year);
+                school = new SchoolDAO().get();
+                if (school != null) {
+                    AdminPanelFrm.this.setTitle(school.getName() + " Examination Manager");
+                    txtSchoolName.setText(school.getName());
+                    txtClDate.setText(school.getClosingDate());
+                    txtOpDate.setText(school.getOpeningDate());
+                    txtCD.setText(school.getClosingDate());
+                    txtOP.setText(school.getOpeningDate());
 
-                    int secs = cal.get(Calendar.SECOND);
-                    int mins = cal.get(Calendar.MINUTE);
-                    int hours = cal.get(Calendar.HOUR_OF_DAY);
-                    MenuTime.setText(hours + ":" + mins + ":" + secs);
+                    txtNumberOfTeachers.setText(String.valueOf(TeacherDAO.get().size()));
+                    txtNumberOfClasses.setText(String.valueOf(ClassroomDAO.get().size()));
+                    txtNumberOfSubjects.setText(String.valueOf(SubjectDAO.get().size()));
+                    txtNumberofStudents.setText(String.valueOf(StudentDAO.get().size()));
+                    txtnumberOfHouses.setText(String.valueOf(HouseDAO.get().size()));
+                } else {
+                    AdminPanelFrm.this.setTitle("School Examination Manager");
                 }
                 return null;
             }
-
-            protected void process(java.util.List<Integer> chucks) {
-            }
-
-            protected void done() {
-            }
         };
-        worker.execute();
+        swingWorker.run();
     }
 
-    private void updateUI() {
-        if(school!=null){
-            this.setTitle(school.getName() + " Examination Manager");
-            txtSchoolName.setText(school.getName());
-            txtClDate.setText(school.getClosingDate());
-            txtOpDate.setText(school.getOpeningDate());
-            txtCD.setText(school.getClosingDate());
-            txtOP.setText(school.getOpeningDate());
-        }else{
-            this.setTitle("School Examination Manager");
-        }
-    }
-
-    private void getNumberOfPersons() {
-        txtNumberOfTeachers.setText(String.valueOf(new TeacherDAO().get().size()));
-        txtNumberOfClasses.setText(String.valueOf(new ClassroomDAO().get().size()));
-        txtNumberOfSubjects.setText(String.valueOf(new SubjectDAO().get().size()));
-        txtNumberofStudents.setText(String.valueOf(new StudentDAO().get().size()));
-        txtnumberOfHouses.setText(String.valueOf(new HouseDAO().get().size()));
-    }
-    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -149,8 +118,6 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem4 = new javax.swing.JMenuItem();
-        MenuDate = new javax.swing.JMenu();
-        MenuTime = new javax.swing.JMenu();
 
         DialogDates.setModal(true);
         DialogDates.setName(""); // NOI18N
@@ -756,7 +723,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
 
     jMenu1.setText("Term Dates");
 
-    jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_MASK));
+    jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_DOWN_MASK));
     jMenuItem1.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Settings_16x16.png"))
     );
     jMenuItem1.setText("Set Term Dates");
@@ -771,7 +738,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
 
     jMenu5.setText("Themes");
 
-    jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
+    jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_DOWN_MASK));
     jMenuItem2.setText("Default (acme)");
     jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -780,7 +747,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jMenu5.add(jMenuItem2);
 
-    jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.ALT_MASK));
+    jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.ALT_DOWN_MASK));
     jMenuItem5.setText("Acryl (acme - Dark)");
     jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -789,7 +756,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jMenu5.add(jMenuItem5);
 
-    jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.ALT_MASK));
+    jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.ALT_DOWN_MASK));
     jMenuItem3.setText("Aero (acme)");
     jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -798,7 +765,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jMenu5.add(jMenuItem3);
 
-    jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M, java.awt.event.InputEvent.ALT_MASK));
+    jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M, java.awt.event.InputEvent.ALT_DOWN_MASK));
     jMenuItem4.setText("Mac (acme)");
     jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -808,12 +775,6 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     jMenu5.add(jMenuItem4);
 
     jMenuBar1.add(jMenu5);
-
-    MenuDate.setText("Date");
-    jMenuBar1.add(MenuDate);
-
-    MenuTime.setText("Time");
-    jMenuBar1.add(MenuTime);
 
     setJMenuBar(jMenuBar1);
 
@@ -986,12 +947,12 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     private void jButton20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton20ActionPerformed
         String OpeningDate = txtOP.getText();
         String ClosingDate = txtCD.getText();
-        if (school!=null) {
+        if (school != null) {
             school.setClosingDate(ClosingDate);
             school.setOpeningDate(OpeningDate);
             boolean success = new SchoolDAO().update(school);
             if (success) {
-                JOptionPane.showMessageDialog(null, "Term dates saved", "acme", JOptionPane.INFORMATION_MESSAGE);                
+                JOptionPane.showMessageDialog(null, "Term dates saved", "acme", JOptionPane.INFORMATION_MESSAGE);
             }
         }
     }//GEN-LAST:event_jButton20ActionPerformed
@@ -1008,8 +969,8 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton15ActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        int res = JOptionPane.showConfirmDialog(null, "Are you sure you want to close the system ?","Close",0);
-        if(res==0){
+        int res = JOptionPane.showConfirmDialog(null, "Are you sure you want to close the system ?", "Close", 0);
+        if (res == 0) {
             System.exit(0);
         }
     }//GEN-LAST:event_formWindowClosing
@@ -1024,7 +985,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
 //        this.dispose();
 //        new FeePanelFrm().setVisible(true);
     }//GEN-LAST:event_jButton18ActionPerformed
-    
+
     public static void main(String args[]) {
         try {
             com.jtattoo.plaf.acryl.AcrylLookAndFeel.setTheme("Default", "", "acme");
@@ -1044,8 +1005,6 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDialog AboutDlg;
     private javax.swing.JDialog DialogDates;
-    private javax.swing.JMenu MenuDate;
-    private javax.swing.JMenu MenuTime;
     private javax.swing.JButton jButton13;
     private javax.swing.JButton jButton15;
     private javax.swing.JButton jButton16;
