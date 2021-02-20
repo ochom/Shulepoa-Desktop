@@ -56,21 +56,12 @@ public class School implements Serializable {
 
     @Column(name = "OpeningDate")
     String openingDate;
+    
+    private boolean activated;
+    
+    private String installed;
 
     public School() {
-    }
-
-    public School(String name, String postalAddress, String logo, String motto, String email, String contact, String principal, String signature, String closingDate, String openingDate) {
-        this.name = name;
-        this.postalAddress = postalAddress;
-        this.logo = logo;
-        this.motto = motto;
-        this.email = email;
-        this.contact = contact;
-        this.principal = principal;
-        this.signature = signature;
-        this.closingDate = closingDate;
-        this.openingDate = openingDate;
     }
 
     public int getId() {
@@ -159,5 +150,21 @@ public class School implements Serializable {
 
     public void setOpeningDate(String openingDate) {
         this.openingDate = openingDate;
+    }
+
+    public boolean isActivated() {
+        return activated;
+    }
+
+    public void setActivated(boolean activated) {
+        this.activated = activated;
+    }
+
+    public String getInstalled() {
+        return installed;
+    }
+
+    public void setInstalled(String installed) {
+        this.installed = installed;
     }
 }

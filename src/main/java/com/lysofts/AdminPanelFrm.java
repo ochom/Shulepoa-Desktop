@@ -110,6 +110,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         jPanel9 = new javax.swing.JPanel();
         jButton15 = new javax.swing.JButton();
         jButton27 = new javax.swing.JButton();
+        jButton19 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -701,23 +702,43 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         }
     });
 
+    jButton19.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+    jButton19.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Properties_24x24.png"))
+
+    );
+    jButton19.setText("Users");
+    jButton19.setToolTipText("Help information on the product");
+    jButton19.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    jButton19.setFocusable(false);
+    jButton19.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    jButton19.setPreferredSize(new java.awt.Dimension(55, 40));
+    jButton19.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    jButton19.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButton19ActionPerformed(evt);
+        }
+    });
+
     javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
     jPanel9.setLayout(jPanel9Layout);
     jPanel9Layout.setHorizontalGroup(
         jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
-            .addContainerGap(17, Short.MAX_VALUE)
+        .addGroup(jPanel9Layout.createSequentialGroup()
+            .addContainerGap()
             .addComponent(jButton27, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(jButton15, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addContainerGap())
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(jButton19, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     jPanel9Layout.setVerticalGroup(
         jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
             .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                .addComponent(jButton15, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE)
-                .addComponent(jButton27, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jButton15, javax.swing.GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE)
+                .addComponent(jButton27, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton19, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE))
             .addContainerGap())
     );
 
@@ -981,10 +1002,14 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
-//        closeConnection();
-//        this.dispose();
-//        new FeePanelFrm().setVisible(true);
+        this.dispose();
+        new FeePanelFrm().setVisible(true);
     }//GEN-LAST:event_jButton18ActionPerformed
+
+    private void jButton19ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton19ActionPerformed
+        this.dispose();
+        new UsersFrm().setVisible(true);
+    }//GEN-LAST:event_jButton19ActionPerformed
 
     public static void main(String args[]) {
         try {
@@ -1010,6 +1035,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     private javax.swing.JButton jButton16;
     private javax.swing.JButton jButton17;
     private javax.swing.JButton jButton18;
+    private javax.swing.JButton jButton19;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton20;
     private javax.swing.JButton jButton27;

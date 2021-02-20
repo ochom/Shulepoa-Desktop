@@ -181,14 +181,14 @@ LIMIT 1;]]>
 			<textField>
 				<reportElement x="24" y="60" width="120" height="24" forecolor="#FF0000" uuid="b0f10afa-28a7-4e7a-816b-849580bc60ba"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="17" isBold="true" isUnderline="false"/>
+					<font fontName="Serif" size="17" isBold="true" isUnderline="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{receipt_no}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="4" y="60" width="82" height="17" forecolor="#0000FF" uuid="606799e7-9199-46f5-bbca-c0a4aaab536a"/>
 				<textElement>
-					<font fontName="Cambria Math" size="12" isBold="true"/>
+					<font fontName="Serif" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Receipt No.]]></text>
 			</staticText>

@@ -6,7 +6,7 @@
 package com.lysofts.dao;
 
 import com.lysofts.entities.MyEntityManager;
-import com.lysofts.entities.School;
+import com.lysofts.entities.User;
 import com.lysofts.utils.ConnClass;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -16,36 +16,34 @@ import javax.persistence.Query;
  *
  * @author mspace-dev
  */
-public class SchoolDAO {
+public class UserDAO {
 
-    public static School get() {
-        String SQL = "SELECT t FROM School t";
-        School school = null;
+    public static List<User> get() {
         EntityManager em = new MyEntityManager().getEm();
+        List<User> users = null;
         try {
-            Query query = em.createQuery(SQL, School.class);
-            List<School> schools = query.getResultList();
-            if (schools.size() > 0) {
-                school = schools.get(0);
-            }
+            String SQL = "SELECT t FROM User t";
+            Query query = em.createQuery(SQL, User.class);
+            users = query.getResultList();
             em.getTransaction().commit();
         } catch (Exception ex) {
             ConnClass.printError(ex);
         } finally {
             em.close();
         }
-        return school;
+        return users;
     }
 
-    public static School get(int id) {
+
+    public static User get(int id) {
         EntityManager em = new MyEntityManager().getEm();
-        School school = em.find(School.class, id);
+        User user = em.find(User.class, id);
         em.getTransaction().commit();
         em.close();
-        return school;
+        return user;
     }
 
-    public static boolean add(School data) {
+    public static boolean add(User data) {
         EntityManager em = new MyEntityManager().getEm();
         try {
             em.persist(data);
@@ -59,21 +57,14 @@ public class SchoolDAO {
         }
     }
 
-    public static boolean update(School data) {
+    public static boolean update(User data) {
         EntityManager em = new MyEntityManager().getEm();
         try {
-            School school = em.find(School.class, data.getId());
-            school.setName(data.getName());
-            school.setPostalAddress(data.getPostalAddress());
-            school.setMotto(data.getMotto());
-            school.setContact(data.getContact());
-            school.setPrincipal(data.getPrincipal());
-            school.setLogo(data.getLogo());
-            school.setSignature(data.getSignature());
-            school.setClosingDate(data.getClosingDate());
-            school.setOpeningDate(data.getOpeningDate());
-            school.setActivated(data.isActivated());
-            school.setInstalled(data.getInstalled());
+            User user = em.find(User.class, data.getId());
+            user.setName(data.getName());
+            user.setPassword(data.getPassword());
+            user.setPhone(data.getPhone());
+            user.setEmail(data.getEmail());
             em.getTransaction().commit();
             return true;
         } catch (Exception ex) {
@@ -82,5 +73,12 @@ public class SchoolDAO {
         } finally {
             em.close();
         }
+    }
+
+    public static void delete(int pk) {
+        EntityManager em = new MyEntityManager().getEm();
+        User user = em.find(User.class, pk);
+        em.remove(user);
+        em.getTransaction().commit();
     }
 }

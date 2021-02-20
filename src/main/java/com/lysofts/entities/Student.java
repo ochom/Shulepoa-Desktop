@@ -23,43 +23,52 @@ public class Student implements Serializable {
     
     @Id            
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    private int id;
     
     @Column(name = "Student_ID")
-    String regNumber;
+    private String regNumber;
     
     @Column(name = "Student_name")
-    String name;
+    private String name;
     
     @Column(name = "Student_Class")
-    String classroom;
+    private String classroom;
     
     @Column(name = "kcpe_marks")
-    String kcpeMarks;
+    private String kcpeMarks;
     
     @Column(name = "kcpe_grade")
-    String kcpeGrade;
+    private String kcpeGrade;
     
     @Column(name = "Picture")
-    String passport;
+    private String passport;
     
     @Column(name = "DOA")
-    String doa;
+    private String doa;
     
     @Column(name = "DOB")
-    String dob;
+    private String dob;
     
     @Column(name = "Gender")
-    String sex;
+    private String sex;
     
     @Column(name = "House")
-    String house;
+    private String house;
     
     @Column(name = "Father")
-    String kinName;
+    private String kinName;
     
     @Column(name = "Phone1")
-    String kinPhone;
+    private String kinPhone;
+    
+    @Column(name = "FeeRequired")
+    private String feeReuired;
+    
+    @Column(name = "FeePaid")
+    private String feePaid;
+    
+    @Column(name = "FeeBalance")
+    private String feeBalance;
 
     public Student() {
     }
@@ -166,6 +175,30 @@ public class Student implements Serializable {
 
     public void setKinPhone(String kinPhone) {
         this.kinPhone = kinPhone;
+    }
+
+    public String getFeeReuired() {
+        return feeReuired;
+    }
+
+    public void setFeeReuired(String feeReuired) {
+        this.feeReuired = feeReuired;
+    }
+
+    public String getFeePaid() {
+        return feePaid;
+    }
+
+    public void setFeePaid(String feePaid) {
+        this.feePaid = feePaid;
+    }
+
+    public String getFeeBalance() {
+        return feeBalance;
+    }
+
+    public void setFeeBalance(String feeBalance) {
+        this.feeBalance = feeBalance;
     }
     
 }

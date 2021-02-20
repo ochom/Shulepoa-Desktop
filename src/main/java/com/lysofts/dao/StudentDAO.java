@@ -91,6 +91,9 @@ public class StudentDAO {
             student.setHouse(data.getHouse());
             student.setKinName(data.getKinName());
             student.setKinPhone(data.getKinPhone());
+            student.setFeeReuired(data.getFeeReuired());
+            student.setFeePaid(data.getFeePaid());
+            student.setFeeBalance(data.getFeeBalance());
             em.getTransaction().commit();
             return true;
         } catch (Exception ex) {

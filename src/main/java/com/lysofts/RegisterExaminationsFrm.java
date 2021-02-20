@@ -1,127 +1,146 @@
-
 package com.lysofts;
 
 import com.lysofts.utils.ConnClass;
 import com.jtattoo.plaf.DecorationHelper;
+import com.lysofts.dao.ExamDAO;
+import com.lysofts.dao.SchoolDAO;
+import com.lysofts.entities.Exam;
+import com.lysofts.entities.School;
 import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 
 public class RegisterExaminationsFrm extends javax.swing.JFrame {
-    
-    Connection Conn=ConnClass.connectDB();
-    PreparedStatement pst=null; 
-    ResultSet rs=null; 
-    String sql=null;
-    
-    
+
+    Connection Conn = ConnClass.connectDB();
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+    String sql = null;
+
+    List<Exam> exams = new ArrayList<>();
+    School school = null;
+
     public RegisterExaminationsFrm() {
-        initComponents();        
-        
+        initComponents();
+
         jLabel3.setVisible(false);
         jProgressBar1.setVisible(false);
         ProgressNo.setVisible(false);
-        
-        new ConnClass().setFrameIcon(this);
-        getSavedExaminations();
-        getMostRecentSavedExaminations();
-        
+
+        new ConnClass().setFrameIcon(RegisterExaminationsFrm.this);
+        updateUI();
+
     }
-    
-    private void UpdateStudentsEntriesForAnExam(String Year,String Term){
-        SwingWorker<Void,Integer> worker = new SwingWorker<Void,Integer>(){
-            int Total = 0; 
-           @Override
-           protected Void doInBackground() throws Exception {    
+
+    private void updateUI() {
+        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                school = SchoolDAO.get();
+                comboYear.removeAllItems();
+                ExamDAO.getYears().forEach(exam -> {
+                    comboYear.addItem(exam.getYear());
+                });
+
+                exams = ExamDAO.get();
+                if (exams.size() > 0) {
+                    Exam latestExam = exams.get(exams.size() - 1);
+                    comboTerm.setSelectedItem(latestExam.getTerm());
+                }
+                return null;
+            }
+        };
+        swingWorker.run();
+    }
+
+    private void UpdateStudentsEntriesForAnExam(String Year, String Term) {
+        SwingWorker<Void, Integer> worker = new SwingWorker<Void, Integer>() {
+            int Total = 0;
+
+            @Override
+            protected Void doInBackground() throws Exception {
                 jLabel3.setVisible(true);
                 jProgressBar1.setVisible(true);
                 ProgressNo.setVisible(true);
-                 try{                    
+                try {
                     PreparedStatement ps = Conn.prepareStatement("Select Count(*)  AS Total From student_details WHERE (Student_class != 'Completed')");
                     ResultSet rst = ps.executeQuery();
-                    if(rst.next()){
+                    if (rst.next()) {
                         Total = Integer.parseInt(rst.getString("Total"));
                     }
-                    pst  = Conn.prepareStatement("SELECT * FROM Student_details WHERE (Student_class != 'Completed')");
-                    rs =pst.executeQuery();
-                    int i=0;                   
-                    while(rs.next()){ 
+                    pst = Conn.prepareStatement("SELECT * FROM Student_details WHERE (Student_class != 'Completed')");
+                    rs = pst.executeQuery();
+                    int i = 0;
+                    while (rs.next()) {
                         i++;
-                       Thread.sleep(10);
-                       String StudentID =rs.getString("Student_id");
-                       String StudentClass = rs.getString("Student_Class");              
-                       String sql1 = "Select Count(*) from Students_exams WHERE (SE_Student_id = '"+StudentID+"' AND Year='"+Year+"' AND Term='"+Term+"' AND SE_StudentClass='"+StudentClass+"')";
-                       PreparedStatement pst1 = Conn.prepareStatement(sql1);
-                       ResultSet rs1 = pst1.executeQuery();
-                       if(rs1.next()){
-                           int Count = Integer.parseInt(rs1.getString("Count(*)")); 
-                           if(Count<1){
-                               pst  = Conn.prepareStatement("INSERT INTO Students_Exams (SE_Student_id,SE_StudentClass,Year,Term)VALUES(?,?,?,?)");
-                               pst.setString(1, StudentID);    pst.setString(2, StudentClass);
-                               pst.setString(3, Year);     pst.setString(4, Term);   
-                               pst.executeUpdate();
-                           }
-                       }
-                    publish(i);
-                 }
-                }catch(SQLException e){
+                        Thread.sleep(10);
+                        String StudentID = rs.getString("Student_id");
+                        String StudentClass = rs.getString("Student_Class");
+                        String sql1 = "Select Count(*) from Students_exams WHERE (SE_Student_id = '" + StudentID + "' AND Year='" + Year + "' AND Term='" + Term + "' AND SE_StudentClass='" + StudentClass + "')";
+                        PreparedStatement pst1 = Conn.prepareStatement(sql1);
+                        ResultSet rs1 = pst1.executeQuery();
+                        if (rs1.next()) {
+                            int Count = Integer.parseInt(rs1.getString("Count(*)"));
+                            if (Count < 1) {
+                                pst = Conn.prepareStatement("INSERT INTO Students_Exams (SE_Student_id,SE_StudentClass,Year,Term)VALUES(?,?,?,?)");
+                                pst.setString(1, StudentID);
+                                pst.setString(2, StudentClass);
+                                pst.setString(3, Year);
+                                pst.setString(4, Term);
+                                pst.executeUpdate();
+                            }
+                        }
+                        publish(i);
+                    }
+                } catch (SQLException e) {
                     System.out.println(e);
-                }finally{
-                    try{
-                         Conn.close();
-                    }catch(SQLException e){
+                } finally {
+                    try {
+                        Conn.close();
+                    } catch (SQLException e) {
                         System.out.println(e);
                     }
-                }            
-               return null;
-           }
-           @Override
-           protected void process( List <Integer> chucks){
-               int progress = chucks.get(chucks.size()-1);
-               ProgressNo.setText((int) ((progress/(Total * 1.0))*100) +"%");
-               jProgressBar1.setValue((int) ((progress/(Total * 1.0))*100));
-           }
-           @Override
-           protected void done(){
+                }
+                return null;
+            }
+
+            @Override
+            protected void process(List<Integer> chucks) {
+                int progress = chucks.get(chucks.size() - 1);
+                ProgressNo.setText((int) ((progress / (Total * 1.0)) * 100) + "%");
+                jProgressBar1.setValue((int) ((progress / (Total * 1.0)) * 100));
+            }
+
+            @Override
+            protected void done() {
                 jLabel3.setVisible(false);
                 jProgressBar1.setVisible(false);
                 ProgressNo.setVisible(false);
-                
-                RegisterExaminationsFrm.this.dispose();
-                new AdminPanelFrm().setVisible(true); 
-           }
-       };
-       worker.execute();
-    
-    }
-    private void getSavedExaminations(){
-        comboYear.removeAllItems();
-        try{
-            sql = "Select * From tblExams GROUP BY Year  ORDER BY Year DESC ";
-            pst = Conn.prepareStatement(sql);
-            rs =pst.executeQuery();
-            while(rs.next()){
-                comboYear.addItem(rs.getString("Year"));
+
+                if (school == null || (!school.isActivated() && hasExpired())) {
+                    RegisterExaminationsFrm.this.dispose();
+                    new ActivationFrm().setVisible(true);
+                } else {
+                    RegisterExaminationsFrm.this.dispose();
+                    new AdminPanelFrm().setVisible(true);
+                }
             }
-        }catch(SQLException e){
-            System.out.println(e);
-        }
+        };
+        worker.execute();
+
     }
-    private void getMostRecentSavedExaminations(){
-        try{
-            sql = "Select * From tblExams ORDER BY Examination_id DESC limit 1";
-            pst = Conn.prepareStatement(sql);
-            rs =pst.executeQuery();
-            if(rs.next()){
-                comboYear.setSelectedItem(rs.getString("Year"));
-                comboTerm.setSelectedItem(rs.getString("Term"));
-            }
-        }catch(SQLException e){
-            System.out.println(e);
-        }
+
+    private boolean hasExpired() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        String today = dateFormat.format(new java.util.Date());
+        int leo = Integer.parseInt(today), installed = Integer.parseInt(school.getInstalled());
+        return (leo - installed) >= 15;
     }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -251,38 +270,35 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         String Year = comboYear.getSelectedItem().toString();
         String Term = comboTerm.getSelectedItem().toString();
-        if(Year.isEmpty()){
+        if (Year.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Enter the Year of Examination");
-        }else if(Term.equalsIgnoreCase("Select")){
+        } else if (Term.equalsIgnoreCase("Select")) {
             JOptionPane.showMessageDialog(null, "Select the current term of Examination");
-        }else{
+        } else {
             btnSave.setEnabled(false);
-            try{
-                sql ="SELECT Count(*) FROM tblExams Where (Year='"+Year+"' AND TERM='"+Term+"')";
-                pst = Conn.prepareStatement(sql);
-                rs = pst.executeQuery();
-                if(rs.next()){
-                    int Count = Integer.parseInt(rs.getString("Count(*)"));
-                    if(Count<=0){
-                        sql = "INSERT INTO tblExams (Year,Term,Exam_name)VALUES(?,?,?)";
-                        pst = Conn.prepareStatement(sql);
-                        pst.setString(1, Year); pst.setString(2, Term); pst.setString(3, "Default");
-                        pst.executeUpdate();
-                        System.out.println("Examination details updated Succesfully");  
-                    } 
+            boolean examExists = false;
+            for (Exam exam : exams) {
+                if (exam.getYear().equals(Year) && exam.getTerm().equals(Term)) {
+                    examExists = true;
                 }
-                UpdateStudentsEntriesForAnExam(Year,Term);
-            }catch(SQLException e){
-                btnSave.setEnabled(true);
-                JOptionPane.showMessageDialog(null,"Error: "+e.getMessage(),"System Error",0); 
+            }
+            if (!examExists) {
+                Exam exam = new Exam();
+                exam.setYear(Year);
+                exam.setTerm(Term);
+                exam.setName("Default");
+                ExamDAO.add(exam);
+                UpdateStudentsEntriesForAnExam(Year, Term);
+            } else {
+                UpdateStudentsEntriesForAnExam(Year, Term);
             }
         }
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        try{
+        try {
             Conn.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }//GEN-LAST:event_formWindowClosed
@@ -293,7 +309,7 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
     public static void main(String args[]) {
         try {
             com.jtattoo.plaf.acryl.AcrylLookAndFeel.setTheme("Green", "", "acme");
-            UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");            
+            UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             ConnClass.printError(ex);
         }
