@@ -15,31 +15,16 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
     PreparedStatement pst=null;
     ResultSet rs =null;
     String sql = null;
+    JDialog loadingDlg = ConnClass.loadingDlg(this);
     
     public TeachersSubjectFrm() {
         initComponents();
-        
-        getIcon();
+        new ConnClass().setFrameIcon(TeachersSubjectFrm.this);
+        loadingDlg.setVisible(true);
         
         getClassesForMe();
         getSubjectForMe();
     }
-    private void getIcon(){
-        try {
-            this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/A Logo Icon File.png")));
-          
-        }catch(Exception e){
-            System.out.println(e);
-        }
-        try {
-            this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/A logo.png")));
-          
-        }catch(Exception e){
-            System.out.println(e);
-      
-        }
-    }
-    
     
     private void updateMySubjects(){
         try{

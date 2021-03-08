@@ -4,7 +4,6 @@ import com.lysofts.utils.ConnClass;
 import com.jtattoo.plaf.DecorationHelper;
 import com.lysofts.dao.UserDAO;
 import com.lysofts.entities.User;
-import com.lysofts.utils.API;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +13,12 @@ public class LoginFrm extends javax.swing.JFrame {
 
     List<User> users = new ArrayList<>();
     String username, password;
+    JDialog loadingDlg = ConnClass.loadingDlg(LoginFrm.this);
 
     public LoginFrm() {
         initComponents();
         new ConnClass().setFrameIcon(LoginFrm.this);
-        updateUI();
+        loadingDlg.setVisible(true);
     }
 
     private boolean isEmpty(String string) {
@@ -36,6 +36,12 @@ public class LoginFrm extends javax.swing.JFrame {
                     txtUsername.addItem(user.getName());
                 });
                 return null;
+            }
+
+            @Override
+            protected void done() {
+                super.done();
+                loadingDlg.setVisible(false);
             }
         };
         swingWorker.run();
@@ -55,14 +61,14 @@ public class LoginFrm extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(LoginFrm.this, "Login successful");
                     LoginFrm.this.dispose();
                     new RegisterExaminationsFrm().setVisible(true);
-
                 } else {
                     processingDialog.dispose();
-                    JOptionPane.showMessageDialog(LoginFrm.this, "Check credential and internet connect then try again", "Login failed", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(LoginFrm.this, "Check credential then try again", "Login failed", JOptionPane.INFORMATION_MESSAGE);
 
                 }
                 return null;
             }
+
         };
         worker.execute();
     }
@@ -117,6 +123,9 @@ public class LoginFrm extends javax.swing.JFrame {
         setName(""); // NOI18N
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
@@ -245,7 +254,14 @@ public class LoginFrm extends javax.swing.JFrame {
     private void txtPasswordKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPasswordKeyTyped
         char c = evt.getKeyChar();
         if (c == KeyEvent.VK_ENTER) {
-            login();
+            password = txtPassword.getText();
+            if (txtUsername.getSelectedIndex() <= 0) {
+                JOptionPane.showMessageDialog(LoginFrm.this, "Enter your username");
+            } else if (isEmpty(password)) {
+                JOptionPane.showMessageDialog(LoginFrm.this, "Enter your password");
+            } else {
+                login();
+            }
         }
     }//GEN-LAST:event_txtPasswordKeyTyped
 
@@ -253,6 +269,10 @@ public class LoginFrm extends javax.swing.JFrame {
         this.dispose();
         new RegisterFrm().setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        updateUI();
+    }//GEN-LAST:event_formWindowOpened
 
     public static void main(String args[]) {
         try {

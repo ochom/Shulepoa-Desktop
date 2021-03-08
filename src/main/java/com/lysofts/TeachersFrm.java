@@ -13,13 +13,14 @@ public class TeachersFrm extends javax.swing.JFrame {
     private List<String> sal;
     private List<Teacher> teachers = new ArrayList<>();
     private Teacher selectedTeacher = null;
+    JDialog loadingDlg = ConnClass.loadingDlg(this);
 
     public TeachersFrm() {
         initComponents();
 
         new ConnClass().setFrameIcon(TeachersFrm.this);
+        loadingDlg.setVisible(true);
         initializeSalutations();
-        updateUI();
     }
 
     private void initializeSalutations() {
@@ -127,6 +128,12 @@ public class TeachersFrm extends javax.swing.JFrame {
                 comboGender.setSelectedIndex(0);
                 return null;
             }
+
+            @Override
+            protected void done() {
+                super.done();
+                loadingDlg.setVisible(false);
+            }
         };
         swingWorker.run();
     }
@@ -157,6 +164,9 @@ public class TeachersFrm extends javax.swing.JFrame {
         setResizable(false);
         setSize(new java.awt.Dimension(490, 320));
         addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
@@ -406,6 +416,10 @@ public class TeachersFrm extends javax.swing.JFrame {
 
     }//GEN-LAST:event_txtNameFocusLost
 
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        updateUI();
+    }//GEN-LAST:event_formWindowOpened
+
     /**
      * @param args the command line arguments
      */
@@ -434,10 +448,8 @@ public class TeachersFrm extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new TeachersFrm().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new TeachersFrm().setVisible(true);
         });
     }
 

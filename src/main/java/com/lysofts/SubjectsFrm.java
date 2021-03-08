@@ -15,12 +15,12 @@ public class SubjectsFrm extends javax.swing.JFrame {
 
     List<Subject> subjects;
     Subject selectedSubject;
+    JDialog loadingDlg = ConnClass.loadingDlg(this);
 
     public SubjectsFrm() {
         initComponents();
         new ConnClass().setFrameIcon(SubjectsFrm.this);
-
-        updateUI();
+        loadingDlg.setVisible(true);
     }
 
     public boolean isValidGrades() {
@@ -131,6 +131,12 @@ public class SubjectsFrm extends javax.swing.JFrame {
                 txtGrade11.setText("");
                 txtGrade12.setText("");
                 return null;
+            }
+
+            @Override
+            protected void done() {
+                super.done();
+                loadingDlg.setVisible(false);
             }
         };
         swingWorker.run();
@@ -272,6 +278,9 @@ public class SubjectsFrm extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(529, 430));
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
@@ -830,6 +839,10 @@ public class SubjectsFrm extends javax.swing.JFrame {
     private void txtSUBJECTKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSUBJECTKeyReleased
         txtSUBJECT.setText(txtSUBJECT.getText().toUpperCase());
     }//GEN-LAST:event_txtSUBJECTKeyReleased
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        updateUI();
+    }//GEN-LAST:event_formWindowOpened
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */

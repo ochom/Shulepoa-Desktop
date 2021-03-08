@@ -10,6 +10,7 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
@@ -23,16 +24,17 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
 
     List<Exam> exams = new ArrayList<>();
     School school = null;
+    JDialog loadingDlg = ConnClass.loadingDlg(RegisterExaminationsFrm.this);
 
     public RegisterExaminationsFrm() {
         initComponents();
-
+    
         jLabel3.setVisible(false);
         jProgressBar1.setVisible(false);
         ProgressNo.setVisible(false);
-
+        
         new ConnClass().setFrameIcon(RegisterExaminationsFrm.this);
-        updateUI();
+        loadingDlg.setVisible(true);
 
     }
 
@@ -52,6 +54,12 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
                     comboTerm.setSelectedItem(latestExam.getTerm());
                 }
                 return null;
+            }
+
+            @Override
+            protected void done() {
+                super.done();
+                loadingDlg.setVisible(false);
             }
         };
         swingWorker.run();
@@ -162,6 +170,9 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
         setResizable(false);
         setSize(new java.awt.Dimension(479, 249));
         addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
             public void windowClosed(java.awt.event.WindowEvent evt) {
                 formWindowClosed(evt);
             }
@@ -303,6 +314,10 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowClosed
 
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        updateUI();
+    }//GEN-LAST:event_formWindowOpened
+
     /**
      * @param args the command line arguments
      */
@@ -314,11 +329,9 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
             ConnClass.printError(ex);
         }
 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                DecorationHelper.decorateWindows(false);
-                new RegisterExaminationsFrm().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            DecorationHelper.decorateWindows(false);
+            new RegisterExaminationsFrm().setVisible(true);
         });
     }
 

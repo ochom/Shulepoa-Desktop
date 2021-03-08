@@ -5,8 +5,7 @@
  */
 package com.lysofts.entities;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.lysofts.utils.ConnClass;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -17,18 +16,20 @@ import javax.persistence.Persistence;
  */
 public class MyEntityManager {
 
-    EntityManagerFactory emf;
-    EntityManager em;
-
-    public MyEntityManager() {
-        emf = Persistence.createEntityManagerFactory("DbPersistanceUnit");
-    }
-
-    public EntityManager getEm() {
-        em = emf.createEntityManager();
-        if (!em.getTransaction().isActive()) {
-            em.getTransaction().begin();
+    public static EntityManager getEm() {
+        try {
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory("DbPersistanceUnit");
+            EntityManager em;
+            em = emf.createEntityManager();
+            if (!em.getTransaction().isActive()) {
+                em.getTransaction().begin();
+            }
+//            int a = Integer.parseInt("Hello");
+//            System.out.println(a);
+            return em;
+        } catch (Exception e) {
+            ConnClass.printError(e);
+            return null;
         }
-        return em;
     }
 }

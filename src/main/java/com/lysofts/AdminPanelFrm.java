@@ -17,19 +17,19 @@ import javax.swing.*;
 public class AdminPanelFrm extends javax.swing.JFrame {
 
     School school = null;
+    JDialog loadingDlg = ConnClass.loadingDlg(AdminPanelFrm.this);
 
     public AdminPanelFrm() {
         initComponents();
-
         new ConnClass().setFrameIcon(AdminPanelFrm.this);
-        updateUI();
+        loadingDlg.setVisible(true);
     }
 
     private void updateUI() {
         SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                school = new SchoolDAO().get();
+                school = SchoolDAO.get();
                 if (school != null) {
                     AdminPanelFrm.this.setTitle(school.getName() + " Examination Manager");
                     txtSchoolName.setText(school.getName());
@@ -47,6 +47,12 @@ public class AdminPanelFrm extends javax.swing.JFrame {
                     AdminPanelFrm.this.setTitle("School Examination Manager");
                 }
                 return null;
+            }
+
+            @Override
+            protected void done() {
+                super.done();
+                loadingDlg.setVisible(false);
             }
         };
         swingWorker.run();
@@ -261,6 +267,9 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(600, 400));
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
@@ -744,7 +753,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
 
     jMenu1.setText("Term Dates");
 
-    jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+    jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_MASK));
     jMenuItem1.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Settings_16x16.png"))
     );
     jMenuItem1.setText("Set Term Dates");
@@ -759,7 +768,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
 
     jMenu5.setText("Themes");
 
-    jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+    jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
     jMenuItem2.setText("Default (acme)");
     jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -768,7 +777,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jMenu5.add(jMenuItem2);
 
-    jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.ALT_DOWN_MASK));
+    jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.ALT_MASK));
     jMenuItem5.setText("Acryl (acme - Dark)");
     jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -777,7 +786,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jMenu5.add(jMenuItem5);
 
-    jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.ALT_DOWN_MASK));
+    jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.ALT_MASK));
     jMenuItem3.setText("Aero (acme)");
     jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -786,7 +795,7 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jMenu5.add(jMenuItem3);
 
-    jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M, java.awt.event.InputEvent.ALT_DOWN_MASK));
+    jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M, java.awt.event.InputEvent.ALT_MASK));
     jMenuItem4.setText("Mac (acme)");
     jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1010,6 +1019,10 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         this.dispose();
         new UsersFrm().setVisible(true);
     }//GEN-LAST:event_jButton19ActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        updateUI();
+    }//GEN-LAST:event_formWindowOpened
 
     public static void main(String args[]) {
         try {

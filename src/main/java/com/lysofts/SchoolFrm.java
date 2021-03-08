@@ -19,12 +19,13 @@ public class SchoolFrm extends javax.swing.JFrame {
     String Logo = "", Sign = "";
     School selectedSchool = null;
     List<Teacher> teachers;
+    JDialog loadingDlg = ConnClass.loadingDlg(this);
 
     public SchoolFrm() {
         initComponents();
-
+        
         new ConnClass().setFrameIcon(SchoolFrm.this);
-        updateUI();
+        loadingDlg.setVisible(true);        
     }
 
     private void updateUI() {
@@ -64,6 +65,12 @@ public class SchoolFrm extends javax.swing.JFrame {
                     getSignature();
                 }
                 return null;
+            }
+
+            @Override
+            protected void done() {
+                super.done();
+                loadingDlg.setVisible(false);
             }
         };
         swingWorker.run();
@@ -133,14 +140,10 @@ public class SchoolFrm extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("School Details");
         setResizable(false);
-        addWindowFocusListener(new java.awt.event.WindowFocusListener() {
-            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
-            }
-            public void windowLostFocus(java.awt.event.WindowEvent evt) {
-                formWindowLostFocus(evt);
-            }
-        });
         addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
@@ -322,10 +325,6 @@ public class SchoolFrm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnSaveActionPerformed
 
-    private void formWindowLostFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowLostFocus
-
-    }//GEN-LAST:event_formWindowLostFocus
-
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         this.dispose();
         new AdminPanelFrm().setVisible(true);
@@ -385,6 +384,10 @@ public class SchoolFrm extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_LogoImageLabelMouseClicked
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        updateUI();
+    }//GEN-LAST:event_formWindowOpened
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */

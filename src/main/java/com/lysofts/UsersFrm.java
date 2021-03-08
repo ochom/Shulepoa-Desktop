@@ -12,12 +12,13 @@ public class UsersFrm extends javax.swing.JFrame {
 
     private List<User> users = new ArrayList<>();
     private User selectedUser = null;
-
+    JDialog loadingDlg = ConnClass.loadingDlg(this);
+    
     public UsersFrm() {
         initComponents();
 
         new ConnClass().setFrameIcon(UsersFrm.this);
-        updateUI();
+        loadingDlg.setVisible(true);        
     }
 
 
@@ -83,6 +84,12 @@ public class UsersFrm extends javax.swing.JFrame {
                 txtPhone.setText("");
                 return null;
             }
+
+            @Override
+            protected void done() {
+                super.done();
+                loadingDlg.setVisible(false);
+            }
         };
         swingWorker.run();
     }
@@ -111,6 +118,9 @@ public class UsersFrm extends javax.swing.JFrame {
         setResizable(false);
         setSize(new java.awt.Dimension(490, 320));
         addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
@@ -318,6 +328,10 @@ public class UsersFrm extends javax.swing.JFrame {
         this.dispose();
         new AdminPanelFrm().setVisible(true);
     }//GEN-LAST:event_formWindowClosing
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        updateUI();
+    }//GEN-LAST:event_formWindowOpened
 
     /**
      * @param args the command line arguments

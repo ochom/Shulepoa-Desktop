@@ -10,7 +10,6 @@ import com.lysofts.entities.Student;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -19,7 +18,6 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableModel;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -37,20 +35,23 @@ public class StudentsFrm extends javax.swing.JFrame {
 
     private java.util.List<Classroom> classrooms = new ArrayList<>();
     private Classroom selectedClassroom = null;
+    JDialog loadingDlg = ConnClass.loadingDlg(this);
 
     public StudentsFrm() {
         this.classrooms = ClassroomDAO.get();
 
         initComponents();
         new ConnClass().setFrameIcon(StudentsFrm.this);
-
-        updateMainUI();
+        loadingDlg.setVisible(true);
     }
 
     private void updateMainUI() {
         SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
+                if (!loadingDlg.isVisible()) {
+                    loadingDlg.setVisible(true);
+                }
                 comboHouse.removeAllItems();
                 comboHouse.addItem("Select");
                 HouseDAO.get().forEach(house -> {
@@ -81,6 +82,12 @@ public class StudentsFrm extends javax.swing.JFrame {
                     model2.addRow(new Object[]{student.getRegNumber(), student.getName(), student.getClassroom()});
                 });
                 return null;
+            }
+
+            @Override
+            protected void done() {
+                super.done();
+                loadingDlg.setVisible(false);
             }
         };
         swingWorker.run();
@@ -863,6 +870,9 @@ public class StudentsFrm extends javax.swing.JFrame {
         setResizable(false);
         setSize(new java.awt.Dimension(210, 266));
         addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
@@ -1226,19 +1236,19 @@ public class StudentsFrm extends javax.swing.JFrame {
             protected Void doInBackground() throws Exception {
                 String fadmited, leavedate, remarks;
                 InputStream report, logo;
-                
-                logo = getClass().getClassLoader().getResourceAsStream("images/kenya.png");                
+
+                logo = getClass().getClassLoader().getResourceAsStream("images/kenya.png");
                 BufferedImage image = null;
                 if (logo != null) {
                     image = ImageIO.read(logo);
-                }else{
+                } else {
                     System.out.print("Image not Found");
                 }
-                
+
                 fadmited = cmbFamditted.getSelectedItem().toString();
                 leavedate = ((JTextField) txtLeaveDate.getDateEditor().getUiComponent()).getText();
                 remarks = taRmarks.getText();
-                
+
                 try {
                     HashMap param = new HashMap();
                     param.put("idno", selectedStudent.getRegNumber());
@@ -1294,6 +1304,10 @@ public class StudentsFrm extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_tableStudentsMouseClicked
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        updateMainUI();
+    }//GEN-LAST:event_formWindowOpened
 
     public static void main(String args[]) {
         try {

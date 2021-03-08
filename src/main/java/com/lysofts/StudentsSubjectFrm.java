@@ -17,26 +17,12 @@ public class StudentsSubjectFrm extends javax.swing.JFrame {
     public StudentsSubjectFrm() {
         initComponents();
         
-        getIcon();
         boolean selectedSub = false;
+        new ConnClass().setFrameIcon(StudentsSubjectFrm.this);
         getSubjects(selectedSub);
         getClasses(); 
     }
-    private void getIcon(){
-        try {
-            this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/A Logo Icon File.png")));
-          
-        }catch(Exception e){
-            System.out.println(e);
-        }
-        try {
-            this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/A logo.png")));
-          
-        }catch(Exception e){
-            System.out.println(e);
-      
-        }
-    }
+    
     private void getClasses(){
         DefaultTableModel model = (DefaultTableModel) Table_class.getModel();
         model.setRowCount(0);
