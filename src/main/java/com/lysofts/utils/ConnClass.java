@@ -20,7 +20,7 @@ public class ConnClass {
 
     private final static boolean DEBUG = false;
 
-    static final Logger logger = Logger.getLogger(ConnClass.class.getName());
+    static final Logger LOG = Logger.getLogger(ConnClass.class.getName());
 
     public static String API_END = DEBUG
             ? "http://localhost:8000/accounts/"
@@ -83,8 +83,8 @@ public class ConnClass {
         try {
             boolean append = true;
             FileHandler handler = new FileHandler("logs.txt", append);
-            logger.addHandler(handler);
-            logger.log(Level.SEVERE, null, ex);
+            LOG.addHandler(handler);
+            LOG.log(Level.SEVERE, null, ex);
         } catch (IOException | SecurityException ex1) {
             Logger.getLogger(ConnClass.class.getName()).log(Level.SEVERE, null, ex1);
         }
