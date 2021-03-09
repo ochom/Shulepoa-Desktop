@@ -15,12 +15,10 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
     PreparedStatement pst=null;
     ResultSet rs =null;
     String sql = null;
-    JDialog loadingDlg = ConnClass.loadingDlg(this);
     
     public TeachersSubjectFrm() {
         initComponents();
         new ConnClass().setFrameIcon(TeachersSubjectFrm.this);
-        loadingDlg.setVisible(true);
         
         getClassesForMe();
         getSubjectForMe();
@@ -103,21 +101,8 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
-        txtName = new javax.swing.JTextField();
-        txtInitials = new javax.swing.JTextField();
-        txtPhone = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         Table_Teachers = new javax.swing.JTable();
-        lblPhone = new javax.swing.JLabel();
-        lblName = new javax.swing.JLabel();
-        lblInitials = new javax.swing.JLabel();
-        lblNO = new javax.swing.JLabel();
-        txtNO = new javax.swing.JTextField();
-        lblInitials1 = new javax.swing.JLabel();
-        comboGender = new javax.swing.JComboBox<>();
         jPanel6 = new javax.swing.JPanel();
         lblCount = new javax.swing.JLabel();
         comboSubjectForMe = new javax.swing.JComboBox<>();
@@ -126,11 +111,19 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
         tableDetailSubjects = new javax.swing.JTable();
         StatusText = new javax.swing.JLabel();
         comboFormToTeach = new javax.swing.JComboBox<>();
+        lblNO = new javax.swing.JLabel();
+        txtNO = new javax.swing.JTextField();
+        lblName = new javax.swing.JLabel();
+        txtName = new javax.swing.JTextField();
+        lblInitials1 = new javax.swing.JLabel();
+        txtGender = new javax.swing.JTextField();
+        lblInitials = new javax.swing.JLabel();
+        txtInitials = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Teachers Subject Allocation");
         setResizable(false);
         setSize(new java.awt.Dimension(490, 320));
-        setType(java.awt.Window.Type.UTILITY);
         addWindowFocusListener(new java.awt.event.WindowFocusListener() {
             public void windowGainedFocus(java.awt.event.WindowEvent evt) {
                 formWindowGainedFocus(evt);
@@ -144,59 +137,13 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
             }
         });
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-
-        jPanel2.setBackground(new java.awt.Color(0, 204, 0));
-
-        jLabel4.setFont(new java.awt.Font("Old English Text MT", 1, 24)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("Teachers' Subject Allocation");
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 617, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(134, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
-        );
-
-        txtName.setEditable(false);
-        txtName.setBackground(new java.awt.Color(255, 255, 255));
-        txtName.setFont(new java.awt.Font("Cambria", 1, 13)); // NOI18N
-        txtName.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtNameFocusLost(evt);
-            }
-        });
-        txtName.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txtNameKeyPressed(evt);
-            }
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtNameKeyReleased(evt);
-            }
-        });
-
-        txtInitials.setEditable(false);
-        txtInitials.setBackground(new java.awt.Color(255, 255, 255));
-        txtInitials.setFont(new java.awt.Font("Cambria", 1, 13)); // NOI18N
-
-        txtPhone.setEditable(false);
-        txtPhone.setBackground(new java.awt.Color(255, 255, 255));
-        txtPhone.setFont(new java.awt.Font("Cambria", 1, 13)); // NOI18N
-
+        Table_Teachers.setFont(new java.awt.Font("SansSerif", 0, 11)); // NOI18N
         Table_Teachers.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "SNo", "Name", "Initials"
+                "#", "Name", "Init"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -216,32 +163,10 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(Table_Teachers);
         if (Table_Teachers.getColumnModel().getColumnCount() > 0) {
-            Table_Teachers.getColumnModel().getColumn(0).setPreferredWidth(30);
+            Table_Teachers.getColumnModel().getColumn(0).setPreferredWidth(20);
             Table_Teachers.getColumnModel().getColumn(1).setPreferredWidth(120);
             Table_Teachers.getColumnModel().getColumn(2).setPreferredWidth(20);
         }
-
-        lblPhone.setFont(new java.awt.Font("Cambria", 1, 12)); // NOI18N
-        lblPhone.setText("Phone");
-
-        lblName.setFont(new java.awt.Font("Cambria", 1, 12)); // NOI18N
-        lblName.setText("Full Name *");
-
-        lblInitials.setFont(new java.awt.Font("Cambria", 1, 12)); // NOI18N
-        lblInitials.setText("Initial *");
-
-        lblNO.setFont(new java.awt.Font("Cambria", 1, 12)); // NOI18N
-        lblNO.setText("Staff No. *");
-
-        txtNO.setEditable(false);
-        txtNO.setBackground(new java.awt.Color(255, 255, 255));
-        txtNO.setFont(new java.awt.Font("Cambria", 1, 13)); // NOI18N
-
-        lblInitials1.setFont(new java.awt.Font("Cambria", 1, 12)); // NOI18N
-        lblInitials1.setText("Gender *");
-
-        comboGender.setFont(new java.awt.Font("Cambria", 1, 13)); // NOI18N
-        comboGender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select", "Male", "Female" }));
 
         jPanel6.setBackground(new java.awt.Color(255, 255, 255));
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("Teaching Subjects"));
@@ -259,7 +184,8 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Add_16x16.png"))); // NOI18N
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Add_16x16.png"))
+        );
         jButton3.setText("Assign this Subject Subject");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -267,12 +193,13 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
             }
         });
 
+        tableDetailSubjects.setFont(new java.awt.Font("SansSerif", 0, 11)); // NOI18N
         tableDetailSubjects.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "CODE", "Subject", "Teaching Class"
+                "CODE", "Subject", "Class"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -309,17 +236,16 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                        .addComponent(comboSubjectForMe, 0, 106, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
-                        .addComponent(comboFormToTeach, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(StatusText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addGap(260, 260, 260)
-                .addComponent(lblCount, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addComponent(comboSubjectForMe, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(comboFormToTeach, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(StatusText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(383, 383, 383)
+                .addComponent(lblCount, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -328,13 +254,13 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addGap(26, 26, 26)
                         .addComponent(lblCount, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 148, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 177, Short.MAX_VALUE))
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(comboFormToTeach, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(comboSubjectForMe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(comboSubjectForMe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(comboFormToTeach, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton3)
                 .addGap(1, 1, 1)
@@ -342,49 +268,84 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblInitials1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblName, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(30, 30, 30)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtInitials, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtNO, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(comboGender, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtPhone)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lblInitials, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lblPhone, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lblNO, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE)))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        lblNO.setFont(new java.awt.Font("Cambria", 1, 12)); // NOI18N
+        lblNO.setText("Staff No. ");
+
+        txtNO.setEditable(false);
+        txtNO.setBackground(new java.awt.Color(255, 255, 255));
+        txtNO.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
+        txtNO.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+
+        lblName.setFont(new java.awt.Font("Cambria", 1, 12)); // NOI18N
+        lblName.setText("Full Name");
+
+        txtName.setEditable(false);
+        txtName.setBackground(new java.awt.Color(255, 255, 255));
+        txtName.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
+        txtName.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        txtName.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtNameFocusLost(evt);
+            }
+        });
+        txtName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtNameKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtNameKeyReleased(evt);
+            }
+        });
+
+        lblInitials1.setFont(new java.awt.Font("Cambria", 1, 12)); // NOI18N
+        lblInitials1.setText("Gender ");
+
+        txtGender.setEditable(false);
+        txtGender.setBackground(new java.awt.Color(255, 255, 255));
+        txtGender.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
+        txtGender.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+
+        lblInitials.setFont(new java.awt.Font("Cambria", 1, 12)); // NOI18N
+        lblInitials.setText("Initial ");
+
+        txtInitials.setEditable(false);
+        txtInitials.setBackground(new java.awt.Color(255, 255, 255));
+        txtInitials.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
+        txtInitials.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(10, 10, 10)
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblInitials1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblName, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtInitials, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNO, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblInitials, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblNO, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtGender, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(12, 12, 12)
+                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(10, 10, 10)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
+
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {lblInitials, lblInitials1, lblNO, lblName, txtGender, txtInitials, txtNO, txtName});
+
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(lblNO)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtNO, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -394,29 +355,16 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
                         .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(lblInitials1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(comboGender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(8, 8, 8)
+                        .addComponent(txtGender, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(lblInitials)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtInitials, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lblPhone)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtPhone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(56, Short.MAX_VALUE))
+                        .addComponent(txtInitials, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
+        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {lblInitials, lblInitials1, lblNO, lblName, txtGender, txtInitials, txtNO, txtName});
 
         pack();
         setLocationRelativeTo(null);
@@ -436,9 +384,8 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
             if(rs.next()){
                 txtName.setText(rs.getString("T_name"));
                 txtNO.setText(rs.getString("T_code"));
-                comboGender.setSelectedItem(rs.getString("T_gender"));
+                txtGender.setText(rs.getString("T_gender"));
                 txtInitials.setText(rs.getString("T_initials"));
-                txtPhone.setText(rs.getString("T_phone"));
             }
         }
         catch(SQLException e){
@@ -588,12 +535,8 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
     private javax.swing.JLabel StatusText;
     private javax.swing.JTable Table_Teachers;
     private javax.swing.JComboBox<String> comboFormToTeach;
-    private javax.swing.JComboBox<String> comboGender;
     private javax.swing.JComboBox<String> comboSubjectForMe;
     private javax.swing.JButton jButton3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -602,11 +545,10 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
     private javax.swing.JLabel lblInitials1;
     private javax.swing.JLabel lblNO;
     private javax.swing.JLabel lblName;
-    private javax.swing.JLabel lblPhone;
     private javax.swing.JTable tableDetailSubjects;
+    private javax.swing.JTextField txtGender;
     private javax.swing.JTextField txtInitials;
     private javax.swing.JTextField txtNO;
     private javax.swing.JTextField txtName;
-    private javax.swing.JTextField txtPhone;
     // End of variables declaration//GEN-END:variables
 }
