@@ -119,6 +119,9 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
             }
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
         });
 
         Table_Teachers.setFont(new java.awt.Font("SansSerif", 0, 11)); // NOI18N
@@ -244,11 +247,6 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
         txtName.setBackground(new java.awt.Color(255, 255, 255));
         txtName.setFont(new java.awt.Font("Serif", 0, 12)); // NOI18N
         txtName.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        txtName.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtNameFocusLost(evt);
-            }
-        });
 
         lblInitials1.setFont(new java.awt.Font("Cambria", 1, 12)); // NOI18N
         lblInitials1.setText("Gender ");
@@ -380,13 +378,14 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tableDetailSubjectsMousePressed
 
-    private void txtNameFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNameFocusLost
-
-    }//GEN-LAST:event_txtNameFocusLost
-
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         new UpdateUI().run();
     }//GEN-LAST:event_formWindowOpened
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        this.dispose();
+        new AdminPanelFrm().setVisible(true);
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
