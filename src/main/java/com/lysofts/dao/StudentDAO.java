@@ -19,7 +19,7 @@ import javax.persistence.Query;
 public class StudentDAO {
 
     public static List<Student> get() {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         List<Student> students = null;
         try {
             String SQL = "SELECT t FROM Student t";
@@ -29,14 +29,14 @@ public class StudentDAO {
         } catch (Exception ex) {
             ConnClass.printError(ex);
         } finally {
-            em.close();
+            //em.close();
         }
         return students;
     }
 
     public static List<Student> get(String searchText) {
         searchText = searchText.toUpperCase();
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         List<Student> students = null;
         try {
             String SQL = "SELECT t FROM Student t WHERE t.regNumber LIKE UPPER(?1) OR t.name LIKE UPPER(?2)";
@@ -48,21 +48,21 @@ public class StudentDAO {
         } catch (Exception ex) {
             ConnClass.printError(ex);
         } finally {
-            em.close();
+            //em.close();
         }
         return students;
     }
 
     public static Student get(int id) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         Student student = em.find(Student.class, id);
         em.getTransaction().commit();
-        em.close();
+        //em.close();
         return student;
     }
 
     public static boolean add(Student data) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             em.persist(data);
             em.getTransaction().commit();
@@ -71,12 +71,12 @@ public class StudentDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
     public static boolean update(Student data) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             Student student = em.find(Student.class, data.getId());
             student.setName(data.getName());
@@ -100,12 +100,12 @@ public class StudentDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
     public static void delete(int pk) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         Student student = em.find(Student.class, pk);
         em.remove(student);
         em.getTransaction().commit();

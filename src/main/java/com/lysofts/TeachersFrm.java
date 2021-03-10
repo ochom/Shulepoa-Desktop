@@ -4,13 +4,15 @@ import com.lysofts.dao.TeacherDAO;
 import com.lysofts.entities.Teacher;
 import com.lysofts.utils.ConnClass;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.swing.*;
 import java.util.List;
+import java.util.Map;
 import javax.swing.table.DefaultTableModel;
 
 public class TeachersFrm extends javax.swing.JFrame {
 
-    private List<String> sal;
+    private Map<String, Object> sals;
     private List<Teacher> teachers = new ArrayList<>();
     private Teacher selectedTeacher = null;
     JDialog loadingDlg = ConnClass.loadingDlg(this);
@@ -24,41 +26,37 @@ public class TeachersFrm extends javax.swing.JFrame {
     }
 
     private void initializeSalutations() {
-        sal = new ArrayList<>();
-        sal.add("sir");
-        sal.add("hon");
-        sal.add("mr");
-        sal.add("mrs");
-        sal.add("ms");
-        sal.add("sir.");
-        sal.add("hon.");
-        sal.add("mr.");
-        sal.add("mrs.");
-        sal.add("ms.");
+        sals = new HashMap<>();
+        sals.put("sir", null);
+        sals.put("hon", null);
+        sals.put("mr", null);
+        sals.put("mrs", null);
+        sals.put("ms", null);
+        sals.put("sir.", null);
+        sals.put("hon.", null);
+        sals.put("mr.", null);
+        sals.put("mrs.", null);
+        sals.put("ms.", null);
     }
 
-    private void Create_Initials() {
+    private void createInitials() {
         try {
             String fullname = txtName.getText();
             String[] parts = fullname.split(" ");
             int tparts = parts.length;
             String abbre = "";
-            int i = 0;
-            if (tparts > 1) {
-                if (sal.contains(parts[0].toLowerCase())) {
-                    i = 1;
-                }
+            int start=0;
+            if (tparts > 1 && sals.containsKey(parts[0].toLowerCase())) {
+                start = 1;
             }
-            if (tparts > 1) {
-                while (i < parts.length) {
-                    abbre += parts[i].substring(0, 1).toUpperCase() + ".";
-                    i++;
-                }
+            
+            for (int i = start; i < tparts; i++) {
+                abbre += parts[i].substring(0, 1).toUpperCase() + ".";
             }
 
             txtInitials.setText(abbre);
         } catch (Exception e) {
-            e.printStackTrace();
+            ConnClass.printError(e);
         }
     }
 
@@ -400,11 +398,11 @@ public class TeachersFrm extends javax.swing.JFrame {
     }//GEN-LAST:event_Table_TeachersMouseClicked
 
     private void txtNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNameKeyPressed
-        Create_Initials();
+        createInitials();
     }//GEN-LAST:event_txtNameKeyPressed
 
     private void txtNameKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNameKeyReleased
-        Create_Initials();
+        createInitials();
     }//GEN-LAST:event_txtNameKeyReleased
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing

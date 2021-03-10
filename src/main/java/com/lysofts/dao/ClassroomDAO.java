@@ -19,7 +19,7 @@ import javax.persistence.Query;
 public class ClassroomDAO {
 
     public static List<Classroom> get() {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         List<Classroom> classrooms = null;
         try {
             String SQL = "SELECT t FROM Classroom t";
@@ -29,21 +29,21 @@ public class ClassroomDAO {
         } catch (Exception ex) {
             ConnClass.printError(ex);
         } finally {
-            em.close();
+            //em.close();
         }
         return classrooms;
     }
 
     public static Classroom get(int id) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         Classroom classroom = em.find(Classroom.class, id);
         em.getTransaction().commit();
-        em.close();
+        //em.close();
         return classroom;
     }
 
     public static boolean add(Classroom data) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             em.persist(data);
             em.getTransaction().commit();
@@ -52,12 +52,12 @@ public class ClassroomDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
     public static boolean update(Classroom data) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             Classroom classroom = em.find(Classroom.class, data.getId());
             classroom.setName(data.getName());
@@ -69,12 +69,12 @@ public class ClassroomDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
     public static void delete(int pk) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         Classroom classroom = em.find(Classroom.class, pk);
         em.remove(classroom);
         em.getTransaction().commit();

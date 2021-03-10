@@ -21,7 +21,7 @@ public class SchoolDAO {
     public static School get() {
         String SQL = "SELECT t FROM School t";
         School school = null;
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             Query query = em.createQuery(SQL, School.class);
             List<School> schools = query.getResultList();
@@ -32,21 +32,21 @@ public class SchoolDAO {
         } catch (Exception ex) {
             ConnClass.printError(ex);
         } finally {
-            em.close();
+            //em.close();
         }
         return school;
     }
 
     public static School get(int id) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         School school = em.find(School.class, id);
         em.getTransaction().commit();
-        em.close();
+        //em.close();
         return school;
     }
 
     public static boolean add(School data) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             em.persist(data);
             em.getTransaction().commit();
@@ -55,12 +55,12 @@ public class SchoolDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
     public static boolean update(School data) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             School school = em.find(School.class, data.getId());
             school.setName(data.getName());
@@ -80,7 +80,7 @@ public class SchoolDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 }

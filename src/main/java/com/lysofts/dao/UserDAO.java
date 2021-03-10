@@ -19,7 +19,7 @@ import javax.persistence.Query;
 public class UserDAO {
 
     public static List<User> get() {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         List<User> users = null;
         try {
             String SQL = "SELECT t FROM User t";
@@ -29,22 +29,22 @@ public class UserDAO {
         } catch (Exception ex) {
             ConnClass.printError(ex);
         } finally {
-            em.close();
+            //em.close();
         }
         return users;
     }
 
 
     public static User get(int id) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         User user = em.find(User.class, id);
         em.getTransaction().commit();
-        em.close();
+        //em.close();
         return user;
     }
 
     public static boolean add(User data) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             em.persist(data);
             em.getTransaction().commit();
@@ -53,12 +53,12 @@ public class UserDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
     public static boolean update(User data) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             User user = em.find(User.class, data.getId());
             user.setName(data.getName());
@@ -71,12 +71,12 @@ public class UserDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
     public static void delete(int pk) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         User user = em.find(User.class, pk);
         em.remove(user);
         em.getTransaction().commit();

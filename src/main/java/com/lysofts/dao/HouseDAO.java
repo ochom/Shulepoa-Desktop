@@ -19,7 +19,7 @@ import javax.persistence.Query;
 public class HouseDAO {
 
     public static List<House> get() {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         List<House> house = null;
         try {
             String SQL = "SELECT t FROM House t";
@@ -29,21 +29,21 @@ public class HouseDAO {
         } catch (Exception ex) {
             ConnClass.printError(ex);
         } finally {
-            em.close();
+            //em.close();
         }
         return house;
     }
 
     public static House get(int id) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         House classroom = em.find(House.class, id);
         em.getTransaction().commit();
-        em.close();
+        //em.close();
         return classroom;
     }
 
     public static boolean add(House data) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             em.persist(data);
             em.getTransaction().commit();
@@ -52,12 +52,12 @@ public class HouseDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
     public static boolean update(House data) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             House classroom = em.find(House.class, data.getId());
             classroom.setName(data.getName());
@@ -67,12 +67,12 @@ public class HouseDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
     public static void delete(int pk) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         House classroom = em.find(House.class, pk);
         em.remove(classroom);
         em.getTransaction().commit();

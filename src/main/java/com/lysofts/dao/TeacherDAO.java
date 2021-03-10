@@ -19,7 +19,7 @@ import javax.persistence.Query;
 public class TeacherDAO {
     
     public static List<Teacher> get() {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         List<Teacher> teachers = null;
         try {
             String SQL = "SELECT t FROM Teacher t";
@@ -29,21 +29,21 @@ public class TeacherDAO {
         } catch (Exception ex) {
             ConnClass.printError(ex);
         } finally {
-            em.close();
+            //em.close();
         }
         return teachers;
     }
 
     public static Teacher get(int id) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         Teacher teacher = em.find(Teacher.class, id);
         em.getTransaction().commit();
-        em.close();
+        //em.close();
         return teacher;
     }
 
     public static boolean add(Teacher data) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             em.persist(data);
             em.getTransaction().commit();
@@ -52,12 +52,12 @@ public class TeacherDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
     public static boolean update(Teacher data) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             Teacher teacher = em.find(Teacher.class, data.getId());
             teacher.setName(data.getName());
@@ -71,12 +71,12 @@ public class TeacherDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
     public static void delete(int pk) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         Teacher teacher = em.find(Teacher.class, pk);
         em.remove(teacher);
         em.getTransaction().commit();

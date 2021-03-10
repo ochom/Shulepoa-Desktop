@@ -19,7 +19,7 @@ import javax.persistence.Query;
 public  class SubjectDAO {
 
     public static List<Subject> get() {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         List<Subject> subjects = null;
         try {
             String SQL = "SELECT t FROM Subject t";
@@ -29,21 +29,21 @@ public  class SubjectDAO {
         } catch (Exception ex) {
             ConnClass.printError(ex);
         } finally {
-            em.close();
+            //em.close();
         }
         return subjects;
     }
 
     public static Subject get(int id) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         Subject subject = em.find(Subject.class, id);
         em.getTransaction().commit();
-        em.close();
+        //em.close();
         return subject;
     }
 
     public static boolean add(Subject data) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             em.persist(data);
             em.getTransaction().commit();
@@ -52,12 +52,12 @@ public  class SubjectDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
     public static boolean update(Subject data) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             Subject subject = em.find(Subject.class, data.getId());
             subject.setName(data.getName());
@@ -81,12 +81,12 @@ public  class SubjectDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
     public static void delete(int pk) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         Subject subject = em.find(Subject.class, pk);
         em.remove(subject);
         em.getTransaction().commit();

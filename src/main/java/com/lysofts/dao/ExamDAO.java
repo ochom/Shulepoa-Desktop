@@ -19,7 +19,7 @@ import javax.persistence.Query;
 public class ExamDAO {
 
     public static List<Exam> get() {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         List<Exam> exams = null;
         try {
             String SQL = "SELECT t FROM Exam t";
@@ -29,13 +29,13 @@ public class ExamDAO {
         } catch (Exception ex) {
             ConnClass.printError(ex);
         } finally {
-            em.close();
+            //em.close();
         }
         return exams;
     }
 
     public static List<Exam> getYears() {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         List<Exam> exams = null;
         try {
             String SQL = "SELECT t FROM Exam t GROUP BY t.year ORDER BY t.year DESC";
@@ -45,21 +45,21 @@ public class ExamDAO {
         } catch (Exception ex) {
             ConnClass.printError(ex);
         } finally {
-            em.close();
+            //em.close();
         }
         return exams;
     }
 
     public static Exam get(int id) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         Exam exam = em.find(Exam.class, id);
         em.getTransaction().commit();
-        em.close();
+        //em.close();
         return exam;
     }
 
     public static boolean add(Exam data) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             em.persist(data);
             em.getTransaction().commit();
@@ -68,12 +68,12 @@ public class ExamDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
     public static boolean update(Exam data) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             Exam exam = em.find(Exam.class, data.getId());
             exam.setName(data.getName());
@@ -84,12 +84,12 @@ public class ExamDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
     public static void delete(int pk) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         Exam exam = em.find(Exam.class, pk);
         em.remove(exam);
         em.getTransaction().commit();

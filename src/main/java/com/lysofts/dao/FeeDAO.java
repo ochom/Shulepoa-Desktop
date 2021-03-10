@@ -19,7 +19,7 @@ import javax.persistence.Query;
 public class FeeDAO {
     
     public static List<Fee> get() {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         List<Fee> fees = null;
         try {
             String SQL = "SELECT t FROM Fee t";
@@ -29,21 +29,21 @@ public class FeeDAO {
         } catch (Exception ex) {
             ConnClass.printError(ex);
         } finally {
-            em.close();
+            //em.close();
         }
         return fees;
     }
 
     public static Fee get(int id) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         Fee fee = em.find(Fee.class, id);
         em.getTransaction().commit();
-        em.close();
+        //em.close();
         return fee;
     }
 
     public static Fee get(String receiptNumber) { 
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         Fee fee = null;
         try {
             String SQL = "SELECT t FROM Fee t WHERE t.receiptNumber=?1";
@@ -57,14 +57,14 @@ public class FeeDAO {
         } catch (Exception ex) {
             ConnClass.printError(ex);
         } finally {
-            em.close();
+            //em.close();
         }
         return fee;
     }
 
 
     public static boolean add(Fee data) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             em.persist(data);
             em.getTransaction().commit();
@@ -73,12 +73,12 @@ public class FeeDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
     public static boolean update(Fee data) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         try {
             Fee fee = em.find(Fee.class, data.getId());
             fee.setRegNumber(data.getRegNumber());
@@ -97,12 +97,12 @@ public class FeeDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
     public static void delete(int pk) {
-        EntityManager em = new MyEntityManager().getEm();
+        EntityManager em = MyEntityManager.getEm();
         Fee fee = em.find(Fee.class, pk);
         em.remove(fee);
         em.getTransaction().commit();

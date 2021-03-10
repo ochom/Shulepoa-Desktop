@@ -30,7 +30,7 @@ public class TeacherSubjectDAO {
         } catch (Exception ex) {
             ConnClass.printError(ex);
         } finally {
-            em.close();
+            //em.close();
         }
         return list;
     }
@@ -50,7 +50,7 @@ public class TeacherSubjectDAO {
         } catch (Exception ex) {
             ConnClass.printError(ex);
         } finally {
-            em.close();
+            //em.close();
         }
         return data;
     }
@@ -69,7 +69,7 @@ public class TeacherSubjectDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
@@ -88,7 +88,7 @@ public class TeacherSubjectDAO {
             ConnClass.printError(ex);
             return false;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
