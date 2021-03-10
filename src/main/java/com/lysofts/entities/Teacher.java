@@ -6,12 +6,14 @@
 package com.lysofts.entities;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  *
@@ -40,6 +42,9 @@ public class Teacher implements Serializable {
 
     @Column(name = "T_initials")
     private String initials;
+    
+    @Transient
+    private List<TeacherSubject> subjects;
 
     public Teacher() {
     }
@@ -100,4 +105,11 @@ public class Teacher implements Serializable {
         this.initials = initials;
     }
 
+    public List<TeacherSubject> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(List<TeacherSubject> subjects) {
+        this.subjects = subjects;
+    }
 }
