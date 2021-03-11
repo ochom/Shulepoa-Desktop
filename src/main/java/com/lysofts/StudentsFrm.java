@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,10 +31,11 @@ import net.sf.jasperreports.swing.JRViewer;
 public class StudentsFrm extends javax.swing.JFrame {
 
     String filepath = null;
-    private java.util.List<Student> students = new ArrayList<>();
+    private List<Student> students = new ArrayList<>();
+    private List<Student> studentsToPromote;
     private Student selectedStudent = null;
 
-    private java.util.List<Classroom> classrooms = new ArrayList<>();
+    private List<Classroom> classrooms = new ArrayList<>();
     private Classroom selectedClassroom = null;
     JDialog loadingDlg = ConnClass.loadingDlg(this);
 
@@ -46,90 +48,76 @@ public class StudentsFrm extends javax.swing.JFrame {
     }
 
     private void updateMainUI() {
-        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                if (!loadingDlg.isVisible()) {
-                    loadingDlg.setVisible(true);
-                }
-                comboHouse.removeAllItems();
-                comboHouse.addItem("Select");
-                HouseDAO.get().forEach(house -> {
-                    comboHouse.addItem(house.getName());
-                });
+        Thread thread = new Thread(() -> {
+            loadingDlg.setVisible(true);
+            comboHouse.removeAllItems();
+            comboHouse.addItem("Select");
+            HouseDAO.get().forEach(house -> {
+                comboHouse.addItem(house.getName());
+            });
 
-                DefaultTableModel model = (DefaultTableModel) tableClassrooms.getModel();
-                model.setRowCount(0);
-                txtClass.removeAllItems();
-                comboClassFromPromotion.removeAllItems();
-                comboClassToPromotion.removeAllItems();
+            DefaultTableModel model = (DefaultTableModel) tableClassrooms.getModel();
+            model.setRowCount(0);
+            txtClass.removeAllItems();
+            comboClassFromPromotion.removeAllItems();
+            comboClassToPromotion.removeAllItems();
 
-                txtClass.addItem("Select");
-                comboClassFromPromotion.addItem("Select");
-                comboClassToPromotion.addItem("Select");
-                classrooms.forEach(classroom -> {
-                    model.addRow(new Object[]{classroom.getName()});
-                    txtClass.addItem(classroom.getName());
-                    comboClassFromPromotion.addItem(classroom.getName());
-                    comboClassToPromotion.addItem(classroom.getName());
-                });
-                comboClassFromPromotion.addItem("Completed");
-                comboClassToPromotion.addItem("Completed");
+            txtClass.addItem("Select");
+            comboClassFromPromotion.addItem("Select");
+            comboClassToPromotion.addItem("Select");
+            classrooms.forEach(classroom -> {
+                model.addRow(new Object[]{classroom.getName()});
+                txtClass.addItem(classroom.getName());
+                comboClassFromPromotion.addItem(classroom.getName());
+                comboClassToPromotion.addItem(classroom.getName());
+            });
+            comboClassFromPromotion.addItem("Completed");
+            comboClassToPromotion.addItem("Completed");
 
-                DefaultTableModel model2 = (DefaultTableModel) tableStudents.getModel();
-                model2.setRowCount(0);
-                students.forEach(student -> {
-                    model2.addRow(new Object[]{student.getRegNumber(), student.getName(), student.getClassroom()});
-                });
-                return null;
-            }
+            DefaultTableModel model2 = (DefaultTableModel) tableStudents.getModel();
+            model2.setRowCount(0);
+            students.forEach(student -> {
+                model2.addRow(new Object[]{student.getRegNumber(), student.getName(), student.getClassroom()});
+            });
 
-            @Override
-            protected void done() {
-                super.done();
-                loadingDlg.setVisible(false);
-            }
-        };
-        swingWorker.run();
+            loadingDlg.setVisible(false);
+        });
+        thread.start();
     }
 
     private void updateStudentUI() {
-        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                if (selectedStudent == null) {
-                    txtClass.setSelectedItem(selectedClassroom.getName());
-                    txtName.setText("");
-                    txtADMNO.setText("");
-                    txtKCPE.setText("");
-                    txtKcpeGrade.setText("");
-                    txtDOA.setDate(null);
-                    txtDOB.setDate(null);
-                    txtFather.setText("");
-                    txtPhone1.setText("");
-                    cmbGender.setSelectedIndex(0);
-                    comboHouse.setSelectedIndex(0);
-                    filepath = "";
-                    profilePic.setIcon(null);
-                } else {
-                    txtClass.setSelectedItem(selectedStudent.getClassroom());
-                    txtName.setText(selectedStudent.getName());
-                    txtADMNO.setText(selectedStudent.getRegNumber());
-                    txtKCPE.setText(selectedStudent.getKcpeMarks());
-                    txtKcpeGrade.setText(selectedStudent.getKcpeGrade());
-                    ((JTextField) txtDOA.getDateEditor().getUiComponent()).setText(selectedStudent.getDoa());
-                    ((JTextField) txtDOB.getDateEditor().getUiComponent()).setText(selectedStudent.getDob());
-                    cmbGender.setSelectedItem(selectedStudent.getSex());
-                    comboHouse.setSelectedItem(selectedStudent.getHouse());
-                    txtFather.setText(selectedStudent.getKinName());
-                    txtPhone1.setText(selectedStudent.getKinPhone());
-                    filepath = selectedStudent.getPassport();
-                    getProfilePic();
-                }
-                return null;
+        Thread thread = new Thread(() -> {
+            if (selectedStudent == null) {
+                txtClass.setSelectedItem(selectedClassroom.getName());
+                txtName.setText("");
+                txtADMNO.setText("");
+                txtKCPE.setText("");
+                txtKcpeGrade.setText("");
+                txtDOA.setDate(null);
+                txtDOB.setDate(null);
+                txtFather.setText("");
+                txtPhone1.setText("");
+                cmbGender.setSelectedIndex(0);
+                comboHouse.setSelectedIndex(0);
+                filepath = "";
+                profilePic.setIcon(null);
+            } else {
+                txtClass.setSelectedItem(selectedStudent.getClassroom());
+                txtName.setText(selectedStudent.getName());
+                txtADMNO.setText(selectedStudent.getRegNumber());
+                txtKCPE.setText(selectedStudent.getKcpeMarks());
+                txtKcpeGrade.setText(selectedStudent.getKcpeGrade());
+                ((JTextField) txtDOA.getDateEditor().getUiComponent()).setText(selectedStudent.getDoa());
+                ((JTextField) txtDOB.getDateEditor().getUiComponent()).setText(selectedStudent.getDob());
+                cmbGender.setSelectedItem(selectedStudent.getSex());
+                comboHouse.setSelectedItem(selectedStudent.getHouse());
+                txtFather.setText(selectedStudent.getKinName());
+                txtPhone1.setText(selectedStudent.getKinPhone());
+                filepath = selectedStudent.getPassport();
+                getProfilePic();
             }
-        };
-        swingWorker.run();
+        });
+        thread.start();
     }
 
     private void AddStudent() {
@@ -230,6 +218,52 @@ public class StudentsFrm extends javax.swing.JFrame {
         worker.execute();
     }
 
+    private void getClassPromotingFrom(boolean select) {
+        DefaultTableModel model = (DefaultTableModel) promotionTable.getModel();
+        model.setRowCount(0);
+        String className = comboClassFromPromotion.getSelectedIndex() > 0 ? comboClassFromPromotion.getSelectedItem().toString() : "";
+        studentsToPromote = StudentDAO.getInClass(className);
+        studentsToPromote.forEach(student -> {
+            model.addRow(new Object[]{select, student.getRegNumber(), student.getName(), student.getClassroom()});
+        });
+    }
+
+    private void promoteStudents() {
+        String fromClassroom = (String) comboClassFromPromotion.getSelectedItem();
+        String toClassroom = (String) comboClassToPromotion.getSelectedItem();
+        if (comboClassFromPromotion.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(null, "Select a classroom to move students from", "acme", JOptionPane.INFORMATION_MESSAGE);
+        } else if (comboClassToPromotion.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(null, "Select a classroom to move students to", "acme", JOptionPane.INFORMATION_MESSAGE);
+        } else if (comboClassFromPromotion.getSelectedIndex() == comboClassToPromotion.getSelectedIndex()) {
+            JOptionPane.showMessageDialog(null, "You cannot move students within a classroom. Try other options", "acme", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            int res = JOptionPane.showConfirmDialog(null, String.format("Move selected students from Form %s to Form %s", fromClassroom, toClassroom), "Acme", JOptionPane.YES_NO_OPTION);
+            if (res == JOptionPane.YES_OPTION) {
+                promoting.pack();
+                promoting.setLocationRelativeTo(this);
+                promoting.setVisible(true);
+                int rowCount = promotionTable.getRowCount();
+                Thread thread = new Thread(() -> {
+                    int selected = 0;
+                    for (int i = 0; i < rowCount; i++) {
+                        if ((boolean) promotionTable.getValueAt(i, 0)) {
+                            Student student = studentsToPromote.get(selected);
+                            student.setClassroom(toClassroom);
+                            StudentDAO.update(student);
+                            selected++;
+                        }
+                    }
+                    selectAll.setSelected(false);
+                    getClassPromotingFrom(false);
+                    promoting.setVisible(false);
+                    JOptionPane.showMessageDialog(null, "All selected students have been promoted to the new class");
+                });
+                thread.start();
+            }
+        }
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -275,7 +309,7 @@ public class StudentsFrm extends javax.swing.JFrame {
         jPanel13 = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
         promotionTable = new javax.swing.JTable();
-        jCheckBox4 = new javax.swing.JCheckBox();
+        selectAll = new javax.swing.JCheckBox();
         jButton3 = new javax.swing.JButton();
         RemarksDlg = new javax.swing.JDialog();
         jPanel16 = new javax.swing.JPanel();
@@ -288,8 +322,10 @@ public class StudentsFrm extends javax.swing.JFrame {
         jLabel20 = new javax.swing.JLabel();
         jLabel21 = new javax.swing.JLabel();
         cmbFamditted = new javax.swing.JComboBox<>();
-        dlgProcessing = new javax.swing.JDialog();
+        promoting = new javax.swing.JDialog();
         jLabel1 = new javax.swing.JLabel();
+        processing = new javax.swing.JDialog();
+        jLabel2 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tableStudents = new javax.swing.JTable();
@@ -635,12 +671,12 @@ public class StudentsFrm extends javax.swing.JFrame {
             promotionTable.getColumnModel().getColumn(2).setPreferredWidth(150);
         }
 
-        jCheckBox4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jCheckBox4.setForeground(new java.awt.Color(0, 204, 0));
-        jCheckBox4.setText("Select All");
-        jCheckBox4.addActionListener(new java.awt.event.ActionListener() {
+        selectAll.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        selectAll.setForeground(new java.awt.Color(0, 204, 0));
+        selectAll.setText("Select All");
+        selectAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox4ActionPerformed(evt);
+                selectAllActionPerformed(evt);
             }
         });
 
@@ -664,7 +700,7 @@ public class StudentsFrm extends javax.swing.JFrame {
                 .addGap(5, 5, 5)
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jCheckBox4, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(selectAll, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)))
             .addGroup(jPanel13Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -673,7 +709,7 @@ public class StudentsFrm extends javax.swing.JFrame {
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel13Layout.createSequentialGroup()
                 .addGap(3, 3, 3)
-                .addComponent(jCheckBox4)
+                .addComponent(selectAll)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 411, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -846,23 +882,42 @@ public class StudentsFrm extends javax.swing.JFrame {
             .addComponent(jPanel16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        dlgProcessing.setResizable(false);
-        dlgProcessing.setType(java.awt.Window.Type.POPUP);
+        promoting.setTitle("Processing...");
+        promoting.setType(java.awt.Window.Type.POPUP);
 
         jLabel1.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel1.setText("Creating certificate. Please wait...");
+        jLabel1.setText("Promoting students. please wait...");
 
-        javax.swing.GroupLayout dlgProcessingLayout = new javax.swing.GroupLayout(dlgProcessing.getContentPane());
-        dlgProcessing.getContentPane().setLayout(dlgProcessingLayout);
-        dlgProcessingLayout.setHorizontalGroup(
-            dlgProcessingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, dlgProcessingLayout.createSequentialGroup()
-                .addGap(0, 14, Short.MAX_VALUE)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 386, javax.swing.GroupLayout.PREFERRED_SIZE))
+        javax.swing.GroupLayout promotingLayout = new javax.swing.GroupLayout(promoting.getContentPane());
+        promoting.getContentPane().setLayout(promotingLayout);
+        promotingLayout.setHorizontalGroup(
+            promotingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, promotingLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE))
         );
-        dlgProcessingLayout.setVerticalGroup(
-            dlgProcessingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        promotingLayout.setVerticalGroup(
+            promotingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+
+        processing.setResizable(false);
+        processing.setType(java.awt.Window.Type.POPUP);
+
+        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel2.setText("Creating certificate. Please wait...");
+
+        javax.swing.GroupLayout processingLayout = new javax.swing.GroupLayout(processing.getContentPane());
+        processing.getContentPane().setLayout(processingLayout);
+        processingLayout.setHorizontalGroup(
+            processingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, processingLayout.createSequentialGroup()
+                .addGap(0, 14, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 386, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        processingLayout.setVerticalGroup(
+            processingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -1049,15 +1104,10 @@ public class StudentsFrm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tableClassroomsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableClassroomsMouseClicked
-        if (tableClassrooms.getRowCount() > 0) {
-            int row = tableClassrooms.getSelectedRow();
+        int row = tableClassrooms.getSelectedRow();
+        if (row >= 0) {
             this.selectedClassroom = classrooms.get(row);
-            this.students = new ArrayList<>();
-            StudentDAO.get().forEach(student -> {
-                if (student.getClassroom().equals(selectedClassroom.getName())) {
-                    students.add(student);
-                }
-            });
+            this.students = StudentDAO.getInClass(selectedClassroom.getName());
             updateMainUI();
         }
     }//GEN-LAST:event_tableClassroomsMouseClicked
@@ -1137,61 +1187,19 @@ public class StudentsFrm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnOpenStudentsDialog1ActionPerformed
 
     private void comboClassFromPromotionPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_comboClassFromPromotionPopupMenuWillBecomeInvisible
-        boolean bool = false;
-        getClassPromotingFrom(bool);
+        getClassPromotingFrom(false);
     }//GEN-LAST:event_comboClassFromPromotionPopupMenuWillBecomeInvisible
-    private void getClassPromotingFrom(boolean bool) {
-        DefaultTableModel model = (DefaultTableModel) promotionTable.getModel();
-        model.setRowCount(0);
-        String className = comboClassFromPromotion.getSelectedIndex() > 0 ? comboClassFromPromotion.getSelectedItem().toString() : "";
-        students = StudentDAO.get();
-        students.forEach(student -> {
-            if (student.getClassroom().equals(className)) {
-                model.addRow(new Object[]{bool, student.getRegNumber(), student.getName(), student.getClassroom()});
-            }
-        });
-    }
 
-
-    private void jCheckBox4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox4ActionPerformed
-        boolean bool;
-        try {
-            if (jCheckBox4.isSelected()) {
-                bool = true;
-                getClassPromotingFrom(bool);
-            } else {
-                bool = false;
-                getClassPromotingFrom(bool);
-            }
-        } catch (Exception e) {
-            System.out.println(e);
+    private void selectAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllActionPerformed
+        if (selectAll.isSelected()) {
+            getClassPromotingFrom(true);
+        } else {
+            getClassPromotingFrom(false);
         }
-    }//GEN-LAST:event_jCheckBox4ActionPerformed
+    }//GEN-LAST:event_selectAllActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        String fromClassroom = (String) comboClassFromPromotion.getSelectedItem();
-        String toClassroom = (String) comboClassToPromotion.getSelectedItem();
-        if (comboClassFromPromotion.getSelectedIndex() == 0) {
-            JOptionPane.showMessageDialog(null, "Select a class you are promoting From", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (comboClassToPromotion.getSelectedIndex() == 0) {
-            JOptionPane.showMessageDialog(null, "Select a class you are promoting To", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else if (comboClassFromPromotion.getSelectedIndex() == comboClassToPromotion.getSelectedIndex()) {
-            JOptionPane.showMessageDialog(null, "You cannot promote to the same Class, Try other options", "acme", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            int res = JOptionPane.showConfirmDialog(null, "Promote selected student From " + fromClassroom + " To " + toClassroom, "acme", JOptionPane.YES_NO_OPTION);
-            if (res == JOptionPane.YES_OPTION) {
-                int rowCount = promotionTable.getRowCount();
-                for (int i = 0; i < rowCount; i++) {
-                    if ((boolean) promotionTable.getValueAt(i, 0)) {
-                        Student student = StudentDAO.get(i);
-                        student.setClassroom(toClassroom);
-                    }
-                }
-                boolean bool = false;
-                getClassPromotingFrom(bool);
-                JOptionPane.showMessageDialog(null, "All selected students have been promoted to the new class");
-            }
-        }
+        promoteStudents();
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
@@ -1228,9 +1236,9 @@ public class StudentsFrm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        dlgProcessing.pack();
-        dlgProcessing.setLocationRelativeTo(this);
-        dlgProcessing.setVisible(true);
+        processing.pack();
+        processing.setLocationRelativeTo(this);
+        processing.setVisible(true);
         SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
@@ -1283,7 +1291,7 @@ public class StudentsFrm extends javax.swing.JFrame {
 
             @Override
             protected void done() {
-                dlgProcessing.setVisible(false);
+                processing.setVisible(false);
                 RemarksDlg.dispose();
                 StudentDetailsDialog.dispose();
             }
@@ -1340,12 +1348,10 @@ public class StudentsFrm extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> comboClassFromPromotion;
     private javax.swing.JComboBox<String> comboClassToPromotion;
     private javax.swing.JComboBox<String> comboHouse;
-    private javax.swing.JDialog dlgProcessing;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton5;
-    private javax.swing.JCheckBox jCheckBox4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
@@ -1355,6 +1361,7 @@ public class StudentsFrm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
@@ -1376,8 +1383,11 @@ public class StudentsFrm extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JDialog processing;
     private javax.swing.JLabel profilePic;
+    private javax.swing.JDialog promoting;
     private javax.swing.JTable promotionTable;
+    private javax.swing.JCheckBox selectAll;
     private javax.swing.JTextArea taRmarks;
     private javax.swing.JTable tableClassrooms;
     private javax.swing.JTable tableStudents;
@@ -1393,4 +1403,5 @@ public class StudentsFrm extends javax.swing.JFrame {
     private javax.swing.JTextField txtPhone1;
     private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
+
 }

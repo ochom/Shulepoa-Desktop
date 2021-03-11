@@ -60,6 +60,25 @@ public class StudentDAO {
         //em.close();
         return student;
     }
+    
+    
+
+    public static List<Student> getInClass(String className) {
+        EntityManager em = MyEntityManager.getEm();
+        List<Student> students = null;
+        try {
+            String SQL = "SELECT t FROM Student t WHERE t.classroom=:cl";
+            Query query = em.createQuery(SQL, Student.class);
+            query.setParameter("cl", className);
+            students = query.getResultList();
+            em.getTransaction().commit();
+        } catch (Exception ex) {
+            ConnClass.printError(ex);
+        } finally {
+            //em.close();
+        }
+        return students;
+    }
 
     public static boolean add(Student data) {
         EntityManager em = MyEntityManager.getEm();
