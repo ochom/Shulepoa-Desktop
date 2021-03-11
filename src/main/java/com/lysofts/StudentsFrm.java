@@ -198,24 +198,20 @@ public class StudentsFrm extends javax.swing.JFrame {
     }
 
     private void getProfilePic() {
-        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                BufferedImage bi;
-                if (new File(filepath).exists()) {
-                    try {
-                        bi = ImageIO.read(new File(filepath));
-                        Image dimg = bi.getScaledInstance(110, 100, Image.SCALE_SMOOTH);
-                        ImageIcon img = new ImageIcon(dimg);
-                        profilePic.setIcon(img);
-                    } catch (IOException e) {
-                        System.out.println(e);
-                    }
+        Thread thread = new Thread(() -> {
+            BufferedImage bi;
+            if (new File(filepath).exists()) {
+                try {
+                    bi = ImageIO.read(new File(filepath));
+                    Image dimg = bi.getScaledInstance(110, 100, Image.SCALE_SMOOTH);
+                    ImageIcon img = new ImageIcon(dimg);
+                    profilePic.setIcon(img);
+                } catch (IOException e) {
+                    System.out.println(e);
                 }
-                return null;
             }
-        };
-        worker.execute();
+        });
+        thread.start();
     }
 
     private void getClassPromotingFrom(boolean select) {
@@ -240,26 +236,47 @@ public class StudentsFrm extends javax.swing.JFrame {
         } else {
             int res = JOptionPane.showConfirmDialog(null, String.format("Move selected students from Form %s to Form %s", fromClassroom, toClassroom), "Acme", JOptionPane.YES_NO_OPTION);
             if (res == JOptionPane.YES_OPTION) {
+                JFrame frame = new JFrame();
+                frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+                int rows = promotionTable.getRowCount();
+                Thread t;
+                t = new Thread() {
+                    @Override
+                    public void run() {
+                        int barTotal = 0;
+                        int selected = 0;
+                        for (int i = 0; i < rows; i++) {
+                            if ((boolean) promotionTable.getValueAt(i, 0)) {
+                                barTotal++;
+                            }
+                        }
+                        for (int i = 0; i < rows; i++) {
+                            if ((boolean) promotionTable.getValueAt(i, 0)) {
+                                Student student = studentsToPromote.get(selected);
+                                student.setClassroom(toClassroom);
+                                StudentDAO.update(student);
+                                selected++;
+                                final int tt = barTotal;
+                                final int ss = selected;
+                                SwingUtilities.invokeLater(() -> {
+                                    jLabel1.setText(String.format("Promoting students: %d/%d", ss, tt));
+                                    jProgressBar1.setValue((int) ((ss*1.0 / tt) * 100));
+                                    jProgressBar1.update(jProgressBar1.getGraphics());
+                                });
+                            }
+                        }
+                        selectAll.setSelected(false);
+                        getClassPromotingFrom(false);
+                        promoting.setVisible(false);
+                        JOptionPane.showMessageDialog(null, "All selected students have been promoted to the new class");
+                    }
+                };
+
+                jProgressBar1.setValue(0);
                 promoting.pack();
                 promoting.setLocationRelativeTo(this);
                 promoting.setVisible(true);
-                int rowCount = promotionTable.getRowCount();
-                Thread thread = new Thread(() -> {
-                    int selected = 0;
-                    for (int i = 0; i < rowCount; i++) {
-                        if ((boolean) promotionTable.getValueAt(i, 0)) {
-                            Student student = studentsToPromote.get(selected);
-                            student.setClassroom(toClassroom);
-                            StudentDAO.update(student);
-                            selected++;
-                        }
-                    }
-                    selectAll.setSelected(false);
-                    getClassPromotingFrom(false);
-                    promoting.setVisible(false);
-                    JOptionPane.showMessageDialog(null, "All selected students have been promoted to the new class");
-                });
-                thread.start();
+                t.start();
             }
         }
     }
@@ -324,6 +341,7 @@ public class StudentsFrm extends javax.swing.JFrame {
         cmbFamditted = new javax.swing.JComboBox<>();
         promoting = new javax.swing.JDialog();
         jLabel1 = new javax.swing.JLabel();
+        jProgressBar1 = new javax.swing.JProgressBar();
         processing = new javax.swing.JDialog();
         jLabel2 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
@@ -883,22 +901,35 @@ public class StudentsFrm extends javax.swing.JFrame {
         );
 
         promoting.setTitle("Processing...");
+        promoting.setAlwaysOnTop(true);
         promoting.setType(java.awt.Window.Type.POPUP);
 
         jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("Promoting students. please wait...");
 
+        jProgressBar1.setForeground(new java.awt.Color(0, 204, 0));
+        jProgressBar1.setValue(50);
+        jProgressBar1.setStringPainted(true);
+
         javax.swing.GroupLayout promotingLayout = new javax.swing.GroupLayout(promoting.getContentPane());
         promoting.getContentPane().setLayout(promotingLayout);
         promotingLayout.setHorizontalGroup(
             promotingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, promotingLayout.createSequentialGroup()
+            .addGroup(promotingLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE))
+                .addGroup(promotingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 393, Short.MAX_VALUE)
+                    .addGroup(promotingLayout.createSequentialGroup()
+                        .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
         promotingLayout.setVerticalGroup(
             promotingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(promotingLayout.createSequentialGroup()
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         processing.setResizable(false);
@@ -1379,6 +1410,7 @@ public class StudentsFrm extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
