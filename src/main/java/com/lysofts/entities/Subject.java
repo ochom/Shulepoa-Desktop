@@ -5,27 +5,19 @@
  */
 package com.lysofts.entities;
 
-import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.lysofts.annotations.Column;
+import com.lysofts.annotations.Table;
+
 
 /**
  *
  * @author mspace-dev
  */
-@Entity
 @Table(name = "subjects")
-public class Subject implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Subject {    
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name ="Subject_id")
-    private int id;
+    private String id;
 
     @Column(name = "S_NO")
     private String number;
@@ -35,6 +27,10 @@ public class Subject implements Serializable {
 
     @Column(name = "Subject_name")
     private String name;
+
+    @Column(name = "Subject_group")
+    private String group="";
+
 
     @Column(name = "Grade1")
     private String grade1;
@@ -85,11 +81,11 @@ public class Subject implements Serializable {
     public Subject() {
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -115,6 +111,14 @@ public class Subject implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = "";
     }
 
     public String getGrade1() {

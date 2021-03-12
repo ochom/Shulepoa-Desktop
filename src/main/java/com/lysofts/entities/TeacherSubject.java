@@ -5,13 +5,8 @@
  */
 package com.lysofts.entities;
 
-import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.lysofts.annotations.Column;
+import com.lysofts.annotations.Table;
 
 /**
  *
@@ -19,13 +14,10 @@ import javax.persistence.Table;
  * 
  */
 
-@Entity
 @Table(name = "tblTeachersToSubjects")
-public class TeacherSubject implements Serializable {
+public class TeacherSubject {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private String id;
 
     @Column(name = "Teacher_id")
     private String teacherId;
@@ -45,11 +37,11 @@ public class TeacherSubject implements Serializable {
     public TeacherSubject() {
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
     

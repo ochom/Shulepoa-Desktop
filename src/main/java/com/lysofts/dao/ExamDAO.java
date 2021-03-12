@@ -5,93 +5,60 @@
  */
 package com.lysofts.dao;
 
-import com.lysofts.entities.MyEntityManager;
+import static com.lysofts.dao.ExamDAO.table;
 import com.lysofts.entities.Exam;
+import com.lysofts.pa.Mapping;
+import com.lysofts.pa.QueryRunner;
 import com.lysofts.utils.ConnClass;
+import java.util.HashMap;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import java.util.Map;
 
 /**
  *
  * @author mspace-dev
  */
 public class ExamDAO {
+    
 
-    public static List<Exam> get() {
-        EntityManager em = MyEntityManager.getEm();
-        List<Exam> exams = null;
-        try {
-            String SQL = "SELECT t FROM Exam t";
-            Query query = em.createQuery(SQL, Exam.class);
-            exams = query.getResultList();
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            ConnClass.printError(ex);
-        } finally {
-            //em.close();
-        }
-        return exams;
-    }
+    static String table = Mapping.getTableName(Exam.class);
 
     public static List<Exam> getYears() {
-        EntityManager em = MyEntityManager.getEm();
-        List<Exam> exams = null;
-        try {
-            String SQL = "SELECT t FROM Exam t GROUP BY t.year ORDER BY t.year DESC";
-            Query query = em.createQuery(SQL, Exam.class);
-            exams = query.getResultList();
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            ConnClass.printError(ex);
-        } finally {
-            //em.close();
-        }
-        return exams;
+        String SQL = String.format("SELECT * FROM %s GROUP BY year ORDER BY year DESC", table);
+        return QueryRunner.run(SQL, null, Exam.class);
     }
 
-    public static Exam get(int id) {
-        EntityManager em = MyEntityManager.getEm();
-        Exam exam = em.find(Exam.class, id);
-        em.getTransaction().commit();
-        //em.close();
-        return exam;
+    public static List<Exam> get() {
+        String SQL = String.format("SELECT * FROM %s", table);
+        Map<Integer, String> params = new HashMap<>();
+        return QueryRunner.run(SQL, params, Exam.class);
     }
 
     public static boolean add(Exam data) {
-        EntityManager em = MyEntityManager.getEm();
         try {
-            em.persist(data);
-            em.getTransaction().commit();
-            return true;
+            Mapping.Param param = new Mapping().insertQuery(data);
+            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(), param.getValuesString());
+            return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
             return false;
-        } finally {
-            //em.close();
         }
     }
 
     public static boolean update(Exam data) {
-        EntityManager em = MyEntityManager.getEm();
         try {
-            Exam exam = em.find(Exam.class, data.getId());
-            exam.setName(data.getName());
-            exam.setYear(data.getYear());
-            exam.setTerm(data.getTerm());
-            return true;
+            Mapping.Param param = new Mapping().updateQuery(data);
+            String SQL = String.format("UPDATE %s SET %s WHERE id=%s", table, param.getFieldString(), data.getId());
+            return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
             return false;
-        } finally {
-            //em.close();
         }
     }
 
-    public static void delete(int pk) {
-        EntityManager em = MyEntityManager.getEm();
-        Exam exam = em.find(Exam.class, pk);
-        em.remove(exam);
-        em.getTransaction().commit();
+    public static boolean delete(String pk) {
+        String SQL = String.format("DELETE FROM %s WHERE id=%s",table, pk);
+        Map<Integer, String> params = new HashMap<>();
+        return QueryRunner.update(SQL, params);
     }
 }

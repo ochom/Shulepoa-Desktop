@@ -5,28 +5,19 @@
  */
 package com.lysofts.entities;
 
-import java.io.Serializable;
+import com.lysofts.annotations.Column;
+import com.lysofts.annotations.Table;
+import com.lysofts.annotations.Transient;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 
 /**
  *
  * @author mspace-dev
  */
-@Entity
 @Table(name = "tblteachers")
-public class Teacher implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Teacher{
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private String id;
 
     @Column(name = "T_name")
     private String name;
@@ -37,7 +28,7 @@ public class Teacher implements Serializable {
     @Column(name = "T_gender")
     private String gender;
 
-    @Column(name = "T_phone", nullable = true)
+    @Column(name = "T_phone")
     private String phone;
 
     @Column(name = "T_initials")
@@ -48,20 +39,12 @@ public class Teacher implements Serializable {
 
     public Teacher() {
     }
-
-    public Teacher(String name, String staffNumber, String gender, String phone, String initials) {
-        this.name = name;
-        this.staffNumber = staffNumber;
-        this.gender = gender;
-        this.phone = phone;
-        this.initials = initials;
-    }
-
-    public int getId() {
+    
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

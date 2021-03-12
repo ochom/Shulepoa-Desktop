@@ -19,105 +19,85 @@ public class SchoolFrm extends javax.swing.JFrame {
     String Logo = "", Sign = "";
     School selectedSchool = null;
     List<Teacher> teachers;
-    JDialog loadingDlg = ConnClass.loadingDlg(this);
 
     public SchoolFrm() {
         initComponents();
-        
-        new ConnClass().setFrameIcon(SchoolFrm.this);
-        loadingDlg.setVisible(true);        
+        ConnClass.setFrameIcon(this);
+
     }
 
     private void updateUI() {
-        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                selectedSchool = SchoolDAO.get();
-                teachers = TeacherDAO.get();
-                comboPrincipal.removeAllItems();
-                comboPrincipal.addItem("Select");
+        Thread t = new Thread(() -> {
+            selectedSchool = SchoolDAO.get();
+            teachers = TeacherDAO.get();
+            comboPrincipal.removeAllItems();
+            comboPrincipal.addItem("Select");
 
-                teachers.forEach(teacher -> {
-                    comboPrincipal.addItem(teacher.getName());
-                });
+            teachers.forEach(teacher -> {
+                comboPrincipal.addItem(teacher.getName());
+            });
 
-                if (selectedSchool == null) {
-                    txtSchoolName.setText("");
-                    txtPostalAddress.setText("");
-                    txtMotto.setText("");
+            if (selectedSchool == null) {
+                txtSchoolName.setText("");
+                txtPostalAddress.setText("");
+                txtMotto.setText("");
+                comboPrincipal.setSelectedIndex(0);
+                Logo = "";
+                Sign = "";
+                getLogo();
+                getSignature();
+            } else {
+                txtSchoolName.setText(selectedSchool.getName());
+                txtPostalAddress.setText(selectedSchool.getPostalAddress());
+                txtMotto.setText(selectedSchool.getMotto());
+                if (selectedSchool.getPrincipal() == null || selectedSchool.getPrincipal().isEmpty()) {
                     comboPrincipal.setSelectedIndex(0);
-                    Logo = "";
-                    Sign = "";
-                    getLogo();
-                    getSignature();
                 } else {
-                    txtSchoolName.setText(selectedSchool.getName());
-                    txtPostalAddress.setText(selectedSchool.getPostalAddress());
-                    txtMotto.setText(selectedSchool.getMotto());
-                    if (selectedSchool.getPrincipal() == null || selectedSchool.getPrincipal().isEmpty()) {
-                        comboPrincipal.setSelectedIndex(0);
-                    } else {
-                        comboPrincipal.setSelectedItem(selectedSchool.getPrincipal());
-                    }
-                    Logo = selectedSchool.getLogo();
-                    Sign = selectedSchool.getSignature();
-                    getLogo();
-                    getSignature();
+                    comboPrincipal.setSelectedItem(selectedSchool.getPrincipal());
                 }
-                return null;
+                Logo = selectedSchool.getLogo();
+                Sign = selectedSchool.getSignature();
+                getLogo();
+                getSignature();
             }
-
-            @Override
-            protected void done() {
-                super.done();
-                loadingDlg.setVisible(false);
-            }
-        };
-        swingWorker.run();
+        });
+        t.start();
     }
 
     private void getLogo() {
-        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                BufferedImage bi;
-                if (new File(Logo).exists()) {
-                    try {
-                        bi = ImageIO.read(new File(Logo));
-                        Image dimg = bi.getScaledInstance(144, 146, Image.SCALE_SMOOTH);
-                        ImageIcon img = new ImageIcon(dimg);
-                        LogoImageLabel.setText("");
-                        LogoImageLabel.setIcon(img);
-                    } catch (IOException e) {
-                        System.out.println(e);
-                    }
+        Thread t = new Thread(() -> {
+            BufferedImage bi;
+            if (new File(Logo).exists()) {
+                try {
+                    bi = ImageIO.read(new File(Logo));
+                    Image dimg = bi.getScaledInstance(144, 146, Image.SCALE_SMOOTH);
+                    ImageIcon img = new ImageIcon(dimg);
+                    LogoImageLabel.setText("");
+                    LogoImageLabel.setIcon(img);
+                } catch (IOException e) {
+                    System.out.println(e);
                 }
-                return null;
             }
-        };
-        worker.execute();
+        });
+        t.start();
     }
 
     private void getSignature() {
-        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                BufferedImage bi;
-                if (new File(Sign).exists()) {
-                    try {
-                        bi = ImageIO.read(new File(Sign));
-                        Image dimg = bi.getScaledInstance(155, 40, Image.SCALE_SMOOTH);
-                        ImageIcon img = new ImageIcon(dimg);
-                        SignatureImageLabel.setText("");
-                        SignatureImageLabel.setIcon(img);
-                    } catch (IOException e) {
-                        System.out.println(e);
-                    }
+        Thread t = new Thread(() -> {
+            BufferedImage bi;
+            if (new File(Sign).exists()) {
+                try {
+                    bi = ImageIO.read(new File(Sign));
+                    Image dimg = bi.getScaledInstance(155, 40, Image.SCALE_SMOOTH);
+                    ImageIcon img = new ImageIcon(dimg);
+                    SignatureImageLabel.setText("");
+                    SignatureImageLabel.setIcon(img);
+                } catch (IOException e) {
+                    System.out.println(e);
                 }
-                return null;
             }
-        };
-        worker.execute();
+        });
+        t.start();
     }
 
     @SuppressWarnings("unchecked")

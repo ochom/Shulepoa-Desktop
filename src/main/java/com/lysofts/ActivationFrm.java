@@ -15,7 +15,7 @@ public class ActivationFrm extends javax.swing.JFrame {
 
     public ActivationFrm() {
         initComponents();
-        new ConnClass().setFrameIcon(ActivationFrm.this);
+        ConnClass.setFrameIcon(this);
     }
     
     private void Activate() {        
@@ -61,7 +61,7 @@ public class ActivationFrm extends javax.swing.JFrame {
                     && MyKey.contains("S"));
 
             
-            school.setActivated(true);
+            school.setActivated("1");
             if (key_new_system && SchoolDAO.update(school)) {
                 JOptionPane.showMessageDialog(null, "Full License Activated succesfull", "Activation", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();

@@ -5,26 +5,18 @@
  */
 package com.lysofts.entities;
 
-import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.lysofts.annotations.Column;
+import com.lysofts.annotations.Table;
 
 /**
  *
  * @author mspace-dev
  */
-@Entity
+
 @Table(name = "tblclasses")
-public class Classroom implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Classroom {
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private String id;
 
     @Column(name = "Class_name")
     private String name;
@@ -38,17 +30,11 @@ public class Classroom implements Serializable {
     public Classroom() {
     }
 
-    public Classroom(String name, String classTeacher, String signature) {
-        this.name = name;
-        this.classTeacher = classTeacher;
-        this.signature = signature;
-    }
-
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -75,6 +61,4 @@ public class Classroom implements Serializable {
     public void setSignature(String signature) {
         this.signature = signature;
     }
-    
-    
 }

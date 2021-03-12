@@ -6,40 +6,31 @@ import com.lysofts.utils.ConnClass;
 import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
-import javax.swing.table.DefaultTableModel;
 
 public class HousesFrm extends javax.swing.JFrame {
 
     List<House> houses;
-    HouseDAO houseDAO;
     House selectedHouse;
 
     public HousesFrm() {
-        this.houseDAO = new HouseDAO();
         initComponents();
-
+        ConnClass.setFrameIcon(this);
         updateUI();
-        new ConnClass().setFrameIcon(this);
     }
 
     private void updateUI() {
-        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                houses = houseDAO.get();
-                DefaultListModel listModel = new DefaultListModel();
-                houses.forEach(house -> {
-                    listModel.addElement(house.getName());
-                });
+        Thread t = new Thread(() -> {
+            houses = HouseDAO.get();
+            DefaultListModel listModel = new DefaultListModel();
+            houses.forEach(house -> {
+                listModel.addElement(house.getName());
+            });
 
-                listDorms.setModel(listModel);
-                selectedHouse = null;
-                txtName.setText("");
-                return  null;
-            }
-        };
-        swingWorker.run();
+            listDorms.setModel(listModel);
+            selectedHouse = null;
+            txtName.setText("");
+        });
+        t.start();
     }
 
     @SuppressWarnings("unchecked")
@@ -140,7 +131,7 @@ public class HousesFrm extends javax.swing.JFrame {
             if (selectedHouse == null) {
                 house = new House();
                 house.setName(name);
-                if (houseDAO.add(house)) {
+                if (HouseDAO.add(house)) {
                     JOptionPane.showMessageDialog(null, "House details saved successfully");
                 } else {
                     JOptionPane.showMessageDialog(null, "Error occcured while saving the data", "Error", 0);
@@ -148,7 +139,7 @@ public class HousesFrm extends javax.swing.JFrame {
             } else {
                 house = selectedHouse;
                 house.setName(name);
-                if (houseDAO.update(house)) {
+                if (HouseDAO.update(house)) {
                     JOptionPane.showMessageDialog(null, "House details saved successfully");
                 } else {
                     JOptionPane.showMessageDialog(null, "Error occcured while updating the data", "Error", 0);
@@ -169,7 +160,7 @@ public class HousesFrm extends javax.swing.JFrame {
         } else {
             int res = JOptionPane.showConfirmDialog(null, "Do you want to delete this House permanently ?", "Delete", JOptionPane.YES_NO_OPTION);
             if (res == 0) {
-                houseDAO.delete(selectedHouse.getId());
+                HouseDAO.delete(selectedHouse.getId());
                 JOptionPane.showMessageDialog(null, "House data deleted");
                 updateUI();
             }

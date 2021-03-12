@@ -5,12 +5,13 @@
  */
 package com.lysofts.dao;
 
-import com.lysofts.entities.MyEntityManager;
 import com.lysofts.entities.Subject;
+import com.lysofts.pa.Mapping;
+import com.lysofts.pa.QueryRunner;
 import com.lysofts.utils.ConnClass;
+import java.util.HashMap;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import java.util.Map;
 
 /**
  *
@@ -18,77 +19,38 @@ import javax.persistence.Query;
  */
 public  class SubjectDAO {
 
-    public static List<Subject> get() {
-        EntityManager em = MyEntityManager.getEm();
-        List<Subject> subjects = null;
-        try {
-            String SQL = "SELECT t FROM Subject t";
-            Query query = em.createQuery(SQL, Subject.class);
-            subjects = query.getResultList();
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            ConnClass.printError(ex);
-        } finally {
-            //em.close();
-        }
-        return subjects;
-    }
+    static String table = Mapping.getTableName(Subject.class);
 
-    public static Subject get(int id) {
-        EntityManager em = MyEntityManager.getEm();
-        Subject subject = em.find(Subject.class, id);
-        em.getTransaction().commit();
-        //em.close();
-        return subject;
+    public static List<Subject> get() {
+        String SQL = String.format("SELECT * FROM %s ORDER BY S_NO+0 ASC", table);
+        return QueryRunner.run(SQL, null, Subject.class);
     }
 
     public static boolean add(Subject data) {
-        EntityManager em = MyEntityManager.getEm();
         try {
-            em.persist(data);
-            em.getTransaction().commit();
-            return true;
+            Mapping.Param param = new Mapping().insertQuery(data);
+            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(), param.getValuesString());
+            return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
             return false;
-        } finally {
-            //em.close();
         }
     }
 
     public static boolean update(Subject data) {
-        EntityManager em = MyEntityManager.getEm();
         try {
-            Subject subject = em.find(Subject.class, data.getId());
-            subject.setName(data.getName());
-            subject.setNumber(data.getNumber());
-            subject.setCode(data.getCode());
-            subject.setGrade1(data.getGrade1());
-            subject.setGrade2(data.getGrade2());
-            subject.setGrade3(data.getGrade3());
-            subject.setGrade4(data.getGrade4());
-            subject.setGrade5(data.getGrade5());
-            subject.setGrade6(data.getGrade6());
-            subject.setGrade7(data.getGrade7());
-            subject.setGrade8(data.getGrade8());            
-            subject.setGrade9(data.getGrade9());
-            subject.setGrade10(data.getGrade10());
-            subject.setGrade11(data.getGrade11());
-            subject.setGrade12(data.getGrade12());
-            em.getTransaction().commit();
-            return true;
+            Mapping.Param param = new Mapping().updateQuery(data);
+            String SQL = String.format("UPDATE %s SET %s WHERE Subject_id=%s", table, param.getFieldString(), data.getId());
+            return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
             return false;
-        } finally {
-            //em.close();
         }
     }
 
-    public static void delete(int pk) {
-        EntityManager em = MyEntityManager.getEm();
-        Subject subject = em.find(Subject.class, pk);
-        em.remove(subject);
-        em.getTransaction().commit();
+    public static boolean delete(String pk) {
+        String SQL = String.format("DELETE FROM %s WHERE Subject_id=%s",table, pk);
+        Map<Integer, String> params = new HashMap<>();
+        return QueryRunner.update(SQL, params);
     }
 }

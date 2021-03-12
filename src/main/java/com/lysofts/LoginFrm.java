@@ -13,12 +13,11 @@ public class LoginFrm extends javax.swing.JFrame {
 
     List<User> users = new ArrayList<>();
     String username, password;
-    JDialog loadingDlg = ConnClass.loadingDlg(LoginFrm.this);
 
     public LoginFrm() {
         initComponents();
-        new ConnClass().setFrameIcon(LoginFrm.this);
-        loadingDlg.setVisible(true);
+        ConnClass.setFrameIcon(this);
+
     }
 
     private boolean isEmpty(String string) {
@@ -26,25 +25,15 @@ public class LoginFrm extends javax.swing.JFrame {
     }
 
     private void updateUI() {
-        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                users = UserDAO.get();
-                txtUsername.removeAllItems();
-                txtUsername.addItem("Select username");
-                users.forEach(user -> {
-                    txtUsername.addItem(user.getName());
-                });
-                return null;
-            }
-
-            @Override
-            protected void done() {
-                super.done();
-                loadingDlg.setVisible(false);
-            }
-        };
-        swingWorker.run();
+        Thread thread = new Thread(() -> {
+            users = UserDAO.get();
+            txtUsername.removeAllItems();
+            txtUsername.addItem("Select username");
+            users.forEach(user -> {
+                txtUsername.addItem(user.getName());
+            });
+        });
+        thread.start();
     }
 
     private void login() {
@@ -52,25 +41,20 @@ public class LoginFrm extends javax.swing.JFrame {
         processingDialog.pack();
         processingDialog.setLocationRelativeTo(this);
         processingDialog.setVisible(true);
-        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() {
-                User user = users.get(txtUsername.getSelectedIndex() - 1);
-                if (user.getPassword().equals(password)) {
-                    processingDialog.dispose();
-                    JOptionPane.showMessageDialog(LoginFrm.this, "Login successful");
-                    LoginFrm.this.dispose();
-                    new RegisterExaminationsFrm().setVisible(true);
-                } else {
-                    processingDialog.dispose();
-                    JOptionPane.showMessageDialog(LoginFrm.this, "Check credential then try again", "Login failed", JOptionPane.INFORMATION_MESSAGE);
+        Thread thread = new Thread(() -> {
+            User user = users.get(txtUsername.getSelectedIndex() - 1);
+            if (user.getPassword().equals(password)) {
+                processingDialog.dispose();
+                JOptionPane.showMessageDialog(LoginFrm.this, "Login successful");
+                LoginFrm.this.dispose();
+                new RegisterExaminationsFrm().setVisible(true);
+            } else {
+                processingDialog.dispose();
+                JOptionPane.showMessageDialog(LoginFrm.this, "Check credential then try again", "Login failed", JOptionPane.INFORMATION_MESSAGE);
 
-                }
-                return null;
             }
-
-        };
-        worker.execute();
+        });
+        thread.start();
     }
 
     @SuppressWarnings("unchecked")
@@ -266,8 +250,7 @@ public class LoginFrm extends javax.swing.JFrame {
     }//GEN-LAST:event_txtPasswordKeyTyped
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        this.dispose();
-        new RegisterFrm().setVisible(true);
+        JOptionPane.showMessageDialog(LoginFrm.this, "Registration disabled");
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened

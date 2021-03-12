@@ -54,8 +54,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         jLabel5.setVisible(false);
         jProgressBar1.setVisible(false);
         ProgressNo.setVisible(false);
-
-        new ConnClass().setFrameIcon(this);
+        ConnClass.setFrameIcon(this);
         getClasses();
     }
 

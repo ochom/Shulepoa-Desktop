@@ -5,80 +5,52 @@
  */
 package com.lysofts.dao;
 
-import com.lysofts.entities.MyEntityManager;
 import com.lysofts.entities.Teacher;
+import com.lysofts.pa.Mapping;
+import com.lysofts.pa.QueryRunner;
 import com.lysofts.utils.ConnClass;
+import java.util.HashMap;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import java.util.Map;
 
 /**
  *
  * @author mspace-dev
  */
 public class TeacherDAO {
-    
-    public static List<Teacher> get() {
-        EntityManager em = MyEntityManager.getEm();
-        List<Teacher> teachers = null;
-        try {
-            String SQL = "SELECT t FROM Teacher t";
-            Query query = em.createQuery(SQL, Teacher.class);
-            teachers = query.getResultList();
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            ConnClass.printError(ex);
-        } finally {
-            //em.close();
-        }
-        return teachers;
-    }
 
-    public static Teacher get(int id) {
-        EntityManager em = MyEntityManager.getEm();
-        Teacher teacher = em.find(Teacher.class, id);
-        em.getTransaction().commit();
-        //em.close();
-        return teacher;
+    static String table = Mapping.getTableName(Teacher.class);
+
+    public static List<Teacher> get() {
+        String SQL = String.format("SELECT * FROM %s", table);
+        return QueryRunner.run(SQL, null, Teacher.class);
     }
 
     public static boolean add(Teacher data) {
-        EntityManager em = MyEntityManager.getEm();
         try {
-            em.persist(data);
-            em.getTransaction().commit();
-            return true;
+            Mapping.Param param = new Mapping().insertQuery(data);
+            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(), param.getValuesString());
+            return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
             return false;
-        } finally {
-            //em.close();
         }
     }
 
     public static boolean update(Teacher data) {
-        EntityManager em = MyEntityManager.getEm();
         try {
-            Teacher teacher = em.find(Teacher.class, data.getId());
-            teacher.setName(data.getName());
-            teacher.setStaffNumber(data.getStaffNumber());
-            teacher.setGender(data.getGender());
-            teacher.setPhone(data.getPhone());
-            teacher.setInitials(data.getInitials());
-            em.getTransaction().commit();
-            return true;
+            Mapping.Param param = new Mapping().updateQuery(data);
+            String SQL = String.format("UPDATE %s SET %s WHERE id=%s", table, param.getFieldString(), data.getId());
+            return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
             return false;
-        } finally {
-            //em.close();
         }
     }
 
-    public static void delete(int pk) {
-        EntityManager em = MyEntityManager.getEm();
-        Teacher teacher = em.find(Teacher.class, pk);
-        em.remove(teacher);
-        em.getTransaction().commit();
+    public static boolean delete(String pk) {
+        String SQL = String.format("DELETE FROM %s WHERE id=%s",table, pk);
+        Map<Integer, String> params = new HashMap<>();
+        return QueryRunner.update(SQL, params);
     }
 }

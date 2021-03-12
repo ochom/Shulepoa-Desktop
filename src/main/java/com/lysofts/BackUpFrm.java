@@ -21,7 +21,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -43,94 +42,79 @@ public class BackUpFrm extends javax.swing.JFrame {
 
     public BackUpFrm() {
         initComponents();
-        new ConnClass().setFrameIcon(this);
+        ConnClass.setFrameIcon(this);
 
         jLabel5.setVisible(false);
         jProgressBar1.setVisible(false);
     }
 
     private void BackUpData() {
-        SwingWorker<Void, Integer> worker = new SwingWorker<Void, Integer>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                jLabel5.setText("Backing up data...");
-                jLabel5.setVisible(true);
-                jProgressBar1.setVisible(true);
-                Date date = new Date();
-                SimpleDateFormat sdft = new SimpleDateFormat("YMMddHmmss");
-                String timestamp = sdft.format(date);
-                String backupFile = BackUpFolder + "/Backup" + timestamp + ".bak";
-                try {
-                    FileOutputStream fos;
-                    byte[] b;
+        Thread t = new Thread(() -> {
+            jLabel5.setText("Backing up data...");
+            jLabel5.setVisible(true);
+            jProgressBar1.setVisible(true);
+            Date date = new Date();
+            SimpleDateFormat sdft = new SimpleDateFormat("YMMddHmmss");
+            String timestamp = sdft.format(date);
+            String backupFile = BackUpFolder + "/Backup" + timestamp + ".bak";
+            try {
+                FileOutputStream fos;
+                byte[] b;
 
-                    fos = new FileOutputStream(backupFile);
-                    try (InputStream is = getClass().getClassLoader().getResourceAsStream(databasePath)) {
-                        b = new byte[1024];
-                        int i;
-                        while ((i = is.read(b)) >= 0) {
-                            fos.write(b, 0, i);
-                            fos.flush();
-                        }
-                        fos.close();
-                    }
-                    JOptionPane.showMessageDialog(null, "Backup completed succesfully");
-                } catch (HeadlessException | IOException e) {
-                    ConnClass.printError(e);
-                }
-                return null;
-            }
-
-            @Override
-            protected void done() {
-                jLabel5.setVisible(false);
-                jProgressBar1.setVisible(false);
-
-            }
-        };
-        worker.execute();
-    }
-
-    private void RestoreDatabase() {
-        SwingWorker<Void, Integer> worker = new SwingWorker<Void, Integer>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                jLabel5.setText("Restoring database...");
-                jLabel5.setVisible(true);
-                jProgressBar1.setVisible(true);
-                try {
-                    FileOutputStream fos;
-                    FileInputStream fis;
-                    
-                    String oldDB = getClass().getClassLoader().getResource(databasePath).getPath();
-                    System.out.print(oldDB);
-                    new File(oldDB).delete();
-
-                    //Restore the database
-                    fos = new FileOutputStream(oldDB);
-                    fis = new FileInputStream(RestoreFile);
-                    byte[] b = new byte[1024];
+                fos = new FileOutputStream(backupFile);
+                try (InputStream is = getClass().getClassLoader().getResourceAsStream(databasePath)) {
+                    b = new byte[1024];
                     int i;
-                    while ((i = fis.read(b)) >= 0) {
+                    while ((i = is.read(b)) >= 0) {
                         fos.write(b, 0, i);
                         fos.flush();
                     }
                     fos.close();
-                    fis.close();
-                    JOptionPane.showMessageDialog(null, "Restoration completed succesfully");
-                } catch (Exception e) {
-                    ConnClass.printError(e);
                 }
-                return null;
-            }
 
-            @Override
-            protected void done() {
                 jLabel5.setVisible(false);
                 jProgressBar1.setVisible(false);
+                JOptionPane.showMessageDialog(null, "Backup completed succesfully");
+            } catch (HeadlessException | IOException e) {
+                ConnClass.printError(e);
             }
-        };
-        worker.execute();
+        });
+        t.start();
+    }
+
+    private void RestoreDatabase() {
+        Thread t = new Thread(() -> {
+            jLabel5.setText("Restoring database...");
+            jLabel5.setVisible(true);
+            jProgressBar1.setVisible(true);
+            try {
+                FileOutputStream fos;
+                FileInputStream fis;
+
+                String oldDB = getClass().getClassLoader().getResource(databasePath).getPath();
+                System.out.print(oldDB);
+                new File(oldDB).delete();
+
+                //Restore the database
+                fos = new FileOutputStream(oldDB);
+                fis = new FileInputStream(RestoreFile);
+                byte[] b = new byte[1024];
+                int i;
+                while ((i = fis.read(b)) >= 0) {
+                    fos.write(b, 0, i);
+                    fos.flush();
+                }
+                fos.close();
+                fis.close();
+
+                jLabel5.setVisible(false);
+                jProgressBar1.setVisible(false);
+                JOptionPane.showMessageDialog(null, "Restoration completed succesfully");
+            } catch (Exception e) {
+                ConnClass.printError(e);
+            }
+        });
+        t.start();
     }
 
     /**

@@ -5,12 +5,13 @@
  */
 package com.lysofts.dao;
 
-import com.lysofts.entities.MyEntityManager;
 import com.lysofts.entities.Fee;
+import com.lysofts.pa.Mapping;
+import com.lysofts.pa.QueryRunner;
 import com.lysofts.utils.ConnClass;
+import java.util.HashMap;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import java.util.Map;
 
 /**
  *
@@ -18,93 +19,45 @@ import javax.persistence.Query;
  */
 public class FeeDAO {
     
+    static String table = Mapping.getTableName(Fee.class);
+
     public static List<Fee> get() {
-        EntityManager em = MyEntityManager.getEm();
-        List<Fee> fees = null;
-        try {
-            String SQL = "SELECT t FROM Fee t";
-            Query query = em.createQuery(SQL, Fee.class);
-            fees = query.getResultList();
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            ConnClass.printError(ex);
-        } finally {
-            //em.close();
-        }
-        return fees;
+        String SQL = String.format("SELECT * FROM %s", table);
+        return QueryRunner.run(SQL, null, Fee.class);
     }
 
-    public static Fee get(int id) {
-        EntityManager em = MyEntityManager.getEm();
-        Fee fee = em.find(Fee.class, id);
-        em.getTransaction().commit();
-        //em.close();
-        return fee;
+    public static List<Fee> get(String receiptNumber) {
+        String SQL = String.format("SELECT * FROM %s WHERE receipt_no=?", table);
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, receiptNumber);
+        return QueryRunner.run(SQL, null, Fee.class);
     }
-
-    public static Fee get(String receiptNumber) { 
-        EntityManager em = MyEntityManager.getEm();
-        Fee fee = null;
-        try {
-            String SQL = "SELECT t FROM Fee t WHERE t.receiptNumber=?1";
-            Query query = em.createQuery(SQL, Fee.class);
-            query.setParameter(1, receiptNumber);
-            List<Fee> fees = query.getResultList();
-            if (fees.size()>0) {
-                fee = fees.get(0);
-            }
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            ConnClass.printError(ex);
-        } finally {
-            //em.close();
-        }
-        return fee;
-    }
-
 
     public static boolean add(Fee data) {
-        EntityManager em = MyEntityManager.getEm();
         try {
-            em.persist(data);
-            em.getTransaction().commit();
-            return true;
+            Mapping.Param param = new Mapping().insertQuery(data);
+            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(), param.getValuesString());
+            return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
             return false;
-        } finally {
-            //em.close();
         }
     }
 
     public static boolean update(Fee data) {
-        EntityManager em = MyEntityManager.getEm();
         try {
-            Fee fee = em.find(Fee.class, data.getId());
-            fee.setRegNumber(data.getRegNumber());
-            fee.setTransCode(data.getTransCode());
-            fee.setDebit(data.getDebit());
-            fee.setCredit(data.getCredit());
-            fee.setYear(data.getYear());
-            fee.setMode(data.getMode());
-            fee.setReceiptNumber(data.getReceiptNumber());
-            fee.setInWords(data.getInWords());
-            fee.setCreated(data.getCreated());
-            fee.setCreatedBy(data.getCreatedBy());
-            em.getTransaction().commit();
-            return true;
+            Mapping.Param param = new Mapping().updateQuery(data);
+            String SQL = String.format("UPDATE %s SET %s WHERE id=%s", table, param.getFieldString(), data.getId());
+            return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
             return false;
-        } finally {
-            //em.close();
         }
     }
 
-    public static void delete(int pk) {
-        EntityManager em = MyEntityManager.getEm();
-        Fee fee = em.find(Fee.class, pk);
-        em.remove(fee);
-        em.getTransaction().commit();
+    public static boolean delete(String pk) {
+        String SQL = String.format("DELETE FROM %s WHERE id=%s",table, pk);
+        Map<Integer, String> params = new HashMap<>();
+        return QueryRunner.update(SQL, params);
     }
 }

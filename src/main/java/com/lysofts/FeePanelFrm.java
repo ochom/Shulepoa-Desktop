@@ -21,7 +21,6 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -45,8 +44,7 @@ public class FeePanelFrm extends javax.swing.JFrame {
 
     public FeePanelFrm() {
         initComponents();
-
-        new ConnClass().setFrameIcon(FeePanelFrm.this);
+        ConnClass.setFrameIcon(this);
         updateUI();
 
         Calendar cal = new GregorianCalendar();
@@ -58,28 +56,24 @@ public class FeePanelFrm extends javax.swing.JFrame {
     }
 
     private void updateUI() {
-        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                comboForm.removeAllItems();
-                comboForm.addItem("Select class");
-                ClassroomDAO.get().forEach(classroom -> {
-                    comboForm.addItem(classroom.getName());
-                });
+        Thread t = new Thread(() -> {
+            comboForm.removeAllItems();
+            comboForm.addItem("Select class");
+            ClassroomDAO.get().forEach(classroom -> {
+                comboForm.addItem(classroom.getName());
+            });
 
-                comboYear.removeAllItems();
-                comboYear1.removeAllItems();
-                comboYear2.removeAllItems();
+            comboYear.removeAllItems();
+            comboYear1.removeAllItems();
+            comboYear2.removeAllItems();
 
-                ExamDAO.getYears().forEach(exam -> {
-                    comboYear.addItem(exam.getYear());
-                    comboYear1.addItem(exam.getYear());
-                    comboYear2.addItem(exam.getYear());
-                });
-                return null;
-            }
-        };
-        swingWorker.run();
+            ExamDAO.getYears().forEach(exam -> {
+                comboYear.addItem(exam.getYear());
+                comboYear1.addItem(exam.getYear());
+                comboYear2.addItem(exam.getYear());
+            });
+        });
+        t.start();
     }
 
     private void printReceipt(Fee fee) {
@@ -775,7 +769,7 @@ public class FeePanelFrm extends javax.swing.JFrame {
     }//GEN-LAST:event_txtSearchMouseClicked
 
     private void txtSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchKeyReleased
-        students = StudentDAO.get(txtSearch.getText());
+        students = StudentDAO.get(txtSearch.getText(), "");
         model = (DefaultTableModel) Table_Students.getModel();
         model.setRowCount(0);
         students.forEach((student) -> {
@@ -869,7 +863,7 @@ public class FeePanelFrm extends javax.swing.JFrame {
         String formName = comboForm.getSelectedItem().toString();
         if (formName.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Enter the class for which you want to print Register");
-        }else if (year.isEmpty()) {
+        } else if (year.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Enter the academic year for which you want to print Register");
         } else {
             try {

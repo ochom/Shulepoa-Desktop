@@ -5,27 +5,19 @@
  */
 package com.lysofts.entities;
 
-import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.lysofts.annotations.Column;
+import com.lysofts.annotations.Table;
+
 
 /**
  *
  * @author mspace-dev
  */
-@Entity
 @Table(name = "tblschool")
-public class School implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class School  {
+    
     @Column(name = "School_id")
-    int id;
+    String id;
 
     @Column(name = "School_name")
     String name;
@@ -57,18 +49,18 @@ public class School implements Serializable {
     @Column(name = "OpeningDate")
     String openingDate;
     
-    private boolean activated;
+    private String activated;
     
     private String installed;
 
     public School() {
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -152,11 +144,11 @@ public class School implements Serializable {
         this.openingDate = openingDate;
     }
 
-    public boolean isActivated() {
+    public String isActivated() {
         return activated;
     }
 
-    public void setActivated(boolean activated) {
+    public void setActivated(String activated) {
         this.activated = activated;
     }
 

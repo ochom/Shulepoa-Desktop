@@ -1,13 +1,11 @@
 package com.lysofts;
 
 import com.lysofts.dao.SubjectDAO;
-import com.lysofts.entities.MyEntityManager;
 import com.lysofts.entities.Subject;
+import com.lysofts.pa.QueryRunner;
 import com.lysofts.utils.ConnClass;
 import java.awt.event.KeyEvent;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
@@ -15,12 +13,11 @@ public class SubjectsFrm extends javax.swing.JFrame {
 
     List<Subject> subjects;
     Subject selectedSubject;
-    JDialog loadingDlg = ConnClass.loadingDlg(this);
 
     public SubjectsFrm() {
         initComponents();
         new ConnClass().setFrameIcon(SubjectsFrm.this);
-        loadingDlg.setVisible(true);
+
     }
 
     public boolean isValidGrades() {
@@ -104,42 +101,32 @@ public class SubjectsFrm extends javax.swing.JFrame {
     }
 
     private void updateUI() {
-        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                subjects = SubjectDAO.get();
-                DefaultTableModel model = (DefaultTableModel) tableSubjects.getModel();
-                model.setRowCount(0);
-                subjects.forEach(subject -> {
-                    model.addRow(new Object[]{subject.getNumber(), subject.getName(), subject.getCode()});
-                });
+        Thread t = new Thread(() -> {
+            subjects = SubjectDAO.get();
+            DefaultTableModel model = (DefaultTableModel) tableSubjects.getModel();
+            model.setRowCount(0);
+            subjects.forEach(subject -> {
+                model.addRow(new Object[]{subject.getNumber(), subject.getName(), subject.getCode()});
+            });
 
-                selectedSubject = null;
-                txtNO.setSelectedIndex(0);
-                txtSUBJECT.setText("");
-                txtCODE.setText("");
-                txtGrade1.setText("");
-                txtGrade2.setText("");
-                txtGrade3.setText("");
-                txtGrade4.setText("");
-                txtGrade5.setText("");
-                txtGrade6.setText("");
-                txtGrade7.setText("");
-                txtGrade8.setText("");
-                txtGrade9.setText("");
-                txtGrade10.setText("");
-                txtGrade11.setText("");
-                txtGrade12.setText("");
-                return null;
-            }
-
-            @Override
-            protected void done() {
-                super.done();
-                loadingDlg.setVisible(false);
-            }
-        };
-        swingWorker.run();
+            selectedSubject = null;
+            txtNO.setSelectedIndex(0);
+            txtSUBJECT.setText("");
+            txtCODE.setText("");
+            txtGrade1.setText("");
+            txtGrade2.setText("");
+            txtGrade3.setText("");
+            txtGrade4.setText("");
+            txtGrade5.setText("");
+            txtGrade6.setText("");
+            txtGrade7.setText("");
+            txtGrade8.setText("");
+            txtGrade9.setText("");
+            txtGrade10.setText("");
+            txtGrade11.setText("");
+            txtGrade12.setText("");
+        });
+        t.start();
     }
 
     private void AddSubject() {
@@ -166,9 +153,9 @@ public class SubjectsFrm extends javax.swing.JFrame {
             Subject subject;
             if (selectedSubject == null) {
                 subject = new Subject();
-                subject.setName(txtSUBJECT.getText());
+                subject.setName(txtSUBJECT.getText().toUpperCase());
                 subject.setNumber(txtNO.getSelectedItem().toString());
-                subject.setCode(txtCODE.getText());
+                subject.setCode(txtCODE.getText().toUpperCase());
                 subject.setGrade1(txtGrade1.getText());
                 subject.setGrade2(txtGrade2.getText());
                 subject.setGrade3(txtGrade3.getText());
@@ -189,9 +176,9 @@ public class SubjectsFrm extends javax.swing.JFrame {
                 }
             } else {
                 subject = selectedSubject;
-                subject.setName(txtSUBJECT.getText());
+                subject.setName(txtSUBJECT.getText().toUpperCase());
                 subject.setNumber(txtNO.getSelectedItem().toString());
-                subject.setCode(txtCODE.getText());
+                subject.setCode(txtCODE.getText().toUpperCase());
                 subject.setGrade1(txtGrade1.getText());
                 subject.setGrade2(txtGrade2.getText());
                 subject.setGrade3(txtGrade3.getText());
@@ -215,20 +202,10 @@ public class SubjectsFrm extends javax.swing.JFrame {
     }
 
     private void addSubjectToSubjectNumbers(Subject subject) {
-        EntityManager em = new MyEntityManager().getEm();
-        try {
-            String SQL = String.format("UPDATE Basic_SubjectNumbers SET S%sCODE='%s', S%sNAME='%s'",
-                    subject.getNumber(), subject.getCode(), subject.getNumber(), subject.getName());
-            Query query = em.createNativeQuery(SQL);
-            query.executeUpdate();
-            em.getTransaction().commit();
-            System.out.println("Subjects Basic Numbers Registered....");
-            updateUI();
-        } catch (Exception e) {
-            System.out.println(e);
-        } finally {
-            em.close();
-        }
+        String SQL = String.format("UPDATE Basic_SubjectNumbers SET S%sCODE='%s', S%sNAME='%s'",
+                subject.getNumber(), subject.getCode(), subject.getNumber(), subject.getName());
+        QueryRunner.update(SQL, null);
+        updateUI();
     }
 
     @SuppressWarnings("unchecked")
@@ -526,32 +503,9 @@ public class SubjectsFrm extends javax.swing.JFrame {
 
         txtSUBJECT.setHorizontalAlignment(javax.swing.JTextField.LEFT);
         txtSUBJECT.setToolTipText("e.g English");
-        txtSUBJECT.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                txtSUBJECTMouseClicked(evt);
-            }
-        });
-        txtSUBJECT.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtSUBJECTKeyReleased(evt);
-            }
-        });
 
         txtCODE.setHorizontalAlignment(javax.swing.JTextField.LEFT);
         txtCODE.setToolTipText("e.g ENG");
-        txtCODE.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                txtCODEMouseClicked(evt);
-            }
-        });
-        txtCODE.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtCODEKeyTyped(evt);
-            }
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtCODEKeyReleased(evt);
-            }
-        });
 
         btnSave.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         btnSave.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Save_16x16.png"))
@@ -612,7 +566,7 @@ public class SubjectsFrm extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -631,12 +585,13 @@ public class SubjectsFrm extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                            .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
         layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {txtCODE, txtNO, txtSUBJECT});
 
-        setSize(new java.awt.Dimension(780, 346));
+        setSize(new java.awt.Dimension(780, 360));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -679,24 +634,6 @@ public class SubjectsFrm extends javax.swing.JFrame {
         this.dispose();
         new AdminPanelFrm().setVisible(true);
     }//GEN-LAST:event_formWindowClosing
-
-    private void txtSUBJECTMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtSUBJECTMouseClicked
-
-    }//GEN-LAST:event_txtSUBJECTMouseClicked
-
-    private void txtCODEMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtCODEMouseClicked
-
-    }//GEN-LAST:event_txtCODEMouseClicked
-
-    private void txtCODEKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCODEKeyTyped
-        char c = evt.getKeyChar();
-        int length = txtCODE.getText().length();
-        if (length >= 3) {
-            if (!(c == KeyEvent.VK_BACK_SPACE || c == KeyEvent.VK_DELETE)) {
-                evt.consume();
-            }
-        }
-    }//GEN-LAST:event_txtCODEKeyTyped
 
     private void txtGrade1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtGrade1KeyTyped
         char c = evt.getKeyChar();
@@ -830,14 +767,6 @@ public class SubjectsFrm extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_txtGrade12KeyTyped
-
-    private void txtCODEKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCODEKeyReleased
-        txtCODE.setText(txtCODE.getText().toUpperCase());
-    }//GEN-LAST:event_txtCODEKeyReleased
-
-    private void txtSUBJECTKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSUBJECTKeyReleased
-        txtSUBJECT.setText(txtSUBJECT.getText().toUpperCase());
-    }//GEN-LAST:event_txtSUBJECTKeyReleased
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         updateUI();

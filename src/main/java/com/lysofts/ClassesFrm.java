@@ -23,8 +23,7 @@ public class ClassesFrm extends javax.swing.JFrame {
 
     public ClassesFrm() {
         initComponents();
-
-        new ConnClass().setFrameIcon(ClassesFrm.this);
+        ConnClass.setFrameIcon(this);
         updateUI();
     }
 
@@ -68,35 +67,31 @@ public class ClassesFrm extends javax.swing.JFrame {
     }
 
     private void updateUI() {
-        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                classrooms = ClassroomDAO.get();
-                List<Teacher> teachers = TeacherDAO.get();
-                comboTeacher.removeAllItems();
-                comboTeacher.addItem("Select");
-                teachers.forEach(teacher -> {
-                    comboTeacher.addItem(teacher.getName());
-                });
+        Thread t = new Thread(() -> {
+            classrooms = ClassroomDAO.get();
+            List<Teacher> teachers = TeacherDAO.get();
+            comboTeacher.removeAllItems();
+            comboTeacher.addItem("Select");
+            teachers.forEach(teacher -> {
+                comboTeacher.addItem(teacher.getName());
+            });
 
-                DefaultTableModel model = new DefaultTableModel(new String[]{"Class", "Class Teacher"}, 0);
-                classrooms.forEach(classroom -> {
-                    model.addRow(new Object[]{classroom.getName(), classroom.getClassTeacher()});
-                });
-                Table_Classes.setModel(model);
-                Table_Classes.getColumn("Class").setPreferredWidth(50);
-                Table_Classes.getColumn("Class Teacher").setPreferredWidth(100);
+            DefaultTableModel model = new DefaultTableModel(new String[]{"Class", "Class Teacher"}, 0);
+            classrooms.forEach(classroom -> {
+                model.addRow(new Object[]{classroom.getName(), classroom.getClassTeacher()});
+            });
+            Table_Classes.setModel(model);
+            Table_Classes.getColumn("Class").setPreferredWidth(50);
+            Table_Classes.getColumn("Class Teacher").setPreferredWidth(100);
 
-                selectedClass = null;
-                comboForm.setSelectedIndex(0);
-                txtStream.setText("");
-                comboTeacher.setSelectedIndex(0);
-                sign = "";
-                signaturePic.setIcon(null);
-                return null;
-            }
-        };
-        swingWorker.run();
+            selectedClass = null;
+            comboForm.setSelectedIndex(0);
+            txtStream.setText("");
+            comboTeacher.setSelectedIndex(0);
+            sign = "";
+            signaturePic.setIcon(null);
+        });
+        t.start();
     }
 
     private void getsignature() {
@@ -156,7 +151,7 @@ public class ClassesFrm extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Class", "Class Teacher"
+                "Classroom", "Class Teacher"
             }
         ) {
             Class[] types = new Class [] {
@@ -254,24 +249,23 @@ public class ClassesFrm extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(20, 20, 20)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(comboTeacher, 0, 180, Short.MAX_VALUE)
-                                    .addComponent(btnUpload, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(signaturePic, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
-                                    .addComponent(comboForm, 0, 277, Short.MAX_VALUE)
-                                    .addComponent(txtStream)
-                                    .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGap(12, 12, 12)
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(comboTeacher, 0, 180, Short.MAX_VALUE)
+                                .addComponent(btnUpload, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(signaturePic, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
+                                .addComponent(comboForm, 0, 277, Short.MAX_VALUE)
+                                .addComponent(txtStream)
+                                .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(10, 10, 10)
                                 .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(4, 4, 4)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -298,14 +292,14 @@ public class ClassesFrm extends javax.swing.JFrame {
                         .addGap(24, 24, 24)
                         .addComponent(btnUpload, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(10, 10, 10)
-                        .addComponent(signaturePic, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(signaturePic, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(32, Short.MAX_VALUE))
         );
 
@@ -327,10 +321,10 @@ public class ClassesFrm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void Table_ClassesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Table_ClassesMouseClicked
-        signaturePic.setIcon(null);
         int row = Table_Classes.getSelectedRow();
-        selectedClass = classrooms.get(row);
-        if (selectedClass != null) {
+        if (row >= 0) {
+            signaturePic.setIcon(null);
+            selectedClass = classrooms.get(row);
             String parts[] = selectedClass.getName().split(" ");
             int partCount = parts.length;
             if (partCount > 1) {
@@ -421,10 +415,8 @@ public class ClassesFrm extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ClassesFrm().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new ClassesFrm().setVisible(true);
         });
     }
 

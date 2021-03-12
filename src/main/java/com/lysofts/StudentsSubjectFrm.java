@@ -18,7 +18,7 @@ public class StudentsSubjectFrm extends javax.swing.JFrame {
         initComponents();
         
         boolean selectedSub = false;
-        new ConnClass().setFrameIcon(StudentsSubjectFrm.this);
+        ConnClass.setFrameIcon(this);
         getSubjects(selectedSub);
         getClasses(); 
     }

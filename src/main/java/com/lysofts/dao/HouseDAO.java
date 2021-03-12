@@ -5,12 +5,13 @@
  */
 package com.lysofts.dao;
 
-import com.lysofts.entities.MyEntityManager;
 import com.lysofts.entities.House;
+import com.lysofts.pa.Mapping;
+import com.lysofts.pa.QueryRunner;
 import com.lysofts.utils.ConnClass;
+import java.util.HashMap;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import java.util.Map;
 
 /**
  *
@@ -18,63 +19,39 @@ import javax.persistence.Query;
  */
 public class HouseDAO {
 
-    public static List<House> get() {
-        EntityManager em = MyEntityManager.getEm();
-        List<House> house = null;
-        try {
-            String SQL = "SELECT t FROM House t";
-            Query query = em.createQuery(SQL, House.class);
-            house = query.getResultList();
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            ConnClass.printError(ex);
-        } finally {
-            //em.close();
-        }
-        return house;
-    }
+    static String table = Mapping.getTableName(House.class);
 
-    public static House get(int id) {
-        EntityManager em = MyEntityManager.getEm();
-        House classroom = em.find(House.class, id);
-        em.getTransaction().commit();
-        //em.close();
-        return classroom;
+    public static List<House> get() {
+        String SQL = String.format("SELECT * FROM %s", table);
+        return QueryRunner.run(SQL, null, House.class);
     }
 
     public static boolean add(House data) {
-        EntityManager em = MyEntityManager.getEm();
         try {
-            em.persist(data);
-            em.getTransaction().commit();
-            return true;
+            Mapping.Param param = new Mapping().insertQuery(data);
+            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(), param.getValuesString());
+            return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
             return false;
-        } finally {
-            //em.close();
         }
     }
 
     public static boolean update(House data) {
-        EntityManager em = MyEntityManager.getEm();
         try {
-            House classroom = em.find(House.class, data.getId());
-            classroom.setName(data.getName());
-            em.getTransaction().commit();
-            return true;
+            Mapping.Param param = new Mapping().updateQuery(data);
+            String SQL = String.format("UPDATE %s SET %s WHERE houseNumber=%s", table, param.getFieldString(), data.getId());
+            return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
             return false;
-        } finally {
-            //em.close();
         }
     }
 
-    public static void delete(int pk) {
-        EntityManager em = MyEntityManager.getEm();
-        House classroom = em.find(House.class, pk);
-        em.remove(classroom);
-        em.getTransaction().commit();
+    public static boolean delete(String pk) {
+        String SQL = String.format("DELETE FROM %s WHERE houseNumber=%s",table, pk);
+        Map<Integer, String> params = new HashMap<>();
+        return QueryRunner.update(SQL, params);
     }
 }
+

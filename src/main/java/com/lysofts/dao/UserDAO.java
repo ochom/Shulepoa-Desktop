@@ -5,12 +5,13 @@
  */
 package com.lysofts.dao;
 
-import com.lysofts.entities.MyEntityManager;
 import com.lysofts.entities.User;
+import com.lysofts.pa.Mapping;
+import com.lysofts.pa.QueryRunner;
 import com.lysofts.utils.ConnClass;
+import java.util.HashMap;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import java.util.Map;
 
 /**
  *
@@ -18,67 +19,38 @@ import javax.persistence.Query;
  */
 public class UserDAO {
 
+    static String table = Mapping.getTableName(User.class);
+
     public static List<User> get() {
-        EntityManager em = MyEntityManager.getEm();
-        List<User> users = null;
-        try {
-            String SQL = "SELECT t FROM User t";
-            Query query = em.createQuery(SQL, User.class);
-            users = query.getResultList();
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            ConnClass.printError(ex);
-        } finally {
-            //em.close();
-        }
-        return users;
-    }
-
-
-    public static User get(int id) {
-        EntityManager em = MyEntityManager.getEm();
-        User user = em.find(User.class, id);
-        em.getTransaction().commit();
-        //em.close();
-        return user;
+        String SQL = String.format("SELECT * FROM %s", table);
+        return QueryRunner.run(SQL, null, User.class);
     }
 
     public static boolean add(User data) {
-        EntityManager em = MyEntityManager.getEm();
         try {
-            em.persist(data);
-            em.getTransaction().commit();
-            return true;
+            Mapping.Param param = new Mapping().insertQuery(data);
+            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(), param.getValuesString());
+            return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
             return false;
-        } finally {
-            //em.close();
         }
     }
 
     public static boolean update(User data) {
-        EntityManager em = MyEntityManager.getEm();
         try {
-            User user = em.find(User.class, data.getId());
-            user.setName(data.getName());
-            user.setPassword(data.getPassword());
-            user.setPhone(data.getPhone());
-            user.setEmail(data.getEmail());
-            em.getTransaction().commit();
-            return true;
+            Mapping.Param param = new Mapping().updateQuery(data);
+            String SQL = String.format("UPDATE %s SET %s WHERE id=%s", table, param.getFieldString(), data.getId());
+            return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
             return false;
-        } finally {
-            //em.close();
         }
     }
 
-    public static void delete(int pk) {
-        EntityManager em = MyEntityManager.getEm();
-        User user = em.find(User.class, pk);
-        em.remove(user);
-        em.getTransaction().commit();
+    public static boolean delete(String pk) {
+        String SQL = String.format("DELETE FROM %s WHERE id=%s",table, pk);
+        Map<Integer, String> params = new HashMap<>();
+        return QueryRunner.update(SQL, params);
     }
 }

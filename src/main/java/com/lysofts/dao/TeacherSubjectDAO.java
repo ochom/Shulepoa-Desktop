@@ -5,97 +5,62 @@
  */
 package com.lysofts.dao;
 
-import com.lysofts.entities.MyEntityManager;
 import com.lysofts.entities.TeacherSubject;
+import com.lysofts.pa.Mapping;
+import com.lysofts.pa.QueryRunner;
 import com.lysofts.utils.ConnClass;
+import java.util.HashMap;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import java.util.Map;
 
 /**
  *
  * @author mspace-dev
  */
+
 public class TeacherSubjectDAO {
 
-    public static List<TeacherSubject> get(String teacherId) {
-        EntityManager em = MyEntityManager.getEm();
-        List<TeacherSubject> list = null;
-        try {
-            String SQL = "SELECT t FROM TeacherSubject t WHERE t.teacherId=:id";
-            Query query = em.createQuery(SQL, TeacherSubject.class);
-            query.setParameter("id", teacherId);
-            list = query.getResultList();
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            ConnClass.printError(ex);
-        } finally {
-            //em.close();
-        }
-        return list;
-    }
+    static String table = Mapping.getTableName(TeacherSubject.class);
 
-    public static TeacherSubject get(String subjectCode, String teacherId) {
-        EntityManager em = MyEntityManager.getEm();
-        TeacherSubject data = null;
-        try {
-            String SQL = "SELECT t FROM TeacherSubject t WHERE t.teacherId=:id";
-            Query query = em.createQuery(SQL, TeacherSubject.class);
-            query.setParameter("id", teacherId);
-            List<TeacherSubject> list = query.getResultList();
-            if (list.size() > 0) {
-                data = list.get(0);
-            }
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            ConnClass.printError(ex);
-        } finally {
-            //em.close();
-        }
-        return data;
+    public static List<TeacherSubject> get(String teacherId) {
+        String SQL = String.format("SELECT * FROM %s WHERE Teacher_id=?", table);
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, teacherId);
+        return QueryRunner.run(SQL, params, TeacherSubject.class);
     }
 
     public static boolean add(TeacherSubject data) {
-        EntityManager em = MyEntityManager.getEm();
         try {
-            Query q = em.createQuery("DELETE  FROM TeacherSubject t WHERE t.subjectCode=:sc AND t.classroom=:c");
-            q.setParameter("sc", data.getSubjectCode());
-            q.setParameter("c", data.getClassroom());
-            q.executeUpdate();
-            em.persist(data);
-            em.getTransaction().commit();
-            return true;
+            delete(data.getTeacherId(), data.getSubjectCode());
+            Mapping.Param param = new Mapping().insertQuery(data);
+            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(), param.getValuesString());
+            return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
             return false;
-        } finally {
-            //em.close();
         }
     }
 
     public static boolean update(TeacherSubject data) {
-        EntityManager em = MyEntityManager.getEm();
         try {
-            TeacherSubject tSubject = em.find(TeacherSubject.class, data.getId());
-            tSubject.setTeacherId(data.getTeacherId());
-            tSubject.setSubjectName(data.getSubjectName());
-            tSubject.setSubjectCode(data.getSubjectCode());
-            tSubject.setClassroom(data.getClassroom());
-            tSubject.setTeacherInitials(data.getTeacherInitials());
-            em.getTransaction().commit();
-            return true;
+            Mapping.Param param = new Mapping().updateQuery(data);
+            String SQL = String.format("UPDATE %s SET %s WHERE id=%s", table, param.getFieldString(), data.getId());
+            return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
             return false;
-        } finally {
-            //em.close();
         }
     }
 
-    public static void delete(TeacherSubject data) {
-        EntityManager em = MyEntityManager.getEm();
-        TeacherSubject ts = em.find(TeacherSubject.class, data.getId());
-        em.remove(ts);
-        em.getTransaction().commit();
+    public static boolean delete(TeacherSubject data) {
+        return delete(data.getTeacherId(), data.getSubjectCode());
+    }
+
+    public static boolean delete(String teacherId, String subjectCode) {
+        String SQL = String.format("DELETE FROM %s WHERE Teacher_id=? AND Subject_code=?", table);
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, teacherId);
+        params.put(2, subjectCode);
+        return QueryRunner.update(SQL, params);
     }
 }

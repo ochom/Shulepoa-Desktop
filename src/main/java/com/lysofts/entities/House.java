@@ -5,27 +5,18 @@
  */
 package com.lysofts.entities;
 
-import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.lysofts.annotations.Column;
+import com.lysofts.annotations.Table;
 
 /**
  *
  * @author mspace-dev
  */
-@Entity
 @Table(name = "tblHouses")
-public class House implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class House {
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "HouseNumber")
-    private int id;
+    private String id;
 
     @Column(name = "HouseName")
     private String name;
@@ -37,11 +28,11 @@ public class House implements Serializable {
         this.name = name;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

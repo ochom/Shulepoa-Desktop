@@ -10,7 +10,6 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
@@ -24,51 +23,37 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
 
     List<Exam> exams = new ArrayList<>();
     School school = null;
-    JDialog loadingDlg = ConnClass.loadingDlg(RegisterExaminationsFrm.this);
 
     public RegisterExaminationsFrm() {
         initComponents();
-    
+        ConnClass.setFrameIcon(this);
+
         jLabel3.setVisible(false);
         jProgressBar1.setVisible(false);
         ProgressNo.setVisible(false);
-        
-        new ConnClass().setFrameIcon(RegisterExaminationsFrm.this);
-        loadingDlg.setVisible(true);
 
     }
 
     private void updateUI() {
-        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                school = SchoolDAO.get();
-                comboYear.removeAllItems();
-                ExamDAO.getYears().forEach(exam -> {
-                    comboYear.addItem(exam.getYear());
-                });
+        Thread t = new Thread(() -> {
+            school = SchoolDAO.get();
+            comboYear.removeAllItems();
+            ExamDAO.getYears().forEach(exam -> {
+                comboYear.addItem(exam.getYear());
+            });
 
-                exams = ExamDAO.get();
-                if (exams.size() > 0) {
-                    Exam latestExam = exams.get(exams.size() - 1);
-                    comboTerm.setSelectedItem(latestExam.getTerm());
-                }
-                return null;
+            exams = ExamDAO.get();
+            if (exams.size() > 0) {
+                Exam latestExam = exams.get(exams.size() - 1);
+                comboTerm.setSelectedItem(latestExam.getTerm());
             }
-
-            @Override
-            protected void done() {
-                super.done();
-                loadingDlg.setVisible(false);
-            }
-        };
-        swingWorker.run();
+        });
+        t.start();
     }
 
     private void UpdateStudentsEntriesForAnExam(String Year, String Term) {
         SwingWorker<Void, Integer> worker = new SwingWorker<Void, Integer>() {
             int Total = 0;
-
             @Override
             protected Void doInBackground() throws Exception {
                 jLabel3.setVisible(true);
@@ -85,7 +70,6 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
                     int i = 0;
                     while (rs.next()) {
                         i++;
-                        Thread.sleep(10);
                         String StudentID = rs.getString("Student_id");
                         String StudentClass = rs.getString("Student_Class");
                         String sql1 = "Select Count(*) from Students_exams WHERE (SE_Student_id = '" + StudentID + "' AND Year='" + Year + "' AND Term='" + Term + "' AND SE_StudentClass='" + StudentClass + "')";
@@ -129,7 +113,7 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
                 jProgressBar1.setVisible(false);
                 ProgressNo.setVisible(false);
 
-                if (school == null || (!school.isActivated() && hasExpired())) {
+                if (school == null || (school.isActivated().equals("0") && hasExpired())) {
                     RegisterExaminationsFrm.this.dispose();
                     new ActivationFrm().setVisible(true);
                 } else {

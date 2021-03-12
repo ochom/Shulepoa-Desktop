@@ -1,6 +1,7 @@
 
 package com.lysofts;
 
+import com.lysofts.utils.ConnClass;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -9,6 +10,7 @@ public class SubjectAllocationChoiceFrm extends javax.swing.JFrame {
     
     public SubjectAllocationChoiceFrm() {
         initComponents();
+        ConnClass.setFrameIcon(this);
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

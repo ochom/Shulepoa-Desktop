@@ -12,15 +12,12 @@ public class UsersFrm extends javax.swing.JFrame {
 
     private List<User> users = new ArrayList<>();
     private User selectedUser = null;
-    JDialog loadingDlg = ConnClass.loadingDlg(this);
-    
+
     public UsersFrm() {
         initComponents();
 
         new ConnClass().setFrameIcon(UsersFrm.this);
-        loadingDlg.setVisible(true);        
     }
-
 
     private void AddUser() {
         String name = txtName.getText();
@@ -66,32 +63,22 @@ public class UsersFrm extends javax.swing.JFrame {
     }
 
     private void updateUI() {
-        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                users = UserDAO.get();
-                DefaultTableModel model = (DefaultTableModel) tblUsers.getModel();
-                model.setRowCount(0);
-                users.forEach(user -> {
-                    model.addRow(new Object[]{user.getName(), user.getPhone()});
-                });
-                tblUsers.setModel(model);
+        Thread t = new Thread(() -> {
+            users = UserDAO.get();
+            DefaultTableModel model = (DefaultTableModel) tblUsers.getModel();
+            model.setRowCount(0);
+            users.forEach(user -> {
+                model.addRow(new Object[]{user.getName(), user.getPhone()});
+            });
+            tblUsers.setModel(model);
 
-                selectedUser = null;
-                txtName.setText("");
-                txtEmail.setText("");
-                txtPassword.setText("");
-                txtPhone.setText("");
-                return null;
-            }
-
-            @Override
-            protected void done() {
-                super.done();
-                loadingDlg.setVisible(false);
-            }
-        };
-        swingWorker.run();
+            selectedUser = null;
+            txtName.setText("");
+            txtEmail.setText("");
+            txtPassword.setText("");
+            txtPhone.setText("");
+        });
+        t.start();
     }
 
     @SuppressWarnings("unchecked")

@@ -5,12 +5,13 @@
  */
 package com.lysofts.dao;
 
-import com.lysofts.entities.MyEntityManager;
 import com.lysofts.entities.Student;
+import com.lysofts.pa.Mapping;
+import com.lysofts.pa.QueryRunner;
 import com.lysofts.utils.ConnClass;
+import java.util.HashMap;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import java.util.Map;
 
 /**
  *
@@ -18,115 +19,61 @@ import javax.persistence.Query;
  */
 public class StudentDAO {
 
+    static String table = Mapping.getTableName(Student.class);
+
     public static List<Student> get() {
-        EntityManager em = MyEntityManager.getEm();
-        List<Student> students = null;
-        try {
-            String SQL = "SELECT t FROM Student t";
-            Query query = em.createQuery(SQL, Student.class);
-            students = query.getResultList();
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            ConnClass.printError(ex);
-        } finally {
-            //em.close();
-        }
-        return students;
+        String SQL = String.format("SELECT * FROM %s", table);
+        return QueryRunner.run(SQL, null, Student.class);
     }
 
-    public static List<Student> get(String searchText) {
-        searchText = searchText.toUpperCase();
-        EntityManager em = MyEntityManager.getEm();
-        List<Student> students = null;
-        try {
-            String SQL = "SELECT t FROM Student t WHERE t.regNumber LIKE UPPER(?1) OR t.name LIKE UPPER(?2)";
-            Query query = em.createQuery(SQL, Student.class);
-            query.setParameter(1, "%" + searchText + "%");
-            query.setParameter(2, "%" + searchText + "%");
-            students = query.getResultList();
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            ConnClass.printError(ex);
-        } finally {
-            //em.close();
-        }
-        return students;
+    public static Student get(String studentId) {
+        String SQL = String.format("SELECT * FROM %s  WHERE Student_ID = ?", table);
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, studentId);
+        List<Student> list = QueryRunner.run(SQL, params, Student.class);
+        return list.size() > 0 ? list.get(0) : null;
     }
 
-    public static Student get(int id) {
-        EntityManager em = MyEntityManager.getEm();
-        Student student = em.find(Student.class, id);
-        em.getTransaction().commit();
-        //em.close();
-        return student;
+    public static List<Student> get(String searchText, String other) {
+        String SQL = String.format("SELECT * FROM %s  WHERE Student_ID LIKE ? OR Student_name LIKE ?", table);
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, "%" + searchText + "%");
+        params.put(2, "%" + searchText + "%");
+        return QueryRunner.run(SQL, params, Student.class);
     }
-    
-    
 
     public static List<Student> getInClass(String className) {
-        EntityManager em = MyEntityManager.getEm();
-        List<Student> students = null;
-        try {
-            String SQL = "SELECT t FROM Student t WHERE t.classroom=:cl";
-            Query query = em.createQuery(SQL, Student.class);
-            query.setParameter("cl", className);
-            students = query.getResultList();
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            ConnClass.printError(ex);
-        } finally {
-            //em.close();
-        }
-        return students;
+        String SQL = String.format("SELECT * FROM %s WHERE Student_Class=?", table);
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, className);
+        return QueryRunner.run(SQL, params, Student.class);
     }
 
     public static boolean add(Student data) {
-        EntityManager em = MyEntityManager.getEm();
         try {
-            em.persist(data);
-            em.getTransaction().commit();
-            return true;
+            Mapping.Param param = new Mapping().insertQuery(data);
+            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(), param.getValuesString());
+            return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
             return false;
-        } finally {
-            //em.close();
         }
     }
 
     public static boolean update(Student data) {
-        EntityManager em = MyEntityManager.getEm();
         try {
-            Student student = em.find(Student.class, data.getId());
-            student.setName(data.getName());
-            student.setRegNumber(data.getRegNumber());
-            student.setSex(data.getSex());
-            student.setClassroom(data.getClassroom());
-            student.setDoa(data.getDoa());
-            student.setDob(data.getDob());
-            student.setKcpeMarks(data.getKcpeMarks());
-            student.setKcpeGrade(data.getKcpeGrade());
-            student.setPassport(data.getPassport());
-            student.setHouse(data.getHouse());
-            student.setKinName(data.getKinName());
-            student.setKinPhone(data.getKinPhone());
-            student.setFeeReuired(data.getFeeReuired());
-            student.setFeePaid(data.getFeePaid());
-            student.setFeeBalance(data.getFeeBalance());
-            em.getTransaction().commit();
-            return true;
+            Mapping.Param param = new Mapping().updateQuery(data);
+            String SQL = String.format("UPDATE %s SET %s WHERE id=%s", table, param.getFieldString(), data.getId());
+            return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
             return false;
-        } finally {
-            //em.close();
         }
     }
 
-    public static void delete(int pk) {
-        EntityManager em = MyEntityManager.getEm();
-        Student student = em.find(Student.class, pk);
-        em.remove(student);
-        em.getTransaction().commit();
+    public static boolean delete(String pk) {
+        String SQL = String.format("DELETE FROM %s WHERE id=%s", table, pk);
+        Map<Integer, String> params = new HashMap<>();
+        return QueryRunner.update(SQL, params);
     }
 }

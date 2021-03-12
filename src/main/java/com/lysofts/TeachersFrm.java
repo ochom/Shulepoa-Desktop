@@ -15,13 +15,11 @@ public class TeachersFrm extends javax.swing.JFrame {
     private Map<String, Object> sals;
     private List<Teacher> teachers = new ArrayList<>();
     private Teacher selectedTeacher = null;
-    JDialog loadingDlg = ConnClass.loadingDlg(this);
 
     public TeachersFrm() {
         initComponents();
-
         new ConnClass().setFrameIcon(TeachersFrm.this);
-        loadingDlg.setVisible(true);
+
         initializeSalutations();
     }
 
@@ -42,19 +40,23 @@ public class TeachersFrm extends javax.swing.JFrame {
     private void createInitials() {
         try {
             String fullname = txtName.getText();
-            String[] parts = fullname.split(" ");
-            int tparts = parts.length;
-            String abbre = "";
-            int start=0;
-            if (tparts > 1 && sals.containsKey(parts[0].toLowerCase())) {
-                start = 1;
-            }
-            
-            for (int i = start; i < tparts; i++) {
-                abbre += parts[i].substring(0, 1).toUpperCase() + ".";
-            }
+            if (!fullname.isEmpty() && fullname.length() > 10) {
+                String[] parts = fullname.split(" ");
+                int tparts = parts.length;
+                String abbre = "";
+                int start = 0;
+                if (tparts > 1) {
+                    if (sals.containsKey(parts[0].toLowerCase())) {
+                        start = 1;
+                    }
+                }
 
-            txtInitials.setText(abbre);
+                for (int i = start; i < tparts; i++) {
+                    abbre += parts[i].substring(0, 1).toUpperCase() + ".";
+                }
+
+                txtInitials.setText(abbre);
+            }
         } catch (Exception e) {
             ConnClass.printError(e);
         }
@@ -107,33 +109,23 @@ public class TeachersFrm extends javax.swing.JFrame {
     }
 
     private void updateUI() {
-        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                teachers = TeacherDAO.get();
-                DefaultTableModel model = (DefaultTableModel) Table_Teachers.getModel();
-                model.setRowCount(0);
-                teachers.forEach(teacher -> {
-                    model.addRow(new Object[]{teacher.getName(), teacher.getStaffNumber()});
-                });
-                Table_Teachers.setModel(model);
+        Thread t = new Thread(() -> {
+            teachers = TeacherDAO.get();
+            DefaultTableModel model = (DefaultTableModel) Table_Teachers.getModel();
+            model.setRowCount(0);
+            teachers.forEach(teacher -> {
+                model.addRow(new Object[]{teacher.getName(), teacher.getStaffNumber()});
+            });
+            Table_Teachers.setModel(model);
 
-                selectedTeacher = null;
-                txtName.setText("");
-                txtNO.setText("");
-                txtInitials.setText("");
-                txtPhone.setText("");
-                comboGender.setSelectedIndex(0);
-                return null;
-            }
-
-            @Override
-            protected void done() {
-                super.done();
-                loadingDlg.setVisible(false);
-            }
-        };
-        swingWorker.run();
+            selectedTeacher = null;
+            txtName.setText("");
+            txtNO.setText("");
+            txtInitials.setText("");
+            txtPhone.setText("");
+            comboGender.setSelectedIndex(0);
+        });
+        t.start();
     }
 
     @SuppressWarnings("unchecked")

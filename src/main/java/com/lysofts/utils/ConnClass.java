@@ -34,36 +34,34 @@ public class ConnClass {
         } catch (ClassNotFoundException | SQLException e) {
             printError(e);
         }
-        if (conn != null) {
-            System.out.println("Connected");
+        return conn;
+    }
+    
+    public static Connection getDB() {
+        try {
+            url = "jdbc:sqlite:struct";
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection(url);
+        } catch (ClassNotFoundException | SQLException e) {
+            printError(e);
         }
         return conn;
     }
 
-    public void setFrameIcon(JFrame jframe) {
+    public static void setFrameIcon(JFrame jframe) {
         try {
-            jframe.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/A Logo Icon File.png")));
+            jframe.setIconImage(Toolkit.getDefaultToolkit().getImage(ConnClass.class.getClassLoader().getResource("images/A Logo Icon File.png")));
         } catch (Exception e) {
             System.out.println(e);
         }
         try {
-            jframe.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/A logo.png")));
+            jframe.setIconImage(Toolkit.getDefaultToolkit().getImage(ConnClass.class.getClassLoader().getResource("images/A logo.png")));
 
         } catch (Exception e) {
             System.out.println(e);
         }
     }
     
-    public static JDialog loadingDlg(JFrame frame){
-        JDialog jDialog = new JDialog(frame);
-        jDialog.add(new JLabel("Processing please wait..."));
-        jDialog.setType(Window.Type.POPUP);
-        jDialog.setUndecorated(true);
-        jDialog.pack();
-        jDialog.setLocationRelativeTo(frame);
-        return jDialog;
-    }
-
     public static int CountRows(String sql) {
         int rows = -1;
         try {

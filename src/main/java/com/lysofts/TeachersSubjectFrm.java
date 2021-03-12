@@ -9,7 +9,6 @@ import com.lysofts.entities.Subject;
 import com.lysofts.entities.Teacher;
 import com.lysofts.entities.TeacherSubject;
 import com.lysofts.utils.ConnClass;
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,8 +17,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 public class TeachersSubjectFrm extends javax.swing.JFrame {
-    
-    JDialog loadingDlg = ConnClass.loadingDlg(this);
+
     List<Teacher> teachers = new ArrayList<>();
     List<Subject> subjects = new ArrayList<>();
     List<Classroom> classrooms = new ArrayList<>();
@@ -30,24 +28,16 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
         initComponents();
 
         new ConnClass().setFrameIcon(TeachersSubjectFrm.this);
-        loadingDlg.setVisible(true);
+
     }
 
-    private class UpdateUI extends SwingWorker<Void, Void> {
-
-        @Override
-        protected Void doInBackground() throws Exception {
+    private void updateUI() {
+        Thread t = new Thread(() -> {
             getClassesForMe();
             getSubjectForMe();
             getTeachers();
-            return null;
-        }
-
-        @Override
-        protected void done() {
-            super.done(); //To change body of generated methods, choose Tools | Templates.
-            loadingDlg.setVisible(false);
-        }
+        });
+        t.start();
     }
 
     private void updateMySubjects() {
@@ -343,7 +333,7 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
         } else {
             String subjectCode = comboSubjectForMe.getSelectedItem().toString();
             String classroom = comboFormToTeach.getSelectedItem().toString();
-            String subjectName = subjects.get(comboSubjectForMe.getSelectedIndex()-1).getName();
+            String subjectName = subjects.get(comboSubjectForMe.getSelectedIndex() - 1).getName();
             if (tsMap.containsKey(String.format("%s_%s", subjectCode, classroom))) {
                 getToolkit().beep();
                 Teacher teacher = tsMap.get(String.format("%s_%s", subjectCode, classroom));
@@ -379,7 +369,7 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
     }//GEN-LAST:event_tableDetailSubjectsMousePressed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        new UpdateUI().run();
+        updateUI();
     }//GEN-LAST:event_formWindowOpened
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
