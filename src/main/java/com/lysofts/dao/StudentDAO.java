@@ -22,7 +22,7 @@ public class StudentDAO {
     static String table = Mapping.getTableName(Student.class);
 
     public static List<Student> get() {
-        String SQL = String.format("SELECT * FROM %s", table);
+        String SQL = String.format("SELECT * FROM %s ORDER BY (Student_id + 0) ASC", table);
         return QueryRunner.run(SQL, null, Student.class);
     }
 
@@ -35,7 +35,7 @@ public class StudentDAO {
     }
 
     public static List<Student> get(String searchText, String other) {
-        String SQL = String.format("SELECT * FROM %s  WHERE Student_ID LIKE ? OR Student_name LIKE ?", table);
+        String SQL = String.format("SELECT * FROM %s  WHERE Student_ID LIKE ? OR Student_name LIKE ? ORDER BY (Student_id + 0) ASC", table);
         Map<Integer, String> params = new HashMap<>();
         params.put(1, "%" + searchText + "%");
         params.put(2, "%" + searchText + "%");
@@ -43,7 +43,7 @@ public class StudentDAO {
     }
 
     public static List<Student> getInClass(String className) {
-        String SQL = String.format("SELECT * FROM %s WHERE Student_Class=?", table);
+        String SQL = String.format("SELECT * FROM %s WHERE Student_Class=? ORDER BY (Student_id + 0) ASC", table);
         Map<Integer, String> params = new HashMap<>();
         params.put(1, className);
         return QueryRunner.run(SQL, params, Student.class);

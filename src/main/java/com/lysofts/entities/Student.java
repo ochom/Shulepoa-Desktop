@@ -61,6 +61,9 @@ public class Student {
     
     @Column(name = "FeeBalance")
     private String feeBalance;
+    
+    @Column(name = "SubjectEntries")
+    private String subjectEntry;
 
     public Student() {
     }
@@ -192,5 +195,12 @@ public class Student {
     public void setFeeBalance(String feeBalance) {
         this.feeBalance = feeBalance;
     }
-    
+
+    public String getSubjectEntry() {
+        return subjectEntry;
+    }
+
+    public void setSubjectEntry(String subjectEntry) {
+        this.subjectEntry = subjectEntry;
+    }
 }

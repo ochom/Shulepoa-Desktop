@@ -26,10 +26,30 @@ public class StudentExamDAO {
         return QueryRunner.run(SQL, null, StudentExam.class);
     }
 
+    public static StudentExam get(String studentId, String classroom, String year, String term) {
+        String SQL = String.format("SELECT * FROM %s  WHERE SE_Student_id=? AND SE_StudentClass=? AND Year=? AND Term=?", table);
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, studentId);
+        params.put(2, classroom);
+        params.put(3, year);
+        params.put(4, term);
+        List<StudentExam> list = QueryRunner.run(SQL, params, StudentExam.class);
+        return list.size() > 0 ? list.get(0) : null;
+    }
+
     public static List<StudentExam> get(String classroom, String year, String term) {
         String SQL = String.format("SELECT * FROM %s  WHERE SE_StudentClass=? AND Year=? AND Term=?", table);
         Map<Integer, String> params = new HashMap<>();
         params.put(1, classroom);
+        params.put(2, year);
+        params.put(3, term);
+        return QueryRunner.run(SQL, params, StudentExam.class);
+    }
+
+    public static List<StudentExam> getByForm(String form, String year, String term) {
+        String SQL = String.format("SELECT * FROM %s  WHERE substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?", table);
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, form);
         params.put(2, year);
         params.put(3, term);
         return QueryRunner.run(SQL, params, StudentExam.class);
@@ -65,7 +85,7 @@ public class StudentExamDAO {
     }
 
     public static boolean delete(String pk) {
-        String SQL = String.format("DELETE FROM %s WHERE id=%s",table, pk);
+        String SQL = String.format("DELETE FROM %s WHERE id=%s", table, pk);
         Map<Integer, String> params = new HashMap<>();
         return QueryRunner.update(SQL, params);
     }

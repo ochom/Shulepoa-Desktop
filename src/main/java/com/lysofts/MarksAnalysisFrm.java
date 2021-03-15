@@ -2,14 +2,22 @@ package com.lysofts;
 
 import com.lysofts.dao.ClassroomDAO;
 import com.lysofts.dao.ExamDAO;
+import com.lysofts.dao.StudentDAO;
+import com.lysofts.dao.StudentExamDAO;
+import com.lysofts.dao.SubjectDAO;
 import com.lysofts.entities.Classroom;
+import com.lysofts.entities.Student;
+import com.lysofts.entities.StudentExam;
+import com.lysofts.entities.Subject;
+import com.lysofts.pa.QueryRunner;
 import com.lysofts.utils.ConnClass;
-import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.*;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
@@ -18,19 +26,17 @@ import javax.swing.table.DefaultTableModel;
 
 public class MarksAnalysisFrm extends javax.swing.JFrame {
 
-    Connection Conn = ConnClass.connectDB();
-    PreparedStatement pst = null;
-    ResultSet rs = null;
-    String sql = null, Year = "", Term = "", Exam = "";
-    List<Classroom> classrooms = new ArrayList<>();
-    Classroom selectedClassroom = null;
+    String sql = "", Form = "", Year = "", Term = "", Exam = "";
 
-    private Timer t;
+    List<Classroom> classrooms = new ArrayList<>();
+    List<StudentExam> studentExams = new ArrayList<>();
+
+    private Timer timer;
     private ActionListener al;
 
     public MarksAnalysisFrm() {
         initComponents();
-        ConnClass.setFrameIcon(this);
+        ConnClass.setFrameIcon(MarksAnalysisFrm.this);
 
         updateUI();
         runprogressBar();
@@ -38,7 +44,6 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
 
     private void updateUI() {
         getYears();
-        getClassrooms();
     }
 
     private void runprogressBar() {
@@ -47,7 +52,7 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
                 AnalysisProg.setValue(AnalysisProg.getValue() + 1);
                 AnalysisProg1.setValue(AnalysisProg1.getValue() + 1);
             } else if (AnalysisProg.getValue() == 100) {
-                t.stop();
+                timer.stop();
                 AnalysisProg.setValue(0);
                 AnalysisProg1.setValue(0);
                 LowerFormsProgressDlg.dispose();
@@ -55,7 +60,7 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Analysis completed succesfully", "acme", 1);
             }
         };
-        t = new Timer(25, al);
+        timer = new Timer(25, al);
     }
 
     private void getYears() {
@@ -67,1104 +72,756 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
     }
 
     private void getClassrooms() {
-        classrooms = ClassroomDAO.get();
-        comboForm.removeAllItems();
-        comboForm.addItem("SELECT");
-        classrooms.forEach(classroom -> {
-            comboForm.addItem(classroom.getName());
+        classrooms = new ArrayList<>();
+        ClassroomDAO.get().forEach(classroom -> {
+            if (classroom.getName().substring(0, 1).equals(Form)) {
+                classrooms.add(classroom);
+            }
         });
     }
 
-    private void getExamMarksForExport() {
-        if (comboForm.getSelectedIndex() == 0) {
-            JOptionPane.showMessageDialog(null, "Select a Form from the dropdown", "Error", 1);
-        } else if (comboYear.getSelectedIndex() == 0) {
-            JOptionPane.showMessageDialog(null, "Enter the Year of examination", "Error", 1);
-        } else if (comboTerm.getSelectedIndex() == 0) {
-            JOptionPane.showMessageDialog(null, "Select a Term from the dropdown", "Error", 1);
-        } else if (comboExam.getSelectedIndex() == 0) {
-            JOptionPane.showMessageDialog(null, "Select a the Examination from the dropdown", "Error", 1);
-        } else {
-            selectedClassroom = classrooms.get(comboForm.getSelectedIndex() - 1);
-            Year = comboYear.getSelectedItem().toString();
-            Term = comboYear.getSelectedItem().toString();
-            Exam = comboYear.getSelectedItem().toString();
-            try {
-                DefaultTableModel model = new DefaultTableModel(new String[]{"Phone Number", "Text"}, 0);
-                switch (Exam) {
-                    case "Exam 1":
-                        break;
-                    case "Exam 2":
-                        break;
-                    case "Exam 3":
-                        break;
-                    default:
-                        break;
-                }
-                if (Exam.equalsIgnoreCase("Exam 1")) {
-                    sql = ("SELECT ifnull(students_exams.S1CODE,'') AS S1C, ifnull(students_exams.S1E1Marks,'') AS S1M,ifnull(students_exams.S1E1Grade,'') AS S1G,ifnull(students_exams.S2CODE,'') AS S2C, ifnull(students_exams.S2E1Marks,'') AS S2M,ifnull(students_exams.S2E1Grade,'') AS S2G,ifnull(students_exams.S3CODE,'') AS S3C, ifnull(students_exams.S3E1Marks,'') AS S3M,ifnull(students_exams.S3E1Grade,'') AS S3G,ifnull(students_exams.S4CODE,'') AS S4C, ifnull(students_exams.S4E1Marks,'') AS S4M,ifnull(students_exams.S4E1Grade,'') AS S4G,ifnull(students_exams.S5CODE,'') AS S5C, ifnull(students_exams.S5E1Marks,'') AS S5M,ifnull(students_exams.S5E1Grade,'') AS S5G,ifnull(students_exams.S6CODE,'') AS S6C, ifnull(students_exams.S6E1Marks,'') AS S6M,ifnull(students_exams.S6E1Grade,'') AS S6G,ifnull(students_exams.S7CODE,'') AS S7C, ifnull(students_exams.S7E1Marks,'') AS S7M,ifnull(students_exams.S7E1Grade,'') AS S7G,ifnull(students_exams.S8CODE,'') AS S8C, ifnull(students_exams.S8E1Marks,'') AS S8M,ifnull(students_exams.S8E1Grade,'') AS S8G,ifnull(students_exams.S9CODE,'') AS S9C, ifnull(students_exams.S9E1Marks,'') AS S9M,ifnull(students_exams.S9E1Grade,'') AS S9G,ifnull(students_exams.S10CODE,'') AS S10C, ifnull(students_exams.S10E1Marks,'') AS S10M,ifnull(students_exams.S10E1Grade,'') AS S10G,ifnull(students_exams.S11CODE,'') AS S11C, ifnull(students_exams.S11E1Marks,'') AS S11M,ifnull(students_exams.S11E1Grade,'') AS S11G,ifnull(students_exams.S12CODE,'') AS S12C, ifnull(students_exams.S12E1Marks,'') AS S12M,ifnull(students_exams.S12E1Grade,'') AS S12G,ifnull(students_exams.S13CODE,'') AS S13C, ifnull(students_exams.S13E1Marks,'') AS S13M,ifnull(students_exams.S13E1Grade,'') AS S13G,ifnull(students_exams.S14CODE,'') AS S14C, ifnull(students_exams.S14E1Marks,'') AS S14M,ifnull(students_exams.S14E1Grade,'') AS S14G,students_exams.Exam1TotalMarks AS TOTALMARKS,students_exams.Exam1MeanGrade AS GRADE, students_exams.Exam1OverallPosition AS Position,student_details.*, tblschool.* FROM tblschool inner join(students_exams inner join student_details on students_exams.SE_Student_id=student_details.student_id) WHERE substr(SE_StudentClass,1,1)='" + selectedClassroom.getName().substring(0, 1) + "'  AND YEAR='" + Year + "' AND Term='" + Term + "' ORDER BY TOTALMARKS DESC");
-                    pst = Conn.prepareStatement(sql);
-                    rs = pst.executeQuery();
-                    String Result = null;
-                    while (rs.next()) {
-                        Result = rs.getString("S1C") + " " + rs.getString("S1G") + " " + rs.getString("S2C") + " " + rs.getString("S2G") + " " + rs.getString("S3C") + " " + rs.getString("S3G") + " " + rs.getString("S4C") + " " + rs.getString("S4G") + " " + rs.getString("S5C") + " " + rs.getString("S5G") + " " + rs.getString("S6C") + " " + rs.getString("S6G") + " " + rs.getString("S7C") + " " + rs.getString("S7G") + " " + rs.getString("S8C") + " " + rs.getString("S8G") + " " + rs.getString("S9C") + " " + rs.getString("S9G") + " " + rs.getString("S10C") + " " + rs.getString("S10G") + " " + rs.getString("S11C") + " " + rs.getString("S11G") + " " + rs.getString("S12C") + " " + rs.getString("S12G") + " " + rs.getString("S13C") + " " + rs.getString("S13G") + " " + rs.getString("S14C") + " " + rs.getString("S14G") + " TOTAL: " + rs.getString("TOTALMARKS") + "" + rs.getString("GRADE") + " POS:" + rs.getString("Position");
-                        String ParentPhone = rs.getString("Phone1");
-                        String StudentDetails = rs.getString("Student_name") + " " + rs.getString("student_id");
-                        String Schoolname = rs.getString("School_name");
+    private void getStudentExams() {
+        DefaultTableModel model = (DefaultTableModel) tableStudentMarks.getModel();
+        model.setRowCount(0);
+        studentExams = new ArrayList<>();
+        StudentExamDAO.getByForm(Form, Year, Term).forEach(studentExam -> {
+            Student student = StudentDAO.get(studentExam.getStudentId());
+            model.addRow(new Object[]{student.getRegNumber(), student.getName(), student.getClassroom()});
+        });
+    }
 
-                        String Text = (Schoolname + " CAT1 RESULTS " + StudentDetails + " " + Result).replaceAll("  ", "");
+    private String[] getSubjectGrade(String subjectCode, String marks) {
+        Subject subject = SubjectDAO.getByCode(subjectCode);
+        Map<String, String[]> gradeMap = new HashMap<>();
+        gradeMap.put("A", new String[]{"100", subject.getGrade1(), "12"});
+        gradeMap.put("A-", new String[]{subject.getGrade1(), subject.getGrade2(), "11"});
+        gradeMap.put("B+", new String[]{subject.getGrade2(), subject.getGrade3(), "10"});
+        gradeMap.put("B", new String[]{subject.getGrade3(), subject.getGrade4(), "9"});
+        gradeMap.put("B-", new String[]{subject.getGrade4(), subject.getGrade5(), "8"});
+        gradeMap.put("C+", new String[]{subject.getGrade5(), subject.getGrade6(), "7"});
+        gradeMap.put("C", new String[]{subject.getGrade6(), subject.getGrade7(), "6"});
+        gradeMap.put("C-", new String[]{subject.getGrade7(), subject.getGrade8(), "5"});
+        gradeMap.put("D+", new String[]{subject.getGrade8(), subject.getGrade9(), "4"});
+        gradeMap.put("D", new String[]{subject.getGrade9(), subject.getGrade10(), "3"});
+        gradeMap.put("D-", new String[]{subject.getGrade10(), subject.getGrade11(), "2"});
+        gradeMap.put("E", new String[]{subject.getGrade11(), subject.getGrade12(), "1"});
+        gradeMap.put("X", new String[]{subject.getGrade12(), "0", "0"});
 
-                        model.addRow(new Object[]{ParentPhone, Text});
-                    }
-                } else if (Exam.equalsIgnoreCase("Exam 2")) {
-                    sql = ("SELECT ifnull(students_exams.S1CODE,'') AS S1C, ifnull(students_exams.S1E2Marks,'') AS S1M,ifnull(students_exams.S1E2Grade,'') AS S1G,ifnull(students_exams.S2CODE,'') AS S2C, ifnull(students_exams.S2E2Marks,'') AS S2M,ifnull(students_exams.S2E2Grade,'') AS S2G,ifnull(students_exams.S3CODE,'') AS S3C, ifnull(students_exams.S3E2Marks,'') AS S3M,ifnull(students_exams.S3E2Grade,'') AS S3G,ifnull(students_exams.S4CODE,'') AS S4C, ifnull(students_exams.S4E2Marks,'') AS S4M,ifnull(students_exams.S4E2Grade,'') AS S4G,ifnull(students_exams.S5CODE,'') AS S5C, ifnull(students_exams.S5E2Marks,'') AS S5M,ifnull(students_exams.S5E2Grade,'') AS S5G,ifnull(students_exams.S6CODE,'') AS S6C, ifnull(students_exams.S6E2Marks,'') AS S6M,ifnull(students_exams.S6E2Grade,'') AS S6G,ifnull(students_exams.S7CODE,'') AS S7C, ifnull(students_exams.S7E2Marks,'') AS S7M,ifnull(students_exams.S7E2Grade,'') AS S7G,ifnull(students_exams.S8CODE,'') AS S8C, ifnull(students_exams.S8E2Marks,'') AS S8M,ifnull(students_exams.S8E2Grade,'') AS S8G,ifnull(students_exams.S9CODE,'') AS S9C, ifnull(students_exams.S9E2Marks,'') AS S9M,ifnull(students_exams.S9E2Grade,'') AS S9G,ifnull(students_exams.S10CODE,'') AS S10C, ifnull(students_exams.S10E2Marks,'') AS S10M,ifnull(students_exams.S10E2Grade,'') AS S10G,ifnull(students_exams.S11CODE,'') AS S11C, ifnull(students_exams.S11E2Marks,'') AS S11M,ifnull(students_exams.S11E2Grade,'') AS S11G,ifnull(students_exams.S12CODE,'') AS S12C, ifnull(students_exams.S12E2Marks,'') AS S12M,ifnull(students_exams.S12E2Grade,'') AS S12G,ifnull(students_exams.S13CODE,'') AS S13C, ifnull(students_exams.S13E2Marks,'') AS S13M,ifnull(students_exams.S13E2Grade,'') AS S13G,ifnull(students_exams.S14CODE,'') AS S14C, ifnull(students_exams.S14E2Marks,'') AS S14M,ifnull(students_exams.S14E2Grade,'') AS S14G,students_exams.Exam2TotalMarks AS TOTALMARKS,students_exams.Exam2MeanGrade AS GRADE, students_exams.Exam2OverallPosition AS Position,student_details.*, tblschool.* FROM tblschool inner join(students_exams inner join student_details on students_exams.SE_Student_id=student_details.student_id) WHERE substr(SE_StudentClass,1,1)='" + selectedClassroom.getName().substring(0, 1) + "'  AND YEAR='" + Year + "' AND Term='" + Term + "' ORDER BY TOTALMARKS DESC");
-                    pst = Conn.prepareStatement(sql);
-                    rs = pst.executeQuery();
-                    String Result = null;
-                    while (rs.next()) {
-                        Result = rs.getString("S1C") + " " + rs.getString("S1G") + " " + rs.getString("S2C") + " " + rs.getString("S2G") + " " + rs.getString("S3C") + " " + rs.getString("S3G") + " " + rs.getString("S4C") + " " + rs.getString("S4G") + " " + rs.getString("S5C") + " " + rs.getString("S5G") + " " + rs.getString("S6C") + " " + rs.getString("S6G") + " " + rs.getString("S7C") + " " + rs.getString("S7G") + " " + rs.getString("S8C") + " " + rs.getString("S8G") + " " + rs.getString("S9C") + " " + rs.getString("S9G") + " " + rs.getString("S10C") + " " + rs.getString("S10G") + " " + rs.getString("S11C") + " " + rs.getString("S11G") + " " + rs.getString("S12C") + " " + rs.getString("S12G") + " " + rs.getString("S13C") + " " + rs.getString("S13G") + " " + rs.getString("S14C") + " " + rs.getString("S14G") + " TOTAL: " + rs.getString("TOTALMARKS") + "" + rs.getString("GRADE") + " POS:" + rs.getString("Position");
-                        String ParentPhone = rs.getString("Phone1");
-                        String StudentDetails = rs.getString("Student_name") + " " + rs.getString("student_id");
-                        String Schoolname = rs.getString("School_name");
+        return getGrading(gradeMap, Integer.parseInt(marks));
+    }
 
-                        String Text = (Schoolname + " CAT2 RESULTS " + StudentDetails + " " + Result).replaceAll("  ", "");
-
-                        model.addRow(new Object[]{ParentPhone, Text});
-                    }
-                } else if (Exam.equalsIgnoreCase("Exam 3")) {
-                    sql = ("SELECT ifnull(students_exams.S1CODE,'') AS S1C, ifnull(students_exams.S1E3Marks,'') AS S1M,ifnull(students_exams.S1E3Grade,'') AS S1G,ifnull(students_exams.S2CODE,'') AS S2C, ifnull(students_exams.S2E3Marks,'') AS S2M,ifnull(students_exams.S2E3Grade,'') AS S2G,ifnull(students_exams.S3CODE,'') AS S3C, ifnull(students_exams.S3E3Marks,'') AS S3M,ifnull(students_exams.S3E3Grade,'') AS S3G,ifnull(students_exams.S4CODE,'') AS S4C, ifnull(students_exams.S4E3Marks,'') AS S4M,ifnull(students_exams.S4E3Grade,'') AS S4G,ifnull(students_exams.S5CODE,'') AS S5C, ifnull(students_exams.S5E3Marks,'') AS S5M,ifnull(students_exams.S5E3Grade,'') AS S5G,ifnull(students_exams.S6CODE,'') AS S6C, ifnull(students_exams.S6E3Marks,'') AS S6M,ifnull(students_exams.S6E3Grade,'') AS S6G,ifnull(students_exams.S7CODE,'') AS S7C, ifnull(students_exams.S7E3Marks,'') AS S7M,ifnull(students_exams.S7E3Grade,'') AS S7G,ifnull(students_exams.S8CODE,'') AS S8C, ifnull(students_exams.S8E3Marks,'') AS S8M,ifnull(students_exams.S8E3Grade,'') AS S8G,ifnull(students_exams.S9CODE,'') AS S9C, ifnull(students_exams.S9E3Marks,'') AS S9M,ifnull(students_exams.S9E3Grade,'') AS S9G,ifnull(students_exams.S10CODE,'') AS S10C, ifnull(students_exams.S10E3Marks,'') AS S10M,ifnull(students_exams.S10E3Grade,'') AS S10G,ifnull(students_exams.S11CODE,'') AS S11C, ifnull(students_exams.S11E3Marks,'') AS S11M,ifnull(students_exams.S11E3Grade,'') AS S11G,ifnull(students_exams.S12CODE,'') AS S12C, ifnull(students_exams.S12E3Marks,'') AS S12M,ifnull(students_exams.S12E3Grade,'') AS S12G,ifnull(students_exams.S13CODE,'') AS S13C, ifnull(students_exams.S13E3Marks,'') AS S13M,ifnull(students_exams.S13E3Grade,'') AS S13G,ifnull(students_exams.S14CODE,'') AS S14C, ifnull(students_exams.S14E3Marks,'') AS S14M,ifnull(students_exams.S14E3Grade,'') AS S14G,students_exams.Exam3TotalMarks AS TOTALMARKS,students_exams.Exam3MeanGrade AS GRADE, students_exams.Exam3OverallPosition AS Position,student_details.*, tblschool.* FROM tblschool inner join(students_exams inner join student_details on students_exams.SE_Student_id=student_details.student_id) WHERE substr(SE_StudentClass,1,1)='" + selectedClassroom.getName().substring(0, 1) + "' AND YEAR='" + Year + "' AND Term='" + Term + "' ORDER BY TOTALMARKS DESC");
-                    pst = Conn.prepareStatement(sql);
-                    rs = pst.executeQuery();
-                    String Result = null;
-                    while (rs.next()) {
-                        Result = rs.getString("S1C") + " " + rs.getString("S1G") + " " + rs.getString("S2C") + " " + rs.getString("S2G") + " " + rs.getString("S3C") + " " + rs.getString("S3G") + " " + rs.getString("S4C") + " " + rs.getString("S4G") + " " + rs.getString("S5C") + " " + rs.getString("S5G") + " " + rs.getString("S6C") + " " + rs.getString("S6G") + " " + rs.getString("S7C") + " " + rs.getString("S7G") + " " + rs.getString("S8C") + " " + rs.getString("S8G") + " " + rs.getString("S9C") + " " + rs.getString("S9G") + " " + rs.getString("S10C") + " " + rs.getString("S10G") + " " + rs.getString("S11C") + " " + rs.getString("S11G") + " " + rs.getString("S12C") + " " + rs.getString("S12G") + " " + rs.getString("S13C") + " " + rs.getString("S13G") + " " + rs.getString("S14C") + " " + rs.getString("S14G") + " TOTAL: " + rs.getString("TOTALMARKS") + "" + rs.getString("GRADE") + " POS:" + rs.getString("Position");
-                        String ParentPhone = rs.getString("Phone1");
-                        String StudentDetails = rs.getString("Student_name") + " " + rs.getString("student_id");
-                        String Schoolname = rs.getString("School_name");
-
-                        String Text = (Schoolname + " CAT3 RESULTS " + StudentDetails + " " + Result).replaceAll("  ", "");
-
-                        model.addRow(new Object[]{ParentPhone, Text});
-                    }
-                }
-                tableStudentMarks.setModel(model);
-                tableStudentMarks.getColumn("Phone Number").setPreferredWidth(100);
-                tableStudentMarks.getColumn("Text").setPreferredWidth(250);
-            } catch (SQLException e) {
-                e.printStackTrace();
+    private String[] getGrading(Map<String, String[]> gradeMap, int marks) {
+        String[] data = new String[2];
+        for (Map.Entry<String, String[]> entry : gradeMap.entrySet()) {
+            int max = Integer.parseInt(entry.getValue()[0]);
+            int min = Integer.parseInt(entry.getValue()[1]);
+            if (marks >= min && marks < max) {
+                data[0] = entry.getKey();
+                data[1] = entry.getValue()[2];
+                return data;
             }
         }
+        return data;
+    }
+
+    private void getExamMarksForExport() {
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Phone Number", "Text"}, 0);
+
+        String exam = Exam.equalsIgnoreCase("Exam 1") ? "1" : Exam.equalsIgnoreCase("Exam 2") ? "2" : "3";
+        studentExams = StudentExamDAO.getByForm(Form, Year, Term);
+        studentExams.forEach(studentExam -> {
+            Student student = StudentDAO.get(studentExam.getStudentId());
+            String text = String.format("%s CAT %s RESULTS:", student.getName(), exam);
+            for (int i = 1; i < 15; i++) {
+                try {
+                    Field codeField = studentExam.getClass().getDeclaredField(String.format("S%dCODE", i));
+                    codeField.setAccessible(true);
+                    String code = codeField.get(studentExam).toString();
+                    if (!code.isEmpty()) {
+                        Field marksField = studentExam.getClass().getDeclaredField(String.format("S%dE%sMarks", i, exam));
+                        Field gradeField = studentExam.getClass().getDeclaredField(String.format("S%dE%sGrade", i, exam));
+                        marksField.setAccessible(true);
+                        gradeField.setAccessible(true);
+                        String marks = marksField.get(studentExam).toString();
+                        String grade = gradeField.get(studentExam).toString();
+                        text += code + " " + marks + grade + ", ";
+                    }
+                } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
+                    ConnClass.printError(ex);
+                }
+            }
+            text += " Total";
+            text += exam.equals("1") ? studentExam.getExam1TotalMarks() : exam.equals("2") ? studentExam.getExam2TotalMarks() : studentExam.getExam3TotalMarks();
+            text += exam.equals("1") ? studentExam.getExam1MeanGrade() : exam.equals("2") ? studentExam.getExam2MeanGrade() : studentExam.getExam3MeanGrade();
+            model.addRow(new Object[]{student.getKinPhone(), text});
+        });
+
+        tableStudentMarks.setModel(model);
+        tableStudentMarks.getColumn("Phone Number").setPreferredWidth(100);
+        tableStudentMarks.getColumn("Text").setPreferredWidth(250);
     }
 
     private void getEndTermMarksForExport() {
-        if (comboForm.getSelectedIndex() == 0) {
-            JOptionPane.showMessageDialog(null, "Select a Form from the dropdown", "Error", 1);
-        } else if (comboYear.getSelectedIndex() == 0) {
-            JOptionPane.showMessageDialog(null, "Enter the Year of examination", "Error", 1);
-        } else if (comboTerm.getSelectedIndex() == 0) {
-            JOptionPane.showMessageDialog(null, "Select a Term from the dropdown", "Error", 1);
-        } else {
-            try {
-                DefaultTableModel model = new DefaultTableModel(new String[]{"Phone Number", "Text"}, 0);
-                sql = ("SELECT ifnull(students_exams.S1CODE,'') AS S1C, ifnull(students_exams.S1AVGmarks,'') AS S1M,ifnull(students_exams.S1AVGGrade,'') AS S1G,ifnull(students_exams.S2CODE,'') AS S2C, ifnull(students_exams.S2AVGmarks,'') AS S2M,ifnull(students_exams.S2AVGGrade,'') AS S2G,ifnull(students_exams.S3CODE,'') AS S3C, ifnull(students_exams.S3AVGmarks,'') AS S3M,ifnull(students_exams.S3AVGGrade,'') AS S3G,ifnull(students_exams.S4CODE,'') AS S4C, ifnull(students_exams.S4AVGmarks,'') AS S4M,ifnull(students_exams.S4AVGGrade,'') AS S4G,ifnull(students_exams.S5CODE,'') AS S5C, ifnull(students_exams.S5AVGmarks,'') AS S5M,ifnull(students_exams.S5AVGGrade,'') AS S5G,ifnull(students_exams.S6CODE,'') AS S6C, ifnull(students_exams.S6AVGmarks,'') AS S6M,ifnull(students_exams.S6AVGGrade,'') AS S6G,ifnull(students_exams.S7CODE,'') AS S7C, ifnull(students_exams.S7AVGmarks,'') AS S7M,ifnull(students_exams.S7AVGGrade,'') AS S7G,ifnull(students_exams.S8CODE,'') AS S8C, ifnull(students_exams.S8AVGmarks,'') AS S8M,ifnull(students_exams.S8AVGGrade,'') AS S8G,ifnull(students_exams.S9CODE,'') AS S9C, ifnull(students_exams.S9AVGmarks,'') AS S9M,ifnull(students_exams.S9AVGGrade,'') AS S9G,ifnull(students_exams.S10CODE,'') AS S10C, ifnull(students_exams.S10AVGmarks,'') AS S10M,ifnull(students_exams.S10AVGGrade,'') AS S10G,ifnull(students_exams.S11CODE,'') AS S11C, ifnull(students_exams.S11AVGmarks,'') AS S11M,ifnull(students_exams.S11AVGGrade,'') AS S11G,ifnull(students_exams.S12CODE,'') AS S12C, ifnull(students_exams.S12AVGmarks,'') AS S12M,ifnull(students_exams.S12AVGGrade,'') AS S12G,ifnull(students_exams.S13CODE,'') AS S13C, ifnull(students_exams.S13AVGmarks,'') AS S13M,ifnull(students_exams.S13AVGGrade,'') AS S13G,ifnull(students_exams.S14CODE,'') AS S14C, ifnull(students_exams.S14AVGmarks,'') AS S14M,ifnull(students_exams.S14AVGGrade,'') AS S14G,students_exams.TotalMarks AS TOTALMARKS,students_exams.MeanGrade AS GRADE, students_exams.OverallPosition AS Position,student_details.*, tblschool.* FROM tblschool inner join(students_exams inner join student_details on students_exams.SE_Student_id=student_details.student_id) WHERE substr(SE_StudentClass,1,1)='" + selectedClassroom.getName().substring(0, 1) + "'  AND YEAR='" + Year + "' AND Term='" + Term + "' ORDER BY TOTALMARKS DESC");
-                pst = Conn.prepareStatement(sql);
-                rs = pst.executeQuery();
-                String Result = null;
-                while (rs.next()) {
-                    Result = rs.getString("S1C") + " " + rs.getString("S1G") + " " + rs.getString("S2C") + " " + rs.getString("S2G") + " " + rs.getString("S3C") + " " + rs.getString("S3G") + " " + rs.getString("S4C") + " " + rs.getString("S4G") + " " + rs.getString("S5C") + " " + rs.getString("S5G") + " " + rs.getString("S6C") + " " + rs.getString("S6G") + " " + rs.getString("S7C") + " " + rs.getString("S7G") + " " + rs.getString("S8C") + " " + rs.getString("S8G") + " " + rs.getString("S9C") + " " + rs.getString("S9G") + " " + rs.getString("S10C") + " " + rs.getString("S10G") + " " + rs.getString("S11C") + " " + rs.getString("S11G") + " " + rs.getString("S12C") + " " + rs.getString("S12G") + " " + rs.getString("S13C") + " " + rs.getString("S13G") + " " + rs.getString("S14C") + " " + rs.getString("S14G") + " TOTAL: " + rs.getString("TOTALMARKS") + "" + rs.getString("GRADE") + " POS:" + rs.getString("Position");
-                    String ParentPhone = rs.getString("Phone1");
-                    String StudentDetails = rs.getString("Student_name") + " " + rs.getString("student_id");
-                    String Schoolname = rs.getString("School_name");
-
-                    String Text = (Schoolname + " END TERM RESULTS " + StudentDetails + " " + Result).replaceAll("  ", "");
-
-                    model.addRow(new Object[]{ParentPhone, Text});
+        
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Phone Number", "Text"}, 0);
+        studentExams = StudentExamDAO.getByForm(Form, Year, Term);
+        studentExams.forEach(studentExam -> {
+            Student student = StudentDAO.get(studentExam.getStudentId());
+            String text = String.format("%s %s RESULTS:", student.getName(), Term);
+            for (int i = 1; i < 15; i++) {
+                try {
+                    Field codeField = studentExam.getClass().getDeclaredField(String.format("S%dCODE", i));
+                    codeField.setAccessible(true);
+                    String code = codeField.get(studentExam).toString();
+                    if (!code.isEmpty()) {
+                        Field marksField = studentExam.getClass().getDeclaredField(String.format("S%dAVGMarks", i));
+                        Field gradeField = studentExam.getClass().getDeclaredField(String.format("S%dAVGGrade", i));
+                        marksField.setAccessible(true);
+                        gradeField.setAccessible(true);
+                        String marks = marksField.get(studentExam).toString();
+                        String grade = gradeField.get(studentExam).toString();
+                        text += code + " " + marks + grade + ", ";
+                    }
+                } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
+                    ConnClass.printError(ex);
                 }
-                tableStudentMarks.setModel(model);
-                tableStudentMarks.getColumn("Phone Number").setPreferredWidth(100);
-                tableStudentMarks.getColumn("Text").setPreferredWidth(250);
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
-        }
+            text += " Total";
+            text += studentExam.getTOTALMarks();
+            text += studentExam.getMeanGrade();
+            model.addRow(new Object[]{student.getKinPhone(), text});
+        });
+
+        tableStudentMarks.setModel(model);
+        tableStudentMarks.getColumn("Phone Number").setPreferredWidth(100);
+        tableStudentMarks.getColumn("Text").setPreferredWidth(250);
     }
 
-    private void UpdateTableFromStudentsExamsTable() {
-        DefaultTableModel model = (DefaultTableModel) tableStudentMarks.getModel();
-        model.setRowCount(0);
+    private void populateSubjectMeanMarks() {
+        lblProgress.setText("Calculating subject mean marks");
+        lblProgress2.setText("Calculating subject mean marks");
         try {
-            sql = "SELECT students_exams.*,student_details.student_name FROM students_exams INNER JOIN student_details ON student_details.student_id=students_exams.SE_Student_id WHERE(substr(students_exams.SE_StudentClass,1,1)=? AND students_exams.Year=? AND students_exams.Term=?) ORDER BY students_exams.SE_Student_id ASC ";
+            String exam = Exam.equalsIgnoreCase("Exam 1") ? "1" : Exam.equalsIgnoreCase("Exam 2") ? "2" : "3";
+            for (StudentExam studentExam : studentExams) {
+                switch (exam) {
+                    case "1":
+                        for (int i = 1; i < 15; i++) {
+                            Field codeField = studentExam.getClass().getDeclaredField(String.format("S%dCODE", i, 1));
+                            codeField.setAccessible(true);
+                            String subjectCode = codeField.get(studentExam).toString();
+                            if (!subjectCode.isEmpty()) {
+                                Field marksField = studentExam.getClass().getDeclaredField(String.format("S%dE%dMarks", i, 1));
+                                Field avgMarksField = studentExam.getClass().getDeclaredField(String.format("S%dAVGMarks", i));
+                                Field avgGradeField = studentExam.getClass().getDeclaredField(String.format("S%dAVGGrade", i));
+                                Field avgMPointsField = studentExam.getClass().getDeclaredField(String.format("S%dAVPoints", i));
 
-            pst = Conn.prepareStatement(sql);
-            pst.setString(1, selectedClassroom.getName().substring(0, 1));
-            pst.setString(2, Year);
-            pst.setString(3, Term);
-            rs = pst.executeQuery();
-            while (rs.next()) {
-                String ADMNO = rs.getString("SE_Student_id");
-                String NAME = rs.getString("student_name");
-                String Class = rs.getString("SE_StudentClass");
-                model.addRow(new Object[]{ADMNO, NAME, Class});
+                                marksField.setAccessible(true);
+                                avgMarksField.setAccessible(true);
+                                avgGradeField.setAccessible(true);
+                                avgMarksField.setAccessible(true);
+                                avgMPointsField.setAccessible(true);
+
+                                String avgMarks = marksField.get(studentExam).toString();
+                                String grades[] = getSubjectGrade(subjectCode, avgMarks);
+                                String avgGrade = grades[0];
+                                String avgPoints = grades[1];
+
+                                avgMarksField.set(studentExam, avgMarks);
+                                avgGradeField.set(studentExam, avgGrade);
+                                avgMPointsField.set(studentExam, avgPoints);
+                            }
+                        }
+                        break;
+                    case "2":
+                        for (int i = 1; i < 15; i++) {
+                            Field codeField = studentExam.getClass().getDeclaredField(String.format("S%dCODE", i, 1));
+                            codeField.setAccessible(true);
+                            String subjectCode = codeField.get(studentExam).toString();
+                            if (!subjectCode.isEmpty()) {
+                                Field marksField1 = studentExam.getClass().getDeclaredField(String.format("S%dE%dMarks", i, 1));
+                                Field marksField2 = studentExam.getClass().getDeclaredField(String.format("S%dE%sMarks", i, 2));
+                                Field avgMarksField = studentExam.getClass().getDeclaredField(String.format("S%dAVGMarks", i));
+                                Field avgGradeField = studentExam.getClass().getDeclaredField(String.format("S%dAVGGrade", i));
+                                Field avgMPointsField = studentExam.getClass().getDeclaredField(String.format("S%dAVPoints", i));
+
+                                marksField1.setAccessible(true);
+                                marksField2.setAccessible(true);
+                                avgMarksField.setAccessible(true);
+                                avgGradeField.setAccessible(true);
+                                avgMarksField.setAccessible(true);
+                                avgMPointsField.setAccessible(true);
+
+                                String marks1 = marksField1.get(studentExam).toString();
+                                String marks2 = marksField2.get(studentExam).toString();
+                                marks1 = marks1.isEmpty() ? "0" : marks1;
+                                marks2 = marks2.isEmpty() ? "0" : marks2;
+
+                                String avgMarks = String.valueOf((int) (((Integer.parseInt(marks1) * 1.0 + Integer.parseInt(marks2) * 1.0)) / 2));
+                                String grades[] = getSubjectGrade(subjectCode, avgMarks);
+                                String avgGrade = grades[0];
+                                String avgPoints = grades[1];
+
+                                avgMarksField.set(studentExam, avgMarks);
+                                avgGradeField.set(studentExam, avgGrade);
+                                avgMPointsField.set(studentExam, avgPoints);
+                            }
+                        }
+                        break;
+                    case "3":
+                        for (int i = 1; i < 15; i++) {
+                            Field codeField = studentExam.getClass().getDeclaredField(String.format("S%dCODE", i, 1));
+                            codeField.setAccessible(true);
+                            String subjectCode = codeField.get(studentExam).toString();
+                            if (!subjectCode.isEmpty()) {
+                                Field marksField1 = studentExam.getClass().getDeclaredField(String.format("S%dE%dMarks", i, 1));
+                                Field marksField2 = studentExam.getClass().getDeclaredField(String.format("S%dE%sMarks", i, 2));
+                                Field marksField3 = studentExam.getClass().getDeclaredField(String.format("S%dE%sMarks", i, 3));
+                                Field avgMarksField = studentExam.getClass().getDeclaredField(String.format("S%dAVGMarks", i));
+                                Field avgGradeField = studentExam.getClass().getDeclaredField(String.format("S%dAVGGrade", i));
+                                Field avgMPointsField = studentExam.getClass().getDeclaredField(String.format("S%dAVPoints", i));
+
+                                marksField1.setAccessible(true);
+                                marksField2.setAccessible(true);
+                                marksField3.setAccessible(true);
+                                avgMarksField.setAccessible(true);
+                                avgGradeField.setAccessible(true);
+                                avgMarksField.setAccessible(true);
+                                avgMPointsField.setAccessible(true);
+
+                                String marks1 = marksField1.get(studentExam).toString();
+                                String marks2 = marksField2.get(studentExam).toString();
+                                String marks3 = marksField3.get(studentExam).toString();
+                                marks1 = marks1.isEmpty() ? "0" : marks1;
+                                marks2 = marks2.isEmpty() ? "0" : marks2;
+                                marks3 = marks3.isEmpty() ? "0" : marks3;
+
+                                String avgMarks = String.valueOf((int) (((Integer.parseInt(marks1) * 1.0 + Integer.parseInt(marks2) * 1.0 + Integer.parseInt(marks3) * 1.0)) / 3));
+                                String grades[] = getSubjectGrade(subjectCode, avgMarks);
+                                String avgGrade = grades[0];
+                                String avgPoints = grades[1];
+
+                                avgMarksField.set(studentExam, avgMarks);
+                                avgGradeField.set(studentExam, avgGrade);
+                                avgMPointsField.set(studentExam, avgPoints);
+                            }
+                        }
+                        break;
+                }
+                StudentExamDAO.update(studentExam);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
-    private void PopulateSubjectMeanMarks() {
-        try {
-            lblProgress.setText("Calculating subject mean marks");
-            lblProgress2.setText("Calculating subject mean marks");
-            if (Exam.equalsIgnoreCase("EXAM 1")) {
-                sql = "UPDATE students_exams SET S1AVGMarks=S1E1Marks,S2AVGMarks=S2E1Marks,S3AVGMarks=S3E1Marks,S4AVGMarks=S4E1Marks,S5AVGMarks=S5E1Marks,S6AVGMarks=S6E1Marks,S7AVGMarks=S7E1Marks,S8AVGMarks=S8E1Marks,S9AVGMarks=S9E1Marks,S10AVGMarks=S10E1Marks,S11AVGMarks=S11E1Marks,S12AVGMarks=S12E1Marks,S13AVGMarks=S13E1Marks,S14AVGMarks=S14E1Marks WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
-            } else if (Exam.equalsIgnoreCase("EXAM 2")) {
-                sql = "UPDATE students_exams SET S1AVGMarks=(CASE WHEN ((S1E1Marks+S1E2Marks)+0>0) THEN rtrim(rtrim(Round(((S1E1Marks+S1E2Marks)/ 2.0)),'0'),'.') ELSE '' END),S2AVGMarks=(CASE WHEN ((S2E1Marks+S2E2Marks)+0>0) THEN rtrim(rtrim(Round(((S2E1Marks+S2E2Marks)/ 2.0)),'0'),'.') ELSE '' END),S3AVGMarks=(CASE WHEN ((S3E1Marks+S3E2Marks)+0>0) THEN rtrim(rtrim(Round(((S3E1Marks+S3E2Marks)/ 2.0)),'0'),'.') ELSE '' END),S4AVGMarks=(CASE WHEN ((S4E1Marks+S4E2Marks)+0>0) THEN rtrim(rtrim(Round(((S4E1Marks+S4E2Marks)/ 2.0)),'0'),'.') ELSE '' END),S5AVGMarks=(CASE WHEN ((S5E1Marks+S5E2Marks)+0>0) THEN rtrim(rtrim(Round(((S5E1Marks+S5E2Marks)/ 2.0)),'0'),'.') ELSE '' END),S6AVGMarks=(CASE WHEN ((S6E1Marks+S6E2Marks)+0>0) THEN rtrim(rtrim(Round(((S6E1Marks+S6E2Marks)/ 2.0)),'0'),'.') ELSE '' END),S7AVGMarks=(CASE WHEN ((S7E1Marks+S7E2Marks)+0>0) THEN rtrim(rtrim(Round(((S7E1Marks+S7E2Marks)/ 2.0)),'0'),'.') ELSE '' END),S8AVGMarks=(CASE WHEN ((S8E1Marks+S8E2Marks)+0>0) THEN rtrim(rtrim(Round(((S8E1Marks+S8E2Marks)/ 2.0)),'0'),'.') ELSE '' END),S9AVGMarks=(CASE WHEN ((S9E1Marks+S9E2Marks)+0>0) THEN rtrim(rtrim(Round(((S9E1Marks+S9E2Marks)/ 2.0)),'0'),'.') ELSE '' END),S10AVGMarks=(CASE WHEN ((S10E1Marks+S10E2Marks)+0>0) THEN rtrim(rtrim(Round(((S10E1Marks+S10E2Marks)/ 2.0)),'0'),'.') ELSE '' END),S11AVGMarks=(CASE WHEN ((S11E1Marks+S11E2Marks)+0>0) THEN rtrim(rtrim(Round(((S11E1Marks+S11E2Marks)/ 2.0)),'0'),'.') ELSE '' END),S12AVGMarks=(CASE WHEN ((S12E1Marks+S12E2Marks)+0>0) THEN rtrim(rtrim(Round(((S12E1Marks+S12E2Marks)/ 2.0)),'0'),'.') ELSE '' END),S13AVGMarks=(CASE WHEN ((S13E1Marks+S13E2Marks)+0>0) THEN rtrim(rtrim(Round(((S13E1Marks+S13E2Marks)/ 2.0)),'0'),'.') ELSE '' END),S14AVGMarks=(CASE WHEN ((S14E1Marks+S14E2Marks)+0>0) THEN rtrim(rtrim(Round(((S14E1Marks+S14E2Marks)/ 2.0)),'0'),'.') ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
-            } else if (Exam.equalsIgnoreCase("EXAM 3")) {
-                sql = "UPDATE students_exams SET S1AVGMarks=(CASE WHEN ((S1E1Marks+S1E2Marks+S1E3Marks)+0>0) THEN rtrim(rtrim(Round(((S1E1Marks+S1E2Marks+S1E3Marks)/ 3.0)),'0'),'.') ELSE '' END),S2AVGMarks=(CASE WHEN ((S2E1Marks+S2E2Marks+S2E3Marks)+0>0) THEN rtrim(rtrim(Round(((S2E1Marks+S2E2Marks+S2E3Marks)/ 3.0)),'0'),'.') ELSE '' END),S3AVGMarks=(CASE WHEN ((S3E1Marks+S3E2Marks+S3E3Marks)+0>0) THEN rtrim(rtrim(Round(((S3E1Marks+S3E2Marks+S3E3Marks)/ 3.0)),'0'),'.') ELSE '' END),S4AVGMarks=(CASE WHEN ((S4E1Marks+S4E2Marks+S4E3Marks)+0>0) THEN rtrim(rtrim(Round(((S4E1Marks+S4E2Marks+S4E3Marks)/ 3.0)),'0'),'.') ELSE '' END),S5AVGMarks=(CASE WHEN ((S5E1Marks+S5E2Marks+S5E3Marks)+0>0) THEN rtrim(rtrim(Round(((S5E1Marks+S5E2Marks+S5E3Marks)/ 3.0)),'0'),'.') ELSE '' END),S6AVGMarks=(CASE WHEN ((S6E1Marks+S6E2Marks+S6E3Marks)+0>0) THEN rtrim(rtrim(Round(((S6E1Marks+S6E2Marks+S6E3Marks)/ 3.0)),'0'),'.') ELSE '' END),S7AVGMarks=(CASE WHEN ((S7E1Marks+S7E2Marks+S7E3Marks)+0>0) THEN rtrim(rtrim(Round(((S7E1Marks+S7E2Marks+S7E3Marks)/ 3.0)),'0'),'.') ELSE '' END),S8AVGMarks=(CASE WHEN ((S8E1Marks+S8E2Marks+S8E3Marks)+0>0) THEN rtrim(rtrim(Round(((S8E1Marks+S8E2Marks+S8E3Marks)/ 3.0)),'0'),'.') ELSE '' END),S9AVGMarks=(CASE WHEN ((S9E1Marks+S9E2Marks+S9E3Marks)+0>0) THEN rtrim(rtrim(Round(((S9E1Marks+S9E2Marks+S9E3Marks)/ 3.0)),'0'),'.') ELSE '' END),S10AVGMarks=(CASE WHEN ((S10E1Marks+S10E2Marks+S10E3Marks)+0>0) THEN rtrim(rtrim(Round(((S10E1Marks+S10E2Marks+S10E3Marks)/ 3.0)),'0'),'.') ELSE '' END),S11AVGMarks=(CASE WHEN ((S11E1Marks+S11E2Marks+S11E3Marks)+0>0) THEN rtrim(rtrim(Round(((S11E1Marks+S11E2Marks+S11E3Marks)/ 3.0)),'0'),'.') ELSE '' END),S12AVGMarks=(CASE WHEN ((S12E1Marks+S12E2Marks+S12E3Marks)+0>0) THEN rtrim(rtrim(Round(((S12E1Marks+S12E2Marks+S12E3Marks)/ 3.0)),'0'),'.') ELSE '' END),S13AVGMarks=(CASE WHEN ((S13E1Marks+S13E2Marks+S13E3Marks)+0>0) THEN rtrim(rtrim(Round(((S13E1Marks+S13E2Marks+S13E3Marks)/ 3.0)),'0'),'.') ELSE '' END),S14AVGMarks=(CASE WHEN ((S14E1Marks+S14E2Marks+S14E3Marks)+0>0) THEN rtrim(rtrim(Round(((S14E1Marks+S14E2Marks+S14E3Marks)/ 3.0)),'0'),'.') ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
-            }
-            pst = Conn.prepareStatement(sql);
-            pst.setString(1, selectedClassroom.getName().substring(0, 1));
-            pst.setString(2, Year);
-            pst.setString(3, Term);
-            pst.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void PopulateSubjectMeanPoints() {
-        try {
-            lblProgress.setText("Calculating subject mean points");
-            lblProgress2.setText("Calculating subject mean points");
-            if (Exam.equalsIgnoreCase("Exam 1")) {
-                sql = "UPDATE students_exams SET S1AVGPoints=(S1E1Points),S2AVGPoints=(S2E1Points),S3AVGPoints=(S3E1Points),S4AVGPoints=(S4E1Points),S5AVGPoints=(S5E1Points),S6AVGPoints=(S6E1Points),S7AVGPoints=(S7E1Points),S8AVGPoints=(S8E1Points),S9AVGPoints=(S9E1Points),S10AVGPoints=(S10E1Points),S11AVGPoints=(S11E1Points),S12AVGPoints=(S12E1Points),S13AVGPoints=(S13E1Points),S14AVGPoints=(S14E1Points) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
-            } else if (Exam.equalsIgnoreCase("Exam 2")) {
-                sql = "UPDATE students_exams SET S1AVGPoints=(CASE WHEN ((S1E1Points+S1E2Points)+0>0) THEN rtrim(rtrim(Round(((S1E1Points+S1E2Points)/ 2.0)),'0'),'.') ELSE '' END),S2AVGPoints=(CASE WHEN ((S2E1Points+S2E2Points)+0>0) THEN rtrim(rtrim(Round(((S2E1Points+S2E2Points)/ 2.0)),'0'),'.') ELSE '' END),S3AVGPoints=(CASE WHEN ((S3E1Points+S3E2Points)+0>0) THEN rtrim(rtrim(Round(((S3E1Points+S3E2Points)/ 2.0)),'0'),'.') ELSE '' END),S4AVGPoints=(CASE WHEN ((S4E1Points+S4E2Points)+0>0) THEN rtrim(rtrim(Round(((S4E1Points+S4E2Points)/ 2.0)),'0'),'.') ELSE '' END),S5AVGPoints=(CASE WHEN ((S5E1Points+S5E2Points)+0>0) THEN rtrim(rtrim(Round(((S5E1Points+S5E2Points)/ 2.0)),'0'),'.') ELSE '' END),S6AVGPoints=(CASE WHEN ((S6E1Points+S6E2Points)+0>0) THEN rtrim(rtrim(Round(((S6E1Points+S6E2Points)/ 2.0)),'0'),'.') ELSE '' END),S7AVGPoints=(CASE WHEN ((S7E1Points+S7E2Points)+0>0) THEN rtrim(rtrim(Round(((S7E1Points+S7E2Points)/ 2.0)),'0'),'.') ELSE '' END),S8AVGPoints=(CASE WHEN ((S8E1Points+S8E2Points)+0>0) THEN rtrim(rtrim(Round(((S8E1Points+S8E2Points)/ 2.0)),'0'),'.') ELSE '' END),S9AVGPoints=(CASE WHEN ((S9E1Points+S9E2Points)+0>0) THEN rtrim(rtrim(Round(((S9E1Points+S9E2Points)/ 2.0)),'0'),'.') ELSE '' END),S10AVGPoints=(CASE WHEN ((S10E1Points+S10E2Points)+0>0) THEN rtrim(rtrim(Round(((S10E1Points+S10E2Points)/ 2.0)),'0'),'.') ELSE '' END),S11AVGPoints=(CASE WHEN ((S11E1Points+S11E2Points)+0>0) THEN rtrim(rtrim(Round(((S11E1Points+S11E2Points)/ 2.0)),'0'),'.') ELSE '' END),S12AVGPoints=(CASE WHEN ((S12E1Points+S12E2Points)+0>0) THEN rtrim(rtrim(Round(((S12E1Points+S12E2Points)/ 2.0)),'0'),'.') ELSE '' END),S13AVGPoints=(CASE WHEN ((S13E1Points+S13E2Points)+0>0) THEN rtrim(rtrim(Round(((S13E1Points+S13E2Points)/ 2.0)),'0'),'.') ELSE '' END),S14AVGPoints=(CASE WHEN ((S14E1Points+S14E2Points)+0>0) THEN rtrim(rtrim(Round(((S14E1Points+S14E2Points)/ 2.0)),'0'),'.') ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
-            } else if (Exam.equalsIgnoreCase("Exam 3")) {
-                sql = "UPDATE students_exams SET S1AVGPoints=(CASE WHEN ((S1E1Points+S1E2Points+S1E3Points)+0>0) THEN rtrim(rtrim(Round(((S1E1Points+S1E2Points+S1E3Points+1)/ 3.0)),'0'),'.') ELSE '' END),S2AVGPoints=(CASE WHEN ((S2E1Points+S2E2Points+S2E3Points)+0>0) THEN rtrim(rtrim(Round(((S2E1Points+S2E2Points+S2E3Points+1)/ 3.0)),'0'),'.') ELSE '' END),S3AVGPoints=(CASE WHEN ((S3E1Points+S3E2Points+S3E3Points)+0>0) THEN rtrim(rtrim(Round(((S3E1Points+S3E2Points+S3E3Points+1)/ 3.0)),'0'),'.') ELSE '' END),S4AVGPoints=(CASE WHEN ((S4E1Points+S4E2Points+S4E3Points)+0>0) THEN rtrim(rtrim(Round(((S4E1Points+S4E2Points+S4E3Points+1)/ 3.0)),'0'),'.') ELSE '' END),S5AVGPoints=(CASE WHEN ((S5E1Points+S5E2Points+S5E3Points)+0>0) THEN rtrim(rtrim(Round(((S5E1Points+S5E2Points+S5E3Points+1)/ 3.0)),'0'),'.') ELSE '' END),S6AVGPoints=(CASE WHEN ((S6E1Points+S6E2Points+S6E3Points)+0>0) THEN rtrim(rtrim(Round(((S6E1Points+S6E2Points+S6E3Points+1)/ 3.0)),'0'),'.') ELSE '' END),S7AVGPoints=(CASE WHEN ((S7E1Points+S7E2Points+S7E3Points)+0>0) THEN rtrim(rtrim(Round(((S7E1Points+S7E2Points+S7E3Points+1)/ 3.0)),'0'),'.') ELSE '' END),S8AVGPoints=(CASE WHEN ((S8E1Points+S8E2Points+S8E3Points)+0>0) THEN rtrim(rtrim(Round(((S8E1Points+S8E2Points+S8E3Points+1)/ 3.0)),'0'),'.') ELSE '' END),S9AVGPoints=(CASE WHEN ((S9E1Points+S9E2Points+S9E3Points)+0>0) THEN rtrim(rtrim(Round(((S9E1Points+S9E2Points+S9E3Points+1)/ 3.0)),'0'),'.') ELSE '' END),S10AVGPoints=(CASE WHEN ((S10E1Points+S10E2Points+S10E3Points)+0>0) THEN rtrim(rtrim(Round(((S10E1Points+S10E2Points+S10E3Points+1)/ 3.0)),'0'),'.') ELSE '' END),S11AVGPoints=(CASE WHEN ((S11E1Points+S11E2Points+S11E3Points)+0>0) THEN rtrim(rtrim(Round(((S11E1Points+S11E2Points+S11E3Points+1)/ 3.0)),'0'),'.') ELSE '' END),S12AVGPoints=(CASE WHEN ((S12E1Points+S12E2Points+S12E3Points)+0>0) THEN rtrim(rtrim(Round(((S12E1Points+S12E2Points+S12E3Points+1)/ 3.0)),'0'),'.') ELSE '' END),S13AVGPoints=(CASE WHEN ((S13E1Points+S13E2Points+S13E3Points)+0>0) THEN rtrim(rtrim(Round(((S13E1Points+S13E2Points+S13E3Points+1)/ 3.0)),'0'),'.') ELSE '' END),S14AVGPoints=(CASE WHEN ((S14E1Points+S14E2Points+S14E3Points)+0>0) THEN rtrim(rtrim(Round(((S14E1Points+S14E2Points+S14E3Points+1)/ 3.0)),'0'),'.') ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
-            }
-            pst = Conn.prepareStatement(sql);
-            pst.setString(1, selectedClassroom.getName().substring(0, 1));
-            pst.setString(2, Year);
-            pst.setString(3, Term);
-            pst.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void PopulateSubjectMeanGrade() {
-        try {
-            lblProgress.setText("Calculating subject mean grades");
-            lblProgress2.setText("Calculating subject means grades");
-            sql = "UPDATE students_exams SET S1AVGGrade =( CASE WHEN S1AVGPoints='12' THEN 'A' WHEN S1AVGPoints='11' THEN 'A-' WHEN S1AVGPoints='10' THEN 'B+' WHEN S1AVGPoints='9' THEN 'B' WHEN S1AVGPoints='8' THEN 'B-' WHEN S1AVGPoints='7' THEN 'C+' WHEN S1AVGPoints='6' THEN 'C' WHEN S1AVGPoints='5' THEN 'C-' WHEN S1AVGPoints='4' THEN 'D+' WHEN S1AVGPoints='3' THEN 'D' WHEN S1AVGPoints='2' THEN 'D-' WHEN S1AVGPoints='1' THEN 'E' ELSE '' END),S2AVGGrade=(CASE WHEN S2AVGPoints='12' THEN 'A' WHEN S2AVGPoints='11' THEN 'A-' WHEN S2AVGPoints='10' THEN 'B+' WHEN S2AVGPoints='9' THEN 'B' WHEN S2AVGPoints='8' THEN 'B-' WHEN S2AVGPoints='7' THEN 'C+' WHEN S2AVGPoints='6' THEN 'C' WHEN S2AVGPoints='5' THEN 'C-' WHEN S2AVGPoints='4' THEN 'D+' WHEN S2AVGPoints='3' THEN 'D' WHEN S2AVGPoints='2' THEN 'D-' WHEN S2AVGPoints='1' THEN 'E' ELSE '' END),S3AVGGrade=(CASE WHEN S3AVGPoints='12' THEN 'A' WHEN S3AVGPoints='11' THEN 'A-' WHEN S3AVGPoints='10' THEN 'B+' WHEN S3AVGPoints='9' THEN 'B' WHEN S3AVGPoints='8' THEN 'B-' WHEN S3AVGPoints='7' THEN 'C+' WHEN S3AVGPoints='6' THEN 'C' WHEN S3AVGPoints='5' THEN 'C-' WHEN S3AVGPoints='4' THEN 'D+' WHEN S3AVGPoints='3' THEN 'D' WHEN S3AVGPoints='2' THEN 'D-' WHEN S3AVGPoints='1' THEN 'E' ELSE '' END),S4AVGGrade=(CASE WHEN S4AVGPoints='12' THEN 'A' WHEN S4AVGPoints='11' THEN 'A-' WHEN S4AVGPoints='10' THEN 'B+' WHEN S4AVGPoints='9' THEN 'B' WHEN S4AVGPoints='8' THEN 'B-' WHEN S4AVGPoints='7' THEN 'C+' WHEN S4AVGPoints='6' THEN 'C' WHEN S4AVGPoints='5' THEN 'C-' WHEN S4AVGPoints='4' THEN 'D+' WHEN S4AVGPoints='3' THEN 'D' WHEN S4AVGPoints='2' THEN 'D-' WHEN S4AVGPoints='1' THEN 'E' ELSE '' END),S5AVGGrade=(CASE WHEN S5AVGPoints='12' THEN 'A' WHEN S5AVGPoints='11' THEN 'A-' WHEN S5AVGPoints='10' THEN 'B+' WHEN S5AVGPoints='9' THEN 'B' WHEN S5AVGPoints='8' THEN 'B-' WHEN S5AVGPoints='7' THEN 'C+' WHEN S5AVGPoints='6' THEN 'C' WHEN S5AVGPoints='5' THEN 'C-' WHEN S5AVGPoints='4' THEN 'D+' WHEN S5AVGPoints='3' THEN 'D' WHEN S5AVGPoints='2' THEN 'D-' WHEN S5AVGPoints='1' THEN 'E' ELSE '' END),S6AVGGrade=(CASE WHEN S6AVGPoints='12' THEN 'A' WHEN S6AVGPoints='11' THEN 'A-' WHEN S6AVGPoints='10' THEN 'B+' WHEN S6AVGPoints='9' THEN 'B' WHEN S6AVGPoints='8' THEN 'B-' WHEN S6AVGPoints='7' THEN 'C+' WHEN S6AVGPoints='6' THEN 'C' WHEN S6AVGPoints='5' THEN 'C-' WHEN S6AVGPoints='4' THEN 'D+' WHEN S6AVGPoints='3' THEN 'D' WHEN S6AVGPoints='2' THEN 'D-' WHEN S6AVGPoints='1' THEN 'E' ELSE '' END),S7AVGGrade=(CASE WHEN S7AVGPoints='12' THEN 'A' WHEN S7AVGPoints='11' THEN 'A-' WHEN S7AVGPoints='10' THEN 'B+' WHEN S7AVGPoints='9' THEN 'B' WHEN S7AVGPoints='8' THEN 'B-' WHEN S7AVGPoints='7' THEN 'C+' WHEN S7AVGPoints='6' THEN 'C' WHEN S7AVGPoints='5' THEN 'C-' WHEN S7AVGPoints='4' THEN 'D+' WHEN S7AVGPoints='3' THEN 'D' WHEN S7AVGPoints='2' THEN 'D-' WHEN S7AVGPoints='1' THEN 'E' ELSE '' END),S8AVGGrade=(CASE WHEN S8AVGPoints='12' THEN 'A' WHEN S8AVGPoints='11' THEN 'A-' WHEN S8AVGPoints='10' THEN 'B+' WHEN S8AVGPoints='9' THEN 'B' WHEN S8AVGPoints='8' THEN 'B-' WHEN S8AVGPoints='7' THEN 'C+' WHEN S8AVGPoints='6' THEN 'C' WHEN S8AVGPoints='5' THEN 'C-' WHEN S8AVGPoints='4' THEN 'D+' WHEN S8AVGPoints='3' THEN 'D' WHEN S8AVGPoints='2' THEN 'D-' WHEN S8AVGPoints='1' THEN 'E' ELSE '' END),S9AVGGrade=(CASE WHEN S9AVGPoints='12' THEN 'A' WHEN S9AVGPoints='11' THEN 'A-' WHEN S9AVGPoints='10' THEN 'B+' WHEN S9AVGPoints='9' THEN 'B' WHEN S9AVGPoints='8' THEN 'B-' WHEN S9AVGPoints='7' THEN 'C+' WHEN S9AVGPoints='6' THEN 'C' WHEN S9AVGPoints='5' THEN 'C-' WHEN S9AVGPoints='4' THEN 'D+' WHEN S9AVGPoints='3' THEN 'D' WHEN S9AVGPoints='2' THEN 'D-' WHEN S9AVGPoints='1' THEN 'E' ELSE '' END),S10AVGGrade=(CASE WHEN S10AVGPoints='12' THEN 'A' WHEN S10AVGPoints='11' THEN 'A-' WHEN S10AVGPoints='10' THEN 'B+' WHEN S10AVGPoints='9' THEN 'B' WHEN S10AVGPoints='8' THEN 'B-' WHEN S10AVGPoints='7' THEN 'C+' WHEN S10AVGPoints='6' THEN 'C' WHEN S10AVGPoints='5' THEN 'C-' WHEN S10AVGPoints='4' THEN 'D+' WHEN S10AVGPoints='3' THEN 'D' WHEN S10AVGPoints='2' THEN 'D-' WHEN S10AVGPoints='1' THEN 'E' ELSE '' END),S11AVGGrade=(CASE WHEN S11AVGPoints='12' THEN 'A' WHEN S11AVGPoints='11' THEN 'A-' WHEN S11AVGPoints='10' THEN 'B+' WHEN S11AVGPoints='9' THEN 'B' WHEN S11AVGPoints='8' THEN 'B-' WHEN S11AVGPoints='7' THEN 'C+' WHEN S11AVGPoints='6' THEN 'C' WHEN S11AVGPoints='5' THEN 'C-' WHEN S11AVGPoints='4' THEN 'D+' WHEN S11AVGPoints='3' THEN 'D' WHEN S11AVGPoints='2' THEN 'D-' WHEN S11AVGPoints='1' THEN 'E' ELSE '' END),S12AVGGrade=(CASE WHEN S12AVGPoints='12' THEN 'A' WHEN S12AVGPoints='11' THEN 'A-' WHEN S12AVGPoints='10' THEN 'B+' WHEN S12AVGPoints='9' THEN 'B' WHEN S12AVGPoints='8' THEN 'B-' WHEN S12AVGPoints='7' THEN 'C+' WHEN S12AVGPoints='6' THEN 'C' WHEN S12AVGPoints='5' THEN 'C-' WHEN S12AVGPoints='4' THEN 'D+' WHEN S12AVGPoints='3' THEN 'D' WHEN S12AVGPoints='2' THEN 'D-' WHEN S12AVGPoints='1' THEN 'E' ELSE '' END),S13AVGGrade=(CASE WHEN S13AVGPoints='12' THEN 'A' WHEN S13AVGPoints='11' THEN 'A-' WHEN S13AVGPoints='10' THEN 'B+' WHEN S13AVGPoints='9' THEN 'B' WHEN S13AVGPoints='8' THEN 'B-' WHEN S13AVGPoints='7' THEN 'C+' WHEN S13AVGPoints='6' THEN 'C' WHEN S13AVGPoints='5' THEN 'C-' WHEN S13AVGPoints='4' THEN 'D+' WHEN S13AVGPoints='3' THEN 'D' WHEN S13AVGPoints='2' THEN 'D-' WHEN S13AVGPoints='1' THEN 'E' ELSE '' END),S14AVGGrade=(CASE WHEN S14AVGPoints='12' THEN 'A' WHEN S14AVGPoints='11' THEN 'A-' WHEN S14AVGPoints='10' THEN 'B+' WHEN S14AVGPoints='9' THEN 'B' WHEN S14AVGPoints='8' THEN 'B-' WHEN S14AVGPoints='7' THEN 'C+' WHEN S14AVGPoints='6' THEN 'C' WHEN S14AVGPoints='5' THEN 'C-' WHEN S14AVGPoints='4' THEN 'D+' WHEN S14AVGPoints='3' THEN 'D' WHEN S14AVGPoints='2' THEN 'D-' WHEN S14AVGPoints='1' THEN 'E' ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
-            pst = Conn.prepareStatement(sql);
-            pst.setString(1, selectedClassroom.getName().substring(0, 1));
-            pst.setString(2, Year);
-            pst.setString(3, Term);
-            pst.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
+            ConnClass.printError(ex);
         }
     }
 
     private void PopulateSubjectRemarks() {
-        try {
-            lblProgress.setText("Remarking subjects perfomance");
-            lblProgress2.setText("Remarking subjects perfomance");
-            sql = "UPDATE students_exams SET S1Remarks=(CASE WHEN S1AVGPoints+0>11 THEN 'Excellent' WHEN S1AVGPoints+0>10 THEN 'Very Good' WHEN S1AVGPoints+0>9 THEN 'Good' WHEN S1AVGPoints+0>8 THEN 'Good' WHEN S1AVGPoints+0>7 THEN 'Average' WHEN S1AVGPoints+0>6 THEN 'Average' WHEN S1AVGPoints+0>5 THEN 'Average' WHEN S1AVGPoints+0>4 THEN 'Put more effort' WHEN S1AVGPoints+0>3 THEN 'Put more effort' WHEN S1AVGPoints+0>2 THEN 'Put more effort' WHEN S1AVGPoints+0>1 THEN 'Put more effort' WHEN S1AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S2Remarks=(CASE WHEN S2AVGPoints+0>11 THEN 'Excellent' WHEN S2AVGPoints+0>10 THEN 'Very Good' WHEN S2AVGPoints+0>9 THEN 'Good' WHEN S2AVGPoints+0>8 THEN 'Good' WHEN S2AVGPoints+0>7 THEN 'Average' WHEN S2AVGPoints+0>6 THEN 'Average' WHEN S2AVGPoints+0>5 THEN 'Average' WHEN S2AVGPoints+0>4 THEN 'Put more effort' WHEN S2AVGPoints+0>3 THEN 'Put more effort' WHEN S2AVGPoints+0>2 THEN 'Put more effort' WHEN S2AVGPoints+0>1 THEN 'Put more effort' WHEN S2AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S3Remarks=(CASE WHEN S3AVGPoints+0>11 THEN 'Excellent' WHEN S3AVGPoints+0>10 THEN 'Very Good' WHEN S3AVGPoints+0>9 THEN 'Good' WHEN S3AVGPoints+0>8 THEN 'Good' WHEN S3AVGPoints+0>7 THEN 'Average' WHEN S3AVGPoints+0>6 THEN 'Average' WHEN S3AVGPoints+0>5 THEN 'Average' WHEN S3AVGPoints+0>4 THEN 'Put more effort' WHEN S3AVGPoints+0>3 THEN 'Put more effort' WHEN S3AVGPoints+0>2 THEN 'Put more effort' WHEN S3AVGPoints+0>1 THEN 'Put more effort' WHEN S3AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S4Remarks=(CASE WHEN S4AVGPoints+0>11 THEN 'Excellent' WHEN S4AVGPoints+0>10 THEN 'Very Good' WHEN S4AVGPoints+0>9 THEN 'Good' WHEN S4AVGPoints+0>8 THEN 'Good' WHEN S4AVGPoints+0>7 THEN 'Average' WHEN S4AVGPoints+0>6 THEN 'Average' WHEN S4AVGPoints+0>5 THEN 'Average' WHEN S4AVGPoints+0>4 THEN 'Put more effort' WHEN S4AVGPoints+0>3 THEN 'Put more effort' WHEN S4AVGPoints+0>2 THEN 'Put more effort' WHEN S4AVGPoints+0>1 THEN 'Put more effort' WHEN S4AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S5Remarks=(CASE WHEN S5AVGPoints+0>11 THEN 'Excellent' WHEN S5AVGPoints+0>10 THEN 'Very Good' WHEN S5AVGPoints+0>9 THEN 'Good' WHEN S5AVGPoints+0>8 THEN 'Good' WHEN S5AVGPoints+0>7 THEN 'Average' WHEN S5AVGPoints+0>6 THEN 'Average' WHEN S5AVGPoints+0>5 THEN 'Average' WHEN S5AVGPoints+0>4 THEN 'Put more effort' WHEN S5AVGPoints+0>3 THEN 'Put more effort' WHEN S5AVGPoints+0>2 THEN 'Put more effort' WHEN S5AVGPoints+0>1 THEN 'Put more effort' WHEN S5AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S6Remarks=(CASE WHEN S6AVGPoints+0>11 THEN 'Excellent' WHEN S6AVGPoints+0>10 THEN 'Very Good' WHEN S6AVGPoints+0>9 THEN 'Good' WHEN S6AVGPoints+0>8 THEN 'Good' WHEN S6AVGPoints+0>7 THEN 'Average' WHEN S6AVGPoints+0>6 THEN 'Average' WHEN S6AVGPoints+0>5 THEN 'Average' WHEN S6AVGPoints+0>4 THEN 'Put more effort' WHEN S6AVGPoints+0>3 THEN 'Put more effort' WHEN S6AVGPoints+0>2 THEN 'Put more effort' WHEN S6AVGPoints+0>1 THEN 'Put more effort' WHEN S6AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S7Remarks=(CASE WHEN S7AVGPoints+0>11 THEN 'Excellent' WHEN S7AVGPoints+0>10 THEN 'Very Good' WHEN S7AVGPoints+0>9 THEN 'Good' WHEN S7AVGPoints+0>8 THEN 'Good' WHEN S7AVGPoints+0>7 THEN 'Average' WHEN S7AVGPoints+0>6 THEN 'Average' WHEN S7AVGPoints+0>5 THEN 'Average' WHEN S7AVGPoints+0>4 THEN 'Put more effort' WHEN S7AVGPoints+0>3 THEN 'Put more effort' WHEN S7AVGPoints+0>2 THEN 'Put more effort' WHEN S7AVGPoints+0>1 THEN 'Put more effort' WHEN S7AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S8Remarks=(CASE WHEN S8AVGPoints+0>11 THEN 'Excellent' WHEN S8AVGPoints+0>10 THEN 'Very Good' WHEN S8AVGPoints+0>9 THEN 'Good' WHEN S8AVGPoints+0>8 THEN 'Good' WHEN S8AVGPoints+0>7 THEN 'Average' WHEN S8AVGPoints+0>6 THEN 'Average' WHEN S8AVGPoints+0>5 THEN 'Average' WHEN S8AVGPoints+0>4 THEN 'Put more effort' WHEN S8AVGPoints+0>3 THEN 'Put more effort' WHEN S8AVGPoints+0>2 THEN 'Put more effort' WHEN S8AVGPoints+0>1 THEN 'Put more effort' WHEN S8AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S9Remarks=(CASE WHEN S9AVGPoints+0>11 THEN 'Excellent' WHEN S9AVGPoints+0>10 THEN 'Very Good' WHEN S9AVGPoints+0>9 THEN 'Good' WHEN S9AVGPoints+0>8 THEN 'Good' WHEN S9AVGPoints+0>7 THEN 'Average' WHEN S9AVGPoints+0>6 THEN 'Average' WHEN S9AVGPoints+0>5 THEN 'Average' WHEN S9AVGPoints+0>4 THEN 'Put more effort' WHEN S9AVGPoints+0>3 THEN 'Put more effort' WHEN S9AVGPoints+0>2 THEN 'Put more effort' WHEN S9AVGPoints+0>1 THEN 'Put more effort' WHEN S9AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S10Remarks=(CASE WHEN S10AVGPoints+0>11 THEN 'Excellent' WHEN S10AVGPoints+0>10 THEN 'Very Good' WHEN S10AVGPoints+0>9 THEN 'Good' WHEN S10AVGPoints+0>8 THEN 'Good' WHEN S10AVGPoints+0>7 THEN 'Average' WHEN S10AVGPoints+0>6 THEN 'Average' WHEN S10AVGPoints+0>5 THEN 'Average' WHEN S10AVGPoints+0>4 THEN 'Put more effort' WHEN S10AVGPoints+0>3 THEN 'Put more effort' WHEN S10AVGPoints+0>2 THEN 'Put more effort' WHEN S10AVGPoints+0>1 THEN 'Put more effort' WHEN S10AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S11Remarks=(CASE WHEN S11AVGPoints+0>11 THEN 'Excellent' WHEN S11AVGPoints+0>10 THEN 'Very Good' WHEN S11AVGPoints+0>9 THEN 'Good' WHEN S11AVGPoints+0>8 THEN 'Good' WHEN S11AVGPoints+0>7 THEN 'Average' WHEN S11AVGPoints+0>6 THEN 'Average' WHEN S11AVGPoints+0>5 THEN 'Average' WHEN S11AVGPoints+0>4 THEN 'Put more effort' WHEN S11AVGPoints+0>3 THEN 'Put more effort' WHEN S11AVGPoints+0>2 THEN 'Put more effort' WHEN S11AVGPoints+0>1 THEN 'Put more effort' WHEN S11AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S12Remarks=(CASE WHEN S12AVGPoints+0>11 THEN 'Excellent' WHEN S12AVGPoints+0>10 THEN 'Very Good' WHEN S12AVGPoints+0>9 THEN 'Good' WHEN S12AVGPoints+0>8 THEN 'Good' WHEN S12AVGPoints+0>7 THEN 'Average' WHEN S12AVGPoints+0>6 THEN 'Average' WHEN S12AVGPoints+0>5 THEN 'Average' WHEN S12AVGPoints+0>4 THEN 'Put more effort' WHEN S12AVGPoints+0>3 THEN 'Put more effort' WHEN S12AVGPoints+0>2 THEN 'Put more effort' WHEN S12AVGPoints+0>1 THEN 'Put more effort' WHEN S12AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S13Remarks=(CASE WHEN S13AVGPoints+0>11 THEN 'Excellent' WHEN S13AVGPoints+0>10 THEN 'Very Good' WHEN S13AVGPoints+0>9 THEN 'Good' WHEN S13AVGPoints+0>8 THEN 'Good' WHEN S13AVGPoints+0>7 THEN 'Average' WHEN S13AVGPoints+0>6 THEN 'Average' WHEN S13AVGPoints+0>5 THEN 'Average' WHEN S13AVGPoints+0>4 THEN 'Put more effort' WHEN S13AVGPoints+0>3 THEN 'Put more effort' WHEN S13AVGPoints+0>2 THEN 'Put more effort' WHEN S13AVGPoints+0>1 THEN 'Put more effort' WHEN S13AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S14Remarks=(CASE WHEN S14AVGPoints+0>11 THEN 'Excellent' WHEN S14AVGPoints+0>10 THEN 'Very Good' WHEN S14AVGPoints+0>9 THEN 'Good' WHEN S14AVGPoints+0>8 THEN 'Good' WHEN S14AVGPoints+0>7 THEN 'Average' WHEN S14AVGPoints+0>6 THEN 'Average' WHEN S14AVGPoints+0>5 THEN 'Average' WHEN S14AVGPoints+0>4 THEN 'Put more effort' WHEN S14AVGPoints+0>3 THEN 'Put more effort' WHEN S14AVGPoints+0>2 THEN 'Put more effort' WHEN S14AVGPoints+0>1 THEN 'Put more effort' WHEN S14AVGPoints+0>0 THEN 'Put more effort' ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
-            pst = Conn.prepareStatement(sql);
-            pst.setString(1, selectedClassroom.getName().substring(0, 1));
-            pst.setString(2, Year);
-            pst.setString(3, Term);
-            pst.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        lblProgress.setText("Remarking subjects perfomance");
+        lblProgress2.setText("Remarking subjects perfomance");
+        sql = "UPDATE students_exams SET S1Remarks=(CASE WHEN S1AVGPoints+0>11 THEN 'Excellent' WHEN S1AVGPoints+0>10 THEN 'Very Good' WHEN S1AVGPoints+0>9 THEN 'Good' WHEN S1AVGPoints+0>8 THEN 'Good' WHEN S1AVGPoints+0>7 THEN 'Average' WHEN S1AVGPoints+0>6 THEN 'Average' WHEN S1AVGPoints+0>5 THEN 'Average' WHEN S1AVGPoints+0>4 THEN 'Put more effort' WHEN S1AVGPoints+0>3 THEN 'Put more effort' WHEN S1AVGPoints+0>2 THEN 'Put more effort' WHEN S1AVGPoints+0>1 THEN 'Put more effort' WHEN S1AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S2Remarks=(CASE WHEN S2AVGPoints+0>11 THEN 'Excellent' WHEN S2AVGPoints+0>10 THEN 'Very Good' WHEN S2AVGPoints+0>9 THEN 'Good' WHEN S2AVGPoints+0>8 THEN 'Good' WHEN S2AVGPoints+0>7 THEN 'Average' WHEN S2AVGPoints+0>6 THEN 'Average' WHEN S2AVGPoints+0>5 THEN 'Average' WHEN S2AVGPoints+0>4 THEN 'Put more effort' WHEN S2AVGPoints+0>3 THEN 'Put more effort' WHEN S2AVGPoints+0>2 THEN 'Put more effort' WHEN S2AVGPoints+0>1 THEN 'Put more effort' WHEN S2AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S3Remarks=(CASE WHEN S3AVGPoints+0>11 THEN 'Excellent' WHEN S3AVGPoints+0>10 THEN 'Very Good' WHEN S3AVGPoints+0>9 THEN 'Good' WHEN S3AVGPoints+0>8 THEN 'Good' WHEN S3AVGPoints+0>7 THEN 'Average' WHEN S3AVGPoints+0>6 THEN 'Average' WHEN S3AVGPoints+0>5 THEN 'Average' WHEN S3AVGPoints+0>4 THEN 'Put more effort' WHEN S3AVGPoints+0>3 THEN 'Put more effort' WHEN S3AVGPoints+0>2 THEN 'Put more effort' WHEN S3AVGPoints+0>1 THEN 'Put more effort' WHEN S3AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S4Remarks=(CASE WHEN S4AVGPoints+0>11 THEN 'Excellent' WHEN S4AVGPoints+0>10 THEN 'Very Good' WHEN S4AVGPoints+0>9 THEN 'Good' WHEN S4AVGPoints+0>8 THEN 'Good' WHEN S4AVGPoints+0>7 THEN 'Average' WHEN S4AVGPoints+0>6 THEN 'Average' WHEN S4AVGPoints+0>5 THEN 'Average' WHEN S4AVGPoints+0>4 THEN 'Put more effort' WHEN S4AVGPoints+0>3 THEN 'Put more effort' WHEN S4AVGPoints+0>2 THEN 'Put more effort' WHEN S4AVGPoints+0>1 THEN 'Put more effort' WHEN S4AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S5Remarks=(CASE WHEN S5AVGPoints+0>11 THEN 'Excellent' WHEN S5AVGPoints+0>10 THEN 'Very Good' WHEN S5AVGPoints+0>9 THEN 'Good' WHEN S5AVGPoints+0>8 THEN 'Good' WHEN S5AVGPoints+0>7 THEN 'Average' WHEN S5AVGPoints+0>6 THEN 'Average' WHEN S5AVGPoints+0>5 THEN 'Average' WHEN S5AVGPoints+0>4 THEN 'Put more effort' WHEN S5AVGPoints+0>3 THEN 'Put more effort' WHEN S5AVGPoints+0>2 THEN 'Put more effort' WHEN S5AVGPoints+0>1 THEN 'Put more effort' WHEN S5AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S6Remarks=(CASE WHEN S6AVGPoints+0>11 THEN 'Excellent' WHEN S6AVGPoints+0>10 THEN 'Very Good' WHEN S6AVGPoints+0>9 THEN 'Good' WHEN S6AVGPoints+0>8 THEN 'Good' WHEN S6AVGPoints+0>7 THEN 'Average' WHEN S6AVGPoints+0>6 THEN 'Average' WHEN S6AVGPoints+0>5 THEN 'Average' WHEN S6AVGPoints+0>4 THEN 'Put more effort' WHEN S6AVGPoints+0>3 THEN 'Put more effort' WHEN S6AVGPoints+0>2 THEN 'Put more effort' WHEN S6AVGPoints+0>1 THEN 'Put more effort' WHEN S6AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S7Remarks=(CASE WHEN S7AVGPoints+0>11 THEN 'Excellent' WHEN S7AVGPoints+0>10 THEN 'Very Good' WHEN S7AVGPoints+0>9 THEN 'Good' WHEN S7AVGPoints+0>8 THEN 'Good' WHEN S7AVGPoints+0>7 THEN 'Average' WHEN S7AVGPoints+0>6 THEN 'Average' WHEN S7AVGPoints+0>5 THEN 'Average' WHEN S7AVGPoints+0>4 THEN 'Put more effort' WHEN S7AVGPoints+0>3 THEN 'Put more effort' WHEN S7AVGPoints+0>2 THEN 'Put more effort' WHEN S7AVGPoints+0>1 THEN 'Put more effort' WHEN S7AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S8Remarks=(CASE WHEN S8AVGPoints+0>11 THEN 'Excellent' WHEN S8AVGPoints+0>10 THEN 'Very Good' WHEN S8AVGPoints+0>9 THEN 'Good' WHEN S8AVGPoints+0>8 THEN 'Good' WHEN S8AVGPoints+0>7 THEN 'Average' WHEN S8AVGPoints+0>6 THEN 'Average' WHEN S8AVGPoints+0>5 THEN 'Average' WHEN S8AVGPoints+0>4 THEN 'Put more effort' WHEN S8AVGPoints+0>3 THEN 'Put more effort' WHEN S8AVGPoints+0>2 THEN 'Put more effort' WHEN S8AVGPoints+0>1 THEN 'Put more effort' WHEN S8AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S9Remarks=(CASE WHEN S9AVGPoints+0>11 THEN 'Excellent' WHEN S9AVGPoints+0>10 THEN 'Very Good' WHEN S9AVGPoints+0>9 THEN 'Good' WHEN S9AVGPoints+0>8 THEN 'Good' WHEN S9AVGPoints+0>7 THEN 'Average' WHEN S9AVGPoints+0>6 THEN 'Average' WHEN S9AVGPoints+0>5 THEN 'Average' WHEN S9AVGPoints+0>4 THEN 'Put more effort' WHEN S9AVGPoints+0>3 THEN 'Put more effort' WHEN S9AVGPoints+0>2 THEN 'Put more effort' WHEN S9AVGPoints+0>1 THEN 'Put more effort' WHEN S9AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S10Remarks=(CASE WHEN S10AVGPoints+0>11 THEN 'Excellent' WHEN S10AVGPoints+0>10 THEN 'Very Good' WHEN S10AVGPoints+0>9 THEN 'Good' WHEN S10AVGPoints+0>8 THEN 'Good' WHEN S10AVGPoints+0>7 THEN 'Average' WHEN S10AVGPoints+0>6 THEN 'Average' WHEN S10AVGPoints+0>5 THEN 'Average' WHEN S10AVGPoints+0>4 THEN 'Put more effort' WHEN S10AVGPoints+0>3 THEN 'Put more effort' WHEN S10AVGPoints+0>2 THEN 'Put more effort' WHEN S10AVGPoints+0>1 THEN 'Put more effort' WHEN S10AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S11Remarks=(CASE WHEN S11AVGPoints+0>11 THEN 'Excellent' WHEN S11AVGPoints+0>10 THEN 'Very Good' WHEN S11AVGPoints+0>9 THEN 'Good' WHEN S11AVGPoints+0>8 THEN 'Good' WHEN S11AVGPoints+0>7 THEN 'Average' WHEN S11AVGPoints+0>6 THEN 'Average' WHEN S11AVGPoints+0>5 THEN 'Average' WHEN S11AVGPoints+0>4 THEN 'Put more effort' WHEN S11AVGPoints+0>3 THEN 'Put more effort' WHEN S11AVGPoints+0>2 THEN 'Put more effort' WHEN S11AVGPoints+0>1 THEN 'Put more effort' WHEN S11AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S12Remarks=(CASE WHEN S12AVGPoints+0>11 THEN 'Excellent' WHEN S12AVGPoints+0>10 THEN 'Very Good' WHEN S12AVGPoints+0>9 THEN 'Good' WHEN S12AVGPoints+0>8 THEN 'Good' WHEN S12AVGPoints+0>7 THEN 'Average' WHEN S12AVGPoints+0>6 THEN 'Average' WHEN S12AVGPoints+0>5 THEN 'Average' WHEN S12AVGPoints+0>4 THEN 'Put more effort' WHEN S12AVGPoints+0>3 THEN 'Put more effort' WHEN S12AVGPoints+0>2 THEN 'Put more effort' WHEN S12AVGPoints+0>1 THEN 'Put more effort' WHEN S12AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S13Remarks=(CASE WHEN S13AVGPoints+0>11 THEN 'Excellent' WHEN S13AVGPoints+0>10 THEN 'Very Good' WHEN S13AVGPoints+0>9 THEN 'Good' WHEN S13AVGPoints+0>8 THEN 'Good' WHEN S13AVGPoints+0>7 THEN 'Average' WHEN S13AVGPoints+0>6 THEN 'Average' WHEN S13AVGPoints+0>5 THEN 'Average' WHEN S13AVGPoints+0>4 THEN 'Put more effort' WHEN S13AVGPoints+0>3 THEN 'Put more effort' WHEN S13AVGPoints+0>2 THEN 'Put more effort' WHEN S13AVGPoints+0>1 THEN 'Put more effort' WHEN S13AVGPoints+0>0 THEN 'Put more effort' ELSE '' END),S14Remarks=(CASE WHEN S14AVGPoints+0>11 THEN 'Excellent' WHEN S14AVGPoints+0>10 THEN 'Very Good' WHEN S14AVGPoints+0>9 THEN 'Good' WHEN S14AVGPoints+0>8 THEN 'Good' WHEN S14AVGPoints+0>7 THEN 'Average' WHEN S14AVGPoints+0>6 THEN 'Average' WHEN S14AVGPoints+0>5 THEN 'Average' WHEN S14AVGPoints+0>4 THEN 'Put more effort' WHEN S14AVGPoints+0>3 THEN 'Put more effort' WHEN S14AVGPoints+0>2 THEN 'Put more effort' WHEN S14AVGPoints+0>1 THEN 'Put more effort' WHEN S14AVGPoints+0>0 THEN 'Put more effort' ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
+
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, Form);
+        params.put(2, Year);
+        params.put(3, Term);
+        QueryRunner.update(sql, params);
     }
 
-    private void PopulateStudentSubjectPositions() {
-        for (Classroom classroom : classrooms) {
+    private void populateStudentSubjectPositions() {
+        classrooms.forEach(classroom -> {
             lblProgress.setText("Calculating Subject positions for Form :" + classroom.getName());
             lblProgress2.setText("Calculating Subject positions for Form :" + classroom.getName());
-            try {
-                String s1p, s2p, s3p, s4p, s5p, s6p, s7p, s8p, s9p, s10p, s11p, s12p, s13p, s14p;
-                s1p = "(CASE WHEN (S1AVGMarks =' ' OR S1AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S1AVGMarks+0 > students_exams.S1AVGMarks+0 AND (students_exams.S1AVGMarks !='') AND t2.SE_StudentClass='" + selectedClassroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
-                s2p = "(CASE WHEN (S2AVGMarks =' ' OR S2AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S2AVGMarks+0 > students_exams.S2AVGMarks+0 AND (students_exams.S2AVGMarks !='') AND t2.SE_StudentClass='" + selectedClassroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
-                s3p = "(CASE WHEN (S3AVGMarks =' ' OR S3AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S3AVGMarks+0 > students_exams.S3AVGMarks+0 AND (students_exams.S3AVGMarks !='') AND t2.SE_StudentClass='" + selectedClassroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
-                s4p = "(CASE WHEN (S4AVGMarks =' ' OR S4AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S4AVGMarks+0 > students_exams.S4AVGMarks+0 AND (students_exams.S4AVGMarks !='') AND t2.SE_StudentClass='" + selectedClassroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
-                s5p = "(CASE WHEN (S5AVGMarks =' ' OR S5AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S5AVGMarks+0 > students_exams.S5AVGMarks+0 AND (students_exams.S5AVGMarks !='') AND t2.SE_StudentClass='" + selectedClassroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
-                s6p = "(CASE WHEN (S6AVGMarks =' ' OR S6AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S6AVGMarks+0 > students_exams.S6AVGMarks+0 AND (students_exams.S6AVGMarks !='') AND t2.SE_StudentClass='" + selectedClassroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
-                s7p = "(CASE WHEN (S7AVGMarks =' ' OR S7AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S7AVGMarks+0 > students_exams.S7AVGMarks+0 AND (students_exams.S7AVGMarks !='') AND t2.SE_StudentClass='" + selectedClassroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
-                s8p = "(CASE WHEN (S8AVGMarks =' ' OR S8AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S8AVGMarks+0 > students_exams.S8AVGMarks+0 AND (students_exams.S8AVGMarks !='') AND t2.SE_StudentClass='" + selectedClassroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
-                s9p = "(CASE WHEN (S9AVGMarks =' ' OR S9AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S9AVGMarks+0 > students_exams.S9AVGMarks+0 AND (students_exams.S9AVGMarks !='') AND t2.SE_StudentClass='" + selectedClassroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
-                s10p = "(CASE WHEN (S10AVGMarks =' ' OR S10AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S10AVGMarks+0 > students_exams.S10AVGMarks+0 AND (students_exams.S10AVGMarks !='') AND t2.SE_StudentClass='" + selectedClassroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
-                s11p = "(CASE WHEN (S11AVGMarks =' ' OR S11AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S11AVGMarks+0 > students_exams.S11AVGMarks+0 AND (students_exams.S11AVGMarks !='') AND t2.SE_StudentClass='" + selectedClassroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
-                s12p = "(CASE WHEN (S12AVGMarks =' ' OR S12AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S12AVGMarks+0 > students_exams.S12AVGMarks+0 AND (students_exams.S12AVGMarks !='') AND t2.SE_StudentClass='" + selectedClassroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
-                s13p = "(CASE WHEN (S13AVGMarks =' ' OR S13AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S13AVGMarks+0 > students_exams.S13AVGMarks+0 AND (students_exams.S13AVGMarks !='') AND t2.SE_StudentClass='" + selectedClassroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
-                s14p = "(CASE WHEN (S14AVGMarks =' ' OR S14AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S14AVGMarks+0 > students_exams.S14AVGMarks+0 AND (students_exams.S14AVGMarks !='') AND t2.SE_StudentClass='" + selectedClassroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
-                sql = ("UPDATE students_exams SET S1AVGPosition=" + s1p + ",S2AVGPosition=" + s2p + ",S3AVGPosition=" + s3p + ",S4AVGPosition=" + s4p + ",S5AVGPosition=" + s5p + ",S6AVGPosition=" + s6p + ",S7AVGPosition=" + s7p + ",S8AVGPosition=" + s8p + ",S9AVGPosition=" + s9p + ",S10AVGPosition=" + s10p + ",S11AVGPosition=" + s11p + ",S12AVGPosition=" + s12p + ",S13AVGPosition=" + s13p + ",S14AVGPosition=" + s14p + " WHERE  (SE_StudentClass='" + selectedClassroom.getName() + "' AND Year='" + Year + "' AND Term='" + Term + "')");
-                pst = Conn.prepareStatement(sql);
-                pst.executeUpdate();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+            String s1p, s2p, s3p, s4p, s5p, s6p, s7p, s8p, s9p, s10p, s11p, s12p, s13p, s14p;
+            s1p = "(CASE WHEN (S1AVGMarks =' ' OR S1AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S1AVGMarks+0 > students_exams.S1AVGMarks+0 AND (students_exams.S1AVGMarks !='') AND t2.SE_StudentClass='" + classroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
+            s2p = "(CASE WHEN (S2AVGMarks =' ' OR S2AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S2AVGMarks+0 > students_exams.S2AVGMarks+0 AND (students_exams.S2AVGMarks !='') AND t2.SE_StudentClass='" + classroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
+            s3p = "(CASE WHEN (S3AVGMarks =' ' OR S3AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S3AVGMarks+0 > students_exams.S3AVGMarks+0 AND (students_exams.S3AVGMarks !='') AND t2.SE_StudentClass='" + classroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
+            s4p = "(CASE WHEN (S4AVGMarks =' ' OR S4AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S4AVGMarks+0 > students_exams.S4AVGMarks+0 AND (students_exams.S4AVGMarks !='') AND t2.SE_StudentClass='" + classroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
+            s5p = "(CASE WHEN (S5AVGMarks =' ' OR S5AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S5AVGMarks+0 > students_exams.S5AVGMarks+0 AND (students_exams.S5AVGMarks !='') AND t2.SE_StudentClass='" + classroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
+            s6p = "(CASE WHEN (S6AVGMarks =' ' OR S6AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S6AVGMarks+0 > students_exams.S6AVGMarks+0 AND (students_exams.S6AVGMarks !='') AND t2.SE_StudentClass='" + classroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
+            s7p = "(CASE WHEN (S7AVGMarks =' ' OR S7AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S7AVGMarks+0 > students_exams.S7AVGMarks+0 AND (students_exams.S7AVGMarks !='') AND t2.SE_StudentClass='" + classroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
+            s8p = "(CASE WHEN (S8AVGMarks =' ' OR S8AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S8AVGMarks+0 > students_exams.S8AVGMarks+0 AND (students_exams.S8AVGMarks !='') AND t2.SE_StudentClass='" + classroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
+            s9p = "(CASE WHEN (S9AVGMarks =' ' OR S9AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S9AVGMarks+0 > students_exams.S9AVGMarks+0 AND (students_exams.S9AVGMarks !='') AND t2.SE_StudentClass='" + classroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
+            s10p = "(CASE WHEN (S10AVGMarks =' ' OR S10AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S10AVGMarks+0 > students_exams.S10AVGMarks+0 AND (students_exams.S10AVGMarks !='') AND t2.SE_StudentClass='" + classroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
+            s11p = "(CASE WHEN (S11AVGMarks =' ' OR S11AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S11AVGMarks+0 > students_exams.S11AVGMarks+0 AND (students_exams.S11AVGMarks !='') AND t2.SE_StudentClass='" + classroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
+            s12p = "(CASE WHEN (S12AVGMarks =' ' OR S12AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S12AVGMarks+0 > students_exams.S12AVGMarks+0 AND (students_exams.S12AVGMarks !='') AND t2.SE_StudentClass='" + classroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
+            s13p = "(CASE WHEN (S13AVGMarks =' ' OR S13AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S13AVGMarks+0 > students_exams.S13AVGMarks+0 AND (students_exams.S13AVGMarks !='') AND t2.SE_StudentClass='" + classroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
+            s14p = "(CASE WHEN (S14AVGMarks =' ' OR S14AVGMarks ='') THEN ''  ELSE (1+(SELECT COUNT(*) FROM students_exams as t2 WHERE (t2.S14AVGMarks+0 > students_exams.S14AVGMarks+0 AND (students_exams.S14AVGMarks !='') AND t2.SE_StudentClass='" + classroom.getName() + "' AND t2.Year='" + Year + "' AND t2.Term='" + Term + "'))) END)";
+            sql = ("UPDATE students_exams SET S1AVGPosition=" + s1p + ",S2AVGPosition=" + s2p + ",S3AVGPosition=" + s3p + ",S4AVGPosition=" + s4p + ",S5AVGPosition=" + s5p + ",S6AVGPosition=" + s6p + ",S7AVGPosition=" + s7p + ",S8AVGPosition=" + s8p + ",S9AVGPosition=" + s9p + ",S10AVGPosition=" + s10p + ",S11AVGPosition=" + s11p + ",S12AVGPosition=" + s12p + ",S13AVGPosition=" + s13p + ",S14AVGPosition=" + s14p + " WHERE  (SE_StudentClass='" + classroom.getName() + "' AND Year='" + Year + "' AND Term='" + Term + "')");
+            QueryRunner.update(sql, null);
+        });
     }
 
     private void LowerFormSumtheExamTotalMarks() {
-        try {
-            lblProgress2.setText("Calculating Exam Total Marks");
-            if (Exam.equalsIgnoreCase("Exam 1")) {
-                sql = "UPDATE students_exams SET Exam1TotalMarks=(IFNULL(S1E1Marks,0)+IFNULL(S2E1Marks,0)+IFNULL(S3E1Marks,0)+IFNULL(S4E1Marks,0)+IFNULL(S5E1Marks,0)+IFNULL(S6E1Marks,0)+IFNULL(S7E1Marks,0)+IFNULL(S8E1Marks,0)+IFNULL(S9E1Marks,0)+IFNULL(S10E1Marks,0)+IFNULL(S11E1Marks,0)+IFNULL(S12E1Marks,0)+IFNULL(S13E1Marks,0)+IFNULL(S14E1Marks,0)),TotalOutOf='1100' WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
-            } else if (Exam.equalsIgnoreCase("Exam 2")) {
-                sql = "UPDATE students_exams SET Exam2TotalMarks=(IFNULL(S1E2Marks,0)+IFNULL(S2E2Marks,0)+IFNULL(S3E2Marks,0)+IFNULL(S4E2Marks,0)+IFNULL(S5E2Marks,0)+IFNULL(S6E2Marks,0)+IFNULL(S7E2Marks,0)+IFNULL(S8E2Marks,0)+IFNULL(S9E2Marks,0)+IFNULL(S10E2Marks,0)+IFNULL(S11E2Marks,0)+IFNULL(S12E2Marks,0)+IFNULL(S13E2Marks,0)+IFNULL(S14E2Marks,0)) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
-            } else if (Exam.equalsIgnoreCase("Exam 3")) {
-                sql = "UPDATE students_exams SET Exam3TotalMarks=(IFNULL(S1E3Marks,0)+IFNULL(S2E3Marks,0)+IFNULL(S3E3Marks,0)+IFNULL(S4E3Marks,0)+IFNULL(S5E3Marks,0)+IFNULL(S6E3Marks,0)+IFNULL(S7E3Marks,0)+IFNULL(S8E3Marks,0)+IFNULL(S9E3Marks,0)+IFNULL(S10E3Marks,0)+IFNULL(S11E3Marks,0)+IFNULL(S12E3Marks,0)+IFNULL(S13E3Marks,0)+IFNULL(S14E3Marks,0)) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
-            }
-            pst = Conn.prepareStatement(sql);
-            pst.setString(1, selectedClassroom.getName().substring(0, 1));
-            pst.setString(2, Year);
-            pst.setString(3, Term);
-            pst.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        lblProgress2.setText("Calculating Exam Total Marks");
+        if (Exam.equalsIgnoreCase("Exam 1")) {
+            sql = "UPDATE students_exams SET Exam1TotalMarks=(IFNULL(S1E1Marks,0)+IFNULL(S2E1Marks,0)+IFNULL(S3E1Marks,0)+IFNULL(S4E1Marks,0)+IFNULL(S5E1Marks,0)+IFNULL(S6E1Marks,0)+IFNULL(S7E1Marks,0)+IFNULL(S8E1Marks,0)+IFNULL(S9E1Marks,0)+IFNULL(S10E1Marks,0)+IFNULL(S11E1Marks,0)+IFNULL(S12E1Marks,0)+IFNULL(S13E1Marks,0)+IFNULL(S14E1Marks,0)),TotalOutOf='1100' WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
+        } else if (Exam.equalsIgnoreCase("Exam 2")) {
+            sql = "UPDATE students_exams SET Exam2TotalMarks=(IFNULL(S1E2Marks,0)+IFNULL(S2E2Marks,0)+IFNULL(S3E2Marks,0)+IFNULL(S4E2Marks,0)+IFNULL(S5E2Marks,0)+IFNULL(S6E2Marks,0)+IFNULL(S7E2Marks,0)+IFNULL(S8E2Marks,0)+IFNULL(S9E2Marks,0)+IFNULL(S10E2Marks,0)+IFNULL(S11E2Marks,0)+IFNULL(S12E2Marks,0)+IFNULL(S13E2Marks,0)+IFNULL(S14E2Marks,0)) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
+        } else if (Exam.equalsIgnoreCase("Exam 3")) {
+            sql = "UPDATE students_exams SET Exam3TotalMarks=(IFNULL(S1E3Marks,0)+IFNULL(S2E3Marks,0)+IFNULL(S3E3Marks,0)+IFNULL(S4E3Marks,0)+IFNULL(S5E3Marks,0)+IFNULL(S6E3Marks,0)+IFNULL(S7E3Marks,0)+IFNULL(S8E3Marks,0)+IFNULL(S9E3Marks,0)+IFNULL(S10E3Marks,0)+IFNULL(S11E3Marks,0)+IFNULL(S12E3Marks,0)+IFNULL(S13E3Marks,0)+IFNULL(S14E3Marks,0)) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
         }
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, Form);
+        params.put(2, Year);
+        params.put(3, Term);
+        QueryRunner.update(sql, params);
     }
 
     private void LowerFormSumtheExamMeanPoints() {
-        try {
-            lblProgress.setText("Calculating Exam Mean Points");
-            if (Exam.equalsIgnoreCase("Exam 1")) {
-                sql = "UPDATE students_exams SET Exam1MeanPoints=Round(((Exam1TotalMarks) * 12.00/1046),2) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
-            } else if (Exam.equalsIgnoreCase("Exam 2")) {
-                sql = "UPDATE students_exams SET Exam2MeanPoints=Round(((Exam2TotalMarks) * 12.00/1046),2) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
-            } else if (Exam.equalsIgnoreCase("Exam 3")) {
-                sql = "UPDATE students_exams SET Exam3MeanPoints=Round(((Exam3TotalMarks) * 12.00/1046),2) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
-            }
-            pst = Conn.prepareStatement(sql);
-            pst.setString(1, selectedClassroom.getName().substring(0, 1));
-            pst.setString(2, Year);
-            pst.setString(3, Term);
-            pst.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        lblProgress.setText("Calculating Exam Mean Points");
+        if (Exam.equalsIgnoreCase("Exam 1")) {
+            sql = "UPDATE students_exams SET Exam1MeanPoints=Round(((Exam1TotalMarks) * 12.00/1046),2) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
+        } else if (Exam.equalsIgnoreCase("Exam 2")) {
+            sql = "UPDATE students_exams SET Exam2MeanPoints=Round(((Exam2TotalMarks) * 12.00/1046),2) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
+        } else if (Exam.equalsIgnoreCase("Exam 3")) {
+            sql = "UPDATE students_exams SET Exam3MeanPoints=Round(((Exam3TotalMarks) * 12.00/1046),2) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
         }
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, Form);
+        params.put(2, Year);
+        params.put(3, Term);
+        QueryRunner.update(sql, params);
     }
 
     private void LowerFormpopulateExamMeanGrade() {
-        try {
-            lblProgress.setText("Calculating Exam Mean Grade");
-            if (Exam.equalsIgnoreCase("Exam 1")) {
-                sql = "UPDATE students_exams SET Exam1MeanGrade=(CASE WHEN (Exam1MeanPoints+0) >11 THEN 'A' WHEN ((Exam1MeanPoints+0)+0) >10 THEN 'A-' WHEN (Exam1MeanPoints+0) >9 THEN 'B+' WHEN (Exam1MeanPoints+0) >8 THEN 'B' WHEN (Exam1MeanPoints+0) >7 THEN 'B-' WHEN (Exam1MeanPoints+0) >6 THEN 'C+' WHEN (Exam1MeanPoints+0) >5 THEN 'C' WHEN (Exam1MeanPoints+0) >4 THEN 'C-' WHEN (Exam1MeanPoints+0) >3 THEN 'D+' WHEN (Exam1MeanPoints+0) >2 THEN 'D' WHEN (Exam1MeanPoints+0) >1 THEN 'D-' WHEN (Exam1MeanPoints+0) >0 THEN 'E' ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
-            } else if (Exam.equalsIgnoreCase("Exam 2")) {
-                sql = "UPDATE students_exams SET Exam2MeanGrade=(CASE WHEN (Exam2MeanPoints+0) >11 THEN 'A' WHEN ((Exam2MeanPoints+0)+0) >10 THEN 'A-' WHEN (Exam2MeanPoints+0) >9 THEN 'B+' WHEN (Exam2MeanPoints+0) >8 THEN 'B' WHEN (Exam2MeanPoints+0) >7 THEN 'B-' WHEN (Exam2MeanPoints+0) >6 THEN 'C+' WHEN (Exam2MeanPoints+0) >5 THEN 'C' WHEN (Exam2MeanPoints+0) >4 THEN 'C-' WHEN (Exam2MeanPoints+0) >3 THEN 'D+' WHEN (Exam2MeanPoints+0) >2 THEN 'D' WHEN (Exam2MeanPoints+0) >1 THEN 'D-' WHEN (Exam2MeanPoints+0) >0 THEN 'E' ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
-            } else if (Exam.equalsIgnoreCase("Exam 3")) {
-                sql = "UPDATE students_exams SET Exam3MeanGrade=(CASE WHEN (Exam3MeanPoints+0) >11 THEN 'A' WHEN ((Exam3MeanPoints+0)+0) >10 THEN 'A-' WHEN (Exam3MeanPoints+0) >9 THEN 'B+' WHEN (Exam3MeanPoints+0) >8 THEN 'B' WHEN (Exam3MeanPoints+0) >7 THEN 'B-' WHEN (Exam3MeanPoints+0) >6 THEN 'C+' WHEN (Exam3MeanPoints+0) >5 THEN 'C' WHEN (Exam3MeanPoints+0) >4 THEN 'C-' WHEN (Exam3MeanPoints+0) >3 THEN 'D+' WHEN (Exam3MeanPoints+0) >2 THEN 'D' WHEN (Exam3MeanPoints+0) >1 THEN 'D-' WHEN (Exam3MeanPoints+0) >0 THEN 'E' ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
-            }
-            pst = Conn.prepareStatement(sql);
-            pst.setString(1, selectedClassroom.getName().substring(0, 1));
-            pst.setString(2, Year);
-            pst.setString(3, Term);
-            pst.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        lblProgress.setText("Calculating Exam Mean Grade");
+        if (Exam.equalsIgnoreCase("Exam 1")) {
+            sql = "UPDATE students_exams SET Exam1MeanGrade=(CASE WHEN (Exam1MeanPoints+0) >11 THEN 'A' WHEN ((Exam1MeanPoints+0)+0) >10 THEN 'A-' WHEN (Exam1MeanPoints+0) >9 THEN 'B+' WHEN (Exam1MeanPoints+0) >8 THEN 'B' WHEN (Exam1MeanPoints+0) >7 THEN 'B-' WHEN (Exam1MeanPoints+0) >6 THEN 'C+' WHEN (Exam1MeanPoints+0) >5 THEN 'C' WHEN (Exam1MeanPoints+0) >4 THEN 'C-' WHEN (Exam1MeanPoints+0) >3 THEN 'D+' WHEN (Exam1MeanPoints+0) >2 THEN 'D' WHEN (Exam1MeanPoints+0) >1 THEN 'D-' WHEN (Exam1MeanPoints+0) >0 THEN 'E' ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
+        } else if (Exam.equalsIgnoreCase("Exam 2")) {
+            sql = "UPDATE students_exams SET Exam2MeanGrade=(CASE WHEN (Exam2MeanPoints+0) >11 THEN 'A' WHEN ((Exam2MeanPoints+0)+0) >10 THEN 'A-' WHEN (Exam2MeanPoints+0) >9 THEN 'B+' WHEN (Exam2MeanPoints+0) >8 THEN 'B' WHEN (Exam2MeanPoints+0) >7 THEN 'B-' WHEN (Exam2MeanPoints+0) >6 THEN 'C+' WHEN (Exam2MeanPoints+0) >5 THEN 'C' WHEN (Exam2MeanPoints+0) >4 THEN 'C-' WHEN (Exam2MeanPoints+0) >3 THEN 'D+' WHEN (Exam2MeanPoints+0) >2 THEN 'D' WHEN (Exam2MeanPoints+0) >1 THEN 'D-' WHEN (Exam2MeanPoints+0) >0 THEN 'E' ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
+        } else if (Exam.equalsIgnoreCase("Exam 3")) {
+            sql = "UPDATE students_exams SET Exam3MeanGrade=(CASE WHEN (Exam3MeanPoints+0) >11 THEN 'A' WHEN ((Exam3MeanPoints+0)+0) >10 THEN 'A-' WHEN (Exam3MeanPoints+0) >9 THEN 'B+' WHEN (Exam3MeanPoints+0) >8 THEN 'B' WHEN (Exam3MeanPoints+0) >7 THEN 'B-' WHEN (Exam3MeanPoints+0) >6 THEN 'C+' WHEN (Exam3MeanPoints+0) >5 THEN 'C' WHEN (Exam3MeanPoints+0) >4 THEN 'C-' WHEN (Exam3MeanPoints+0) >3 THEN 'D+' WHEN (Exam3MeanPoints+0) >2 THEN 'D' WHEN (Exam3MeanPoints+0) >1 THEN 'D-' WHEN (Exam3MeanPoints+0) >0 THEN 'E' ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
         }
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, Form);
+        params.put(2, Year);
+        params.put(3, Term);
+        QueryRunner.update(sql, params);
     }
 
     private void LowerFormSumtheEndTermTotalMarks() {
-        try {
-            lblProgress.setText("Calculating End Term Total Points");
-            sql = "UPDATE students_exams SET TotalMarks=(IFNULL(S1AVGMarks,0)+IFNULL(S2AVGMarks,0)+IFNULL(S3AVGMarks,0)+IFNULL(S4AVGMarks,0)+IFNULL(S5AVGMarks,0)+IFNULL(S6AVGMarks,0)+IFNULL(S7AVGMarks,0)+IFNULL(S8AVGMarks,0)+IFNULL(S9AVGMarks,0)+IFNULL(S10AVGMarks,0)+IFNULL(S11AVGMarks,0)+IFNULL(S12AVGMarks,0)+IFNULL(S13AVGMarks,0)+IFNULL(S14AVGMarks,0)),TotalOutOf='1100' WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
+        lblProgress.setText("Calculating End Term Total Points");
+        sql = "UPDATE students_exams SET TotalMarks=(IFNULL(S1AVGMarks,0)+IFNULL(S2AVGMarks,0)+IFNULL(S3AVGMarks,0)+IFNULL(S4AVGMarks,0)+IFNULL(S5AVGMarks,0)+IFNULL(S6AVGMarks,0)+IFNULL(S7AVGMarks,0)+IFNULL(S8AVGMarks,0)+IFNULL(S9AVGMarks,0)+IFNULL(S10AVGMarks,0)+IFNULL(S11AVGMarks,0)+IFNULL(S12AVGMarks,0)+IFNULL(S13AVGMarks,0)+IFNULL(S14AVGMarks,0)),TotalOutOf='1100' WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
 
-            pst = Conn.prepareStatement(sql);
-            pst.setString(1, selectedClassroom.getName().substring(0, 1));
-            pst.setString(2, Year);
-            pst.setString(3, Term);
-            pst.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, Form);
+        params.put(2, Year);
+        params.put(3, Term);
+        QueryRunner.update(sql, params);
     }
 
     private void LowerFormSumtheEndTermMeanPoints() {
-        try {
-            lblProgress.setText("Calculating End Term Mean Points");
-            if (Exam.equalsIgnoreCase("Exam 1")) {
-                sql = "UPDATE students_exams SET MeanPoints=(Exam1MeanPoints) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
-            } else if (Exam.equalsIgnoreCase("Exam 2")) {
-                sql = "UPDATE students_exams SET MeanPoints=round(((IFNULL(Exam1MeanPoints,0)+IFNULL(Exam2MeanPoints,0))/2.0),2) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
-            } else if (Exam.equalsIgnoreCase("Exam 3")) {
-                sql = "UPDATE students_exams SET MeanPoints=round(((IFNULL(Exam1MeanPoints,0)+IFNULL(Exam2MeanPoints,0)+IFNULL(Exam3MeanPoints,0))/3.0),2) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
-            }
-            pst = Conn.prepareStatement(sql);
-            pst.setString(1, selectedClassroom.getName().substring(0, 1));
-            pst.setString(2, Year);
-            pst.setString(3, Term);
-            pst.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        lblProgress.setText("Calculating End Term Mean Points");
+        if (Exam.equalsIgnoreCase("Exam 1")) {
+            sql = "UPDATE students_exams SET MeanPoints=(Exam1MeanPoints) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
+        } else if (Exam.equalsIgnoreCase("Exam 2")) {
+            sql = "UPDATE students_exams SET MeanPoints=round(((IFNULL(Exam1MeanPoints,0)+IFNULL(Exam2MeanPoints,0))/2.0),2) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
+        } else if (Exam.equalsIgnoreCase("Exam 3")) {
+            sql = "UPDATE students_exams SET MeanPoints=round(((IFNULL(Exam1MeanPoints,0)+IFNULL(Exam2MeanPoints,0)+IFNULL(Exam3MeanPoints,0))/3.0),2) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
         }
+        lblProgress.setText("Calculating End Term Total Points");
+        sql = "UPDATE students_exams SET TotalMarks=(IFNULL(S1AVGMarks,0)+IFNULL(S2AVGMarks,0)+IFNULL(S3AVGMarks,0)+IFNULL(S4AVGMarks,0)+IFNULL(S5AVGMarks,0)+IFNULL(S6AVGMarks,0)+IFNULL(S7AVGMarks,0)+IFNULL(S8AVGMarks,0)+IFNULL(S9AVGMarks,0)+IFNULL(S10AVGMarks,0)+IFNULL(S11AVGMarks,0)+IFNULL(S12AVGMarks,0)+IFNULL(S13AVGMarks,0)+IFNULL(S14AVGMarks,0)),TotalOutOf='1100' WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
+
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, Form);
+        params.put(2, Year);
+        params.put(3, Term);
+        QueryRunner.update(sql, params);
     }
 
     private void LowerFormEndTermMeanGrade() {
-        try {
-            lblProgress.setText("End Term Mean Grade");
-            sql = "UPDATE students_exams SET MeanGrade=(CASE WHEN (MeanPoints+0)>11 THEN 'A' WHEN (MeanPoints+0)>10 THEN 'A-' WHEN (MeanPoints+0)>9 THEN 'B+' WHEN (MeanPoints+0)>8 THEN 'B' WHEN (MeanPoints+0)>7 THEN 'B-' WHEN (MeanPoints+0)>6 THEN 'C+' WHEN (MeanPoints+0)>5 THEN 'C' WHEN (MeanPoints+0)>4 THEN 'C-' WHEN (MeanPoints+0)>3 THEN 'D+' WHEN (MeanPoints+0)>2 THEN 'D' WHEN (MeanPoints+0)>1 THEN 'D-' WHEN (MeanPoints+0)>0 THEN 'E' ELSE 'X' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
-            pst = Conn.prepareStatement(sql);
-            pst.setString(1, selectedClassroom.getName().substring(0, 1));
-            pst.setString(2, Year);
-            pst.setString(3, Term);
-            pst.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        lblProgress.setText("End Term Mean Grade");
+        sql = "UPDATE students_exams SET MeanGrade=(CASE WHEN (MeanPoints+0)>11 THEN 'A' WHEN (MeanPoints+0)>10 THEN 'A-' WHEN (MeanPoints+0)>9 THEN 'B+' WHEN (MeanPoints+0)>8 THEN 'B' WHEN (MeanPoints+0)>7 THEN 'B-' WHEN (MeanPoints+0)>6 THEN 'C+' WHEN (MeanPoints+0)>5 THEN 'C' WHEN (MeanPoints+0)>4 THEN 'C-' WHEN (MeanPoints+0)>3 THEN 'D+' WHEN (MeanPoints+0)>2 THEN 'D' WHEN (MeanPoints+0)>1 THEN 'D-' WHEN (MeanPoints+0)>0 THEN 'E' ELSE 'X' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
+
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, Form);
+        params.put(2, Year);
+        params.put(3, Term);
+        QueryRunner.update(sql, params);
     }
 
     private void UpperFormSumtheExam1TotalPoints() {
         try {
-            int Rows = tableStudentMarks.getRowCount();
-            for (int row = 0; row < Rows; row++) {
-                String StudentID = tableStudentMarks.getValueAt(row, 0).toString();
-                lblProgress2.setText("Calculating Exam Total Points For: " + tableStudentMarks.getValueAt(row, 1).toString() + "ADM  :" + tableStudentMarks.getValueAt(row, 0).toString());
-                sql = "SELECT (CASE WHEN S1E1Points+0>0 THEN S1E1Points ELSE '' END) as S1,(CASE WHEN S2E1Points+0>0 THEN S2E1Points ELSE '' END) as S2,(CASE WHEN S3E1Points+0>0 THEN S3E1Points ELSE '' END) as S3,(CASE WHEN S4E1Points+0>0 THEN S4E1Points ELSE '' END) as S4,(CASE WHEN S5E1Points+0>0 THEN S5E1Points ELSE '' END) as S5,(CASE WHEN S6E1Points+0>0 THEN S6E1Points ELSE '' END) as S6,(CASE WHEN S7E1Points+0>0 THEN S7E1Points ELSE '' END) as S7,(CASE WHEN S8E1Points+0>0 THEN S8E1Points ELSE '' END) as S8,(CASE WHEN S9E1Points+0>0 THEN S9E1Points ELSE '' END) as S9,(CASE WHEN S10E1Points+0>0 THEN S10E1Points ELSE '' END) as S10,(CASE WHEN S11E1Points+0>0 THEN S11E1Points ELSE '' END) as S11,(CASE WHEN S12E1Points+0>0 THEN S12E1Points ELSE '' END) as S12,(CASE WHEN S13E1Points+0>0 THEN S13E1Points ELSE '' END) as S13,(CASE WHEN S14E1Points+0>0 THEN S14E1Points ELSE '' END) as S14 FROM students_exams WHERE (SE_Student_id='" + StudentID + "' AND substr(SE_StudentClass,1,1)='" + selectedClassroom.getName().substring(0, 1) + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                pst = Conn.prepareStatement(sql);
-                rs = pst.executeQuery();
-                if (rs.next()) {
-                    int GroupA = 0;
-                    int FirstOfGroupBPicked = 0;
-                    int GroupBRemainder = 0;
-                    int FirstOfGroupCPicked = 0;
-                    int GroupCRemainders = 0;
-                    int GroupD = 0;
-                    int GroupCRemaindersToGroupD = 0;
-                    int GroupBRemainderToGroupCToGroupD = 0;
+            List<StudentExam> exams = StudentExamDAO.getByForm(Form, Year, Term);
+            exams.forEach(exam -> {
+                int S1 = exam.getS1E1Points().isEmpty() ? 0 : Integer.parseInt(exam.getS1E1Points());
+                int S2 = exam.getS2E1Points().isEmpty() ? 0 : Integer.parseInt(exam.getS2E1Points());
+                int S3 = exam.getS3E1Points().isEmpty() ? 0 : Integer.parseInt(exam.getS3E1Points());
+                int S4 = exam.getS4E1Points().isEmpty() ? 0 : Integer.parseInt(exam.getS4E1Points());
+                int S5 = exam.getS5E1Points().isEmpty() ? 0 : Integer.parseInt(exam.getS5E1Points());
+                int S6 = exam.getS6E1Points().isEmpty() ? 0 : Integer.parseInt(exam.getS6E1Points());
+                int S7 = exam.getS7E1Points().isEmpty() ? 0 : Integer.parseInt(exam.getS7E1Points());
+                int S8 = exam.getS8E1Points().isEmpty() ? 0 : Integer.parseInt(exam.getS8E1Points());
+                int S9 = exam.getS9E1Points().isEmpty() ? 0 : Integer.parseInt(exam.getS9E1Points());
+                int S10 = exam.getS10E1Points().isEmpty() ? 0 : Integer.parseInt(exam.getS10E1Points());
+                int S11 = exam.getS11E1Points().isEmpty() ? 0 : Integer.parseInt(exam.getS11E1Points());
+                int S12 = exam.getS12E1Points().isEmpty() ? 0 : Integer.parseInt(exam.getS12E1Points());
+                int S13 = exam.getS13E1Points().isEmpty() ? 0 : Integer.parseInt(exam.getS13E1Points());
+                int S14 = exam.getS14E1Points().isEmpty() ? 0 : Integer.parseInt(exam.getS14E1Points());
 
-                    String S1P = rs.getString("S1");
-                    String S2P = rs.getString("S2");
-                    String S3P = rs.getString("S3");
-                    String S4P = rs.getString("S4");
-                    String S5P = rs.getString("S5");
-                    String S6P = rs.getString("S6");
-                    String S7P = rs.getString("S7");
-                    String S8P = rs.getString("S8");
-                    String S9P = rs.getString("S9");
-                    String S10P = rs.getString("S10");
-                    String S11P = rs.getString("S11");
-                    String S12P = rs.getString("S12");
-                    String S13P = rs.getString("S13");
-                    String S14P = rs.getString("S14");
+                int GroupA = S1 + S2 + S3;
+                int FirstOfGroupBPicked;
+                int GroupBRemainder;
+                int FirstOfGroupCPicked;
+                int GroupCRemainders;
+                int GroupBCDRemainderPicked;
+                int GroupD = S10 + S11 + S12 + S13 + S14;
 
-                    int S1 = 0;
-                    if (!S1P.equalsIgnoreCase("")) {
-                        S1 = Integer.parseInt(S1P);
-                    }
-                    int S2 = 0;
-                    if (!S2P.equalsIgnoreCase("")) {
-                        S2 = Integer.parseInt(S2P);
-                    }
-                    int S3 = 0;
-                    if (!S3P.equalsIgnoreCase("")) {
-                        S3 = Integer.parseInt(S3P);
-                    }
-                    int S4 = 0;
-                    if (!S4P.equalsIgnoreCase("")) {
-                        S4 = Integer.parseInt(S4P);
-                    }
-                    int S5 = 0;
-                    if (!S5P.equalsIgnoreCase("")) {
-                        S5 = Integer.parseInt(S5P);
-                    }
-                    int S6 = 0;
-                    if (!S6P.equalsIgnoreCase("")) {
-                        S6 = Integer.parseInt(S6P);
-                    }
-                    int S7 = 0;
-                    if (!S7P.isEmpty()) {
-                        S7 = Integer.parseInt(S7P);
-                    }
-                    int S8 = 0;
-                    if (!S8P.equalsIgnoreCase("")) {
-                        S8 = Integer.parseInt(S8P);
-                    }
-                    int S9 = 0;
-                    if (!S9P.equalsIgnoreCase("")) {
-                        S9 = Integer.parseInt(S9P);
-                    }
-                    int S10 = 0;
-                    if (!S10P.equalsIgnoreCase("")) {
-                        S10 = Integer.parseInt(S10P);
-                    }
-                    int S11 = 0;
-                    if (!S11P.equalsIgnoreCase("")) {
-                        S11 = Integer.parseInt(S11P);
-                    }
-                    int S12 = 0;
-                    if (!S12P.equalsIgnoreCase("")) {
-                        S12 = Integer.parseInt(S12P);
-                    }
-                    int S13 = 0;
-                    if (!S13P.equalsIgnoreCase("")) {
-                        S13 = Integer.parseInt(S13P);
-                    }
-                    int S14 = 0;
-                    if (!S14P.equalsIgnoreCase("")) {
-                        S14 = Integer.parseInt(S14P);
-                    }
-                    GroupA = S1 + S2 + S3;
-                    GroupD = S10 + S11 + S12 + S13 + S14;
-                    if ((S4 <= S5) && (S4 <= S6)) {
-                        FirstOfGroupBPicked = S5 + S6;
-                        GroupBRemainder = S4;
-                    } else if ((S5 <= S4) && (S5 <= S6)) {
-                        FirstOfGroupBPicked = S4 + S6;
-                        GroupBRemainder = S5;
-                    } else if ((S6 <= S4) && (S6 <= S5)) {
-                        FirstOfGroupBPicked = S4 + S5;
-                        GroupBRemainder = S6;
-                    }
-                    if ((S7 >= S8) && (S7 >= S9)) {
-                        FirstOfGroupCPicked = S7;
-                        GroupCRemainders = S8 + S9;
-                    } else if ((S8 >= S7) && (S8 >= S9)) {
-                        FirstOfGroupCPicked = S8;
-                        GroupCRemainders = S7 + S9;
-                    } else if ((S9 >= S7) && (S9 >= S8)) {
-                        FirstOfGroupCPicked = S9;
-                        GroupCRemainders = S7 + S8;
-                    }
-                    if (GroupCRemainders >= GroupD) {
-                        GroupCRemaindersToGroupD = GroupCRemainders;
-                    } else if (GroupD >= GroupCRemainders) {
-                        GroupCRemaindersToGroupD = GroupD;
-                    }
-                    if ((GroupBRemainder <= FirstOfGroupCPicked) && (GroupBRemainder <= GroupCRemaindersToGroupD)) {
-                        GroupBRemainderToGroupCToGroupD = FirstOfGroupCPicked + GroupCRemaindersToGroupD;
-                    } else if ((FirstOfGroupCPicked <= GroupBRemainder) && (FirstOfGroupCPicked <= GroupCRemaindersToGroupD)) {
-                        GroupBRemainderToGroupCToGroupD = GroupBRemainder + GroupCRemaindersToGroupD;
-                    } else if ((GroupCRemaindersToGroupD <= GroupBRemainder) && (GroupCRemaindersToGroupD <= FirstOfGroupCPicked)) {
-                        GroupBRemainderToGroupCToGroupD = GroupBRemainder + FirstOfGroupCPicked;
-                    }
-                    int Points = GroupA + FirstOfGroupBPicked + GroupBRemainderToGroupCToGroupD;
-                    sql = ("UPDATE students_exams SET Exam1TotalMarks='" + Points + "',TotalOutOf='84' WHERE (SE_Student_id='" + StudentID + "' AND substr(SE_StudentClass,1,1)='" + selectedClassroom.getName().substring(0, 1) + "' AND Year='" + Year + "' AND Term='" + Term + "')");
-                    pst = Conn.prepareStatement(sql);
-                    pst.executeUpdate();
+                if ((S4 <= S5) && (S4 <= S6)) {
+                    FirstOfGroupBPicked = S5 + S6;
+                    GroupBRemainder = S4;
+                } else if ((S5 <= S4) && (S5 <= S6)) {
+                    FirstOfGroupBPicked = S4 + S6;
+                    GroupBRemainder = S5;
+                } else {
+                    FirstOfGroupBPicked = S4 + S5;
+                    GroupBRemainder = S6;
                 }
-            }
-        } catch (HeadlessException | NumberFormatException | SQLException e) {
-            e.printStackTrace();
+
+                if ((S7 >= S8) && (S7 >= S9)) {
+                    FirstOfGroupCPicked = S7;
+                    GroupCRemainders = S8 + S9;
+                } else if ((S8 >= S7) && (S8 >= S9)) {
+                    FirstOfGroupCPicked = S8;
+                    GroupCRemainders = S7 + S9;
+                } else {
+                    FirstOfGroupCPicked = S9;
+                    GroupCRemainders = S7 + S8;
+                }
+
+                if (GroupBRemainder >= GroupCRemainders && GroupBRemainder >= GroupD) {
+                    GroupBCDRemainderPicked = GroupBRemainder;
+                } else if (GroupCRemainders >= GroupBRemainder && GroupCRemainders > GroupD) {
+                    GroupBCDRemainderPicked = GroupCRemainders;
+                } else {
+                    GroupBCDRemainderPicked = GroupD;
+                }
+                int Points = GroupA + FirstOfGroupBPicked + FirstOfGroupCPicked + GroupBCDRemainderPicked;
+                exam.setExam1TotalMarks(String.valueOf(Points));
+                exam.setTotalOutOf("84");
+                StudentExamDAO.update(exam);
+            });
+        } catch (Exception ex) {
+            ConnClass.printError(ex);
         }
     }
 
     private void UpperFormSumtheExam2TotalPoints() {
         try {
-            int Rows = tableStudentMarks.getRowCount();
-            for (int row = 0; row < Rows; row++) {
-                String StudentID = tableStudentMarks.getValueAt(row, 0).toString();
-                lblProgress2.setText("Calculating Exam Total Points For: " + tableStudentMarks.getValueAt(row, 1).toString() + "ADM  :" + tableStudentMarks.getValueAt(row, 0).toString());
-                sql = "SELECT (CASE WHEN S1E2Points+0>0 THEN S1E2Points ELSE '' END) as S1,(CASE WHEN S2E2Points+0>0 THEN S2E2Points ELSE '' END) as S2,(CASE WHEN S3E2Points+0>0 THEN S3E2Points ELSE '' END) as S3,(CASE WHEN S4E2Points+0>0 THEN S4E2Points ELSE '' END) as S4,(CASE WHEN S5E2Points+0>0 THEN S5E2Points ELSE '' END) as S5,(CASE WHEN S6E2Points+0>0 THEN S6E2Points ELSE '' END) as S6,(CASE WHEN S7E2Points+0>0 THEN S7E2Points ELSE '' END) as S7,(CASE WHEN S8E2Points+0>0 THEN S8E2Points ELSE '' END) as S8,(CASE WHEN S9E2Points+0>0 THEN S9E2Points ELSE '' END) as S9,(CASE WHEN S10E2Points+0>0 THEN S10E2Points ELSE '' END) as S10,(CASE WHEN S11E2Points+0>0 THEN S11E2Points ELSE '' END) as S11,(CASE WHEN S12E2Points+0>0 THEN S12E2Points ELSE '' END) as S12,(CASE WHEN S13E2Points+0>0 THEN S13E2Points ELSE '' END) as S13,(CASE WHEN S14E2Points+0>0 THEN S14E2Points ELSE '' END) as S14 FROM students_exams WHERE (SE_Student_id='" + StudentID + "' AND substr(SE_StudentClass,1,1)='" + selectedClassroom.getName().substring(0, 1) + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                pst = Conn.prepareStatement(sql);
-                rs = pst.executeQuery();
-                if (rs.next()) {
-                    int GroupA = 0;
-                    int FirstOfGroupBPicked = 0;
-                    int GroupBRemainder = 0;
-                    int FirstOfGroupCPicked = 0;
-                    int GroupCRemainders = 0;
-                    int GroupD = 0;
-                    int GroupCRemaindersToGroupD = 0;
-                    int GroupBRemainderToGroupCToGroupD = 0;
+            List<StudentExam> exams = StudentExamDAO.getByForm(Form, Year, Term);
+            exams.forEach(exam -> {
+                int S1 = exam.getS1E2Points().isEmpty() ? 0 : Integer.parseInt(exam.getS1E2Points());
+                int S2 = exam.getS2E2Points().isEmpty() ? 0 : Integer.parseInt(exam.getS2E2Points());
+                int S3 = exam.getS3E2Points().isEmpty() ? 0 : Integer.parseInt(exam.getS3E2Points());
+                int S4 = exam.getS4E2Points().isEmpty() ? 0 : Integer.parseInt(exam.getS4E2Points());
+                int S5 = exam.getS5E2Points().isEmpty() ? 0 : Integer.parseInt(exam.getS5E2Points());
+                int S6 = exam.getS6E2Points().isEmpty() ? 0 : Integer.parseInt(exam.getS6E2Points());
+                int S7 = exam.getS7E2Points().isEmpty() ? 0 : Integer.parseInt(exam.getS7E2Points());
+                int S8 = exam.getS8E2Points().isEmpty() ? 0 : Integer.parseInt(exam.getS8E2Points());
+                int S9 = exam.getS9E2Points().isEmpty() ? 0 : Integer.parseInt(exam.getS9E2Points());
+                int S10 = exam.getS10E2Points().isEmpty() ? 0 : Integer.parseInt(exam.getS10E2Points());
+                int S11 = exam.getS11E2Points().isEmpty() ? 0 : Integer.parseInt(exam.getS11E2Points());
+                int S12 = exam.getS12E2Points().isEmpty() ? 0 : Integer.parseInt(exam.getS12E2Points());
+                int S13 = exam.getS13E2Points().isEmpty() ? 0 : Integer.parseInt(exam.getS13E2Points());
+                int S14 = exam.getS14E2Points().isEmpty() ? 0 : Integer.parseInt(exam.getS14E2Points());
 
-                    String S1P = rs.getString("S1");
-                    String S2P = rs.getString("S2");
-                    String S3P = rs.getString("S3");
-                    String S4P = rs.getString("S4");
-                    String S5P = rs.getString("S5");
-                    String S6P = rs.getString("S6");
-                    String S7P = rs.getString("S7");
-                    String S8P = rs.getString("S8");
-                    String S9P = rs.getString("S9");
-                    String S10P = rs.getString("S10");
-                    String S11P = rs.getString("S11");
-                    String S12P = rs.getString("S12");
-                    String S13P = rs.getString("S13");
-                    String S14P = rs.getString("S14");
+                int GroupA = S1 + S2 + S3;
+                int FirstOfGroupBPicked;
+                int GroupBRemainder;
+                int FirstOfGroupCPicked;
+                int GroupCRemainders;
+                int GroupBCDRemainderPicked;
+                int GroupD = S10 + S11 + S12 + S13 + S14;
 
-                    int S1 = 0;
-                    if (!S1P.equalsIgnoreCase("")) {
-                        S1 = Integer.parseInt(S1P);
-                    }
-                    int S2 = 0;
-                    if (!S2P.equalsIgnoreCase("")) {
-                        S2 = Integer.parseInt(S2P);
-                    }
-                    int S3 = 0;
-                    if (!S3P.equalsIgnoreCase("")) {
-                        S3 = Integer.parseInt(S3P);
-                    }
-                    int S4 = 0;
-                    if (!S4P.equalsIgnoreCase("")) {
-                        S4 = Integer.parseInt(S4P);
-                    }
-                    int S5 = 0;
-                    if (!S5P.equalsIgnoreCase("")) {
-                        S5 = Integer.parseInt(S5P);
-                    }
-                    int S6 = 0;
-                    if (!S6P.equalsIgnoreCase("")) {
-                        S6 = Integer.parseInt(S6P);
-                    }
-                    int S7 = 0;
-                    if (!S7P.isEmpty()) {
-                        S7 = Integer.parseInt(S7P);
-                    }
-                    int S8 = 0;
-                    if (!S8P.equalsIgnoreCase("")) {
-                        S8 = Integer.parseInt(S8P);
-                    }
-                    int S9 = 0;
-                    if (!S9P.equalsIgnoreCase("")) {
-                        S9 = Integer.parseInt(S9P);
-                    }
-                    int S10 = 0;
-                    if (!S10P.equalsIgnoreCase("")) {
-                        S10 = Integer.parseInt(S10P);
-                    }
-                    int S11 = 0;
-                    if (!S11P.equalsIgnoreCase("")) {
-                        S11 = Integer.parseInt(S11P);
-                    }
-                    int S12 = 0;
-                    if (!S12P.equalsIgnoreCase("")) {
-                        S12 = Integer.parseInt(S12P);
-                    }
-                    int S13 = 0;
-                    if (!S13P.equalsIgnoreCase("")) {
-                        S13 = Integer.parseInt(S13P);
-                    }
-                    int S14 = 0;
-                    if (!S14P.equalsIgnoreCase("")) {
-                        S14 = Integer.parseInt(S14P);
-                    }
-                    GroupA = S1 + S2 + S3;
-                    GroupD = S10 + S11 + S12 + S13 + S14;
-                    if ((S4 <= S5) && (S4 <= S6)) {
-                        FirstOfGroupBPicked = S5 + S6;
-                        GroupBRemainder = S4;
-                    } else if ((S5 <= S4) && (S5 <= S6)) {
-                        FirstOfGroupBPicked = S4 + S6;
-                        GroupBRemainder = S5;
-                    } else if ((S6 <= S4) && (S6 <= S5)) {
-                        FirstOfGroupBPicked = S4 + S5;
-                        GroupBRemainder = S6;
-                    }
-                    if ((S7 >= S8) && (S7 >= S9)) {
-                        FirstOfGroupCPicked = S7;
-                        GroupCRemainders = S8 + S9;
-                    } else if ((S8 >= S7) && (S8 >= S9)) {
-                        FirstOfGroupCPicked = S8;
-                        GroupCRemainders = S7 + S9;
-                    } else if ((S9 >= S7) && (S9 >= S8)) {
-                        FirstOfGroupCPicked = S9;
-                        GroupCRemainders = S7 + S8;
-                    }
-                    if (GroupCRemainders >= GroupD) {
-                        GroupCRemaindersToGroupD = GroupCRemainders;
-                    } else if (GroupD >= GroupCRemainders) {
-                        GroupCRemaindersToGroupD = GroupD;
-                    }
-                    if ((GroupBRemainder <= FirstOfGroupCPicked) && (GroupBRemainder <= GroupCRemaindersToGroupD)) {
-                        GroupBRemainderToGroupCToGroupD = FirstOfGroupCPicked + GroupCRemaindersToGroupD;
-                    } else if ((FirstOfGroupCPicked <= GroupBRemainder) && (FirstOfGroupCPicked <= GroupCRemaindersToGroupD)) {
-                        GroupBRemainderToGroupCToGroupD = GroupBRemainder + GroupCRemaindersToGroupD;
-                    } else if ((GroupCRemaindersToGroupD <= GroupBRemainder) && (GroupCRemaindersToGroupD <= FirstOfGroupCPicked)) {
-                        GroupBRemainderToGroupCToGroupD = GroupBRemainder + FirstOfGroupCPicked;
-                    }
-                    int Points = GroupA + FirstOfGroupBPicked + GroupBRemainderToGroupCToGroupD;
-                    sql = ("UPDATE students_exams SET Exam2TotalMarks='" + Points + "' WHERE (SE_Student_id='" + StudentID + "' AND substr(SE_StudentClass,1,1)='" + selectedClassroom.getName().substring(0, 1) + "' AND Year='" + Year + "' AND Term='" + Term + "')");
-                    pst = Conn.prepareStatement(sql);
-                    pst.executeUpdate();
+                if ((S4 <= S5) && (S4 <= S6)) {
+                    FirstOfGroupBPicked = S5 + S6;
+                    GroupBRemainder = S4;
+                } else if ((S5 <= S4) && (S5 <= S6)) {
+                    FirstOfGroupBPicked = S4 + S6;
+                    GroupBRemainder = S5;
+                } else {
+                    FirstOfGroupBPicked = S4 + S5;
+                    GroupBRemainder = S6;
                 }
-            }
-        } catch (HeadlessException | NumberFormatException | SQLException e) {
-            e.printStackTrace();
+
+                if ((S7 >= S8) && (S7 >= S9)) {
+                    FirstOfGroupCPicked = S7;
+                    GroupCRemainders = S8 + S9;
+                } else if ((S8 >= S7) && (S8 >= S9)) {
+                    FirstOfGroupCPicked = S8;
+                    GroupCRemainders = S7 + S9;
+                } else {
+                    FirstOfGroupCPicked = S9;
+                    GroupCRemainders = S7 + S8;
+                }
+
+                if (GroupBRemainder >= GroupCRemainders && GroupBRemainder >= GroupD) {
+                    GroupBCDRemainderPicked = GroupBRemainder;
+                } else if (GroupCRemainders >= GroupBRemainder && GroupCRemainders > GroupD) {
+                    GroupBCDRemainderPicked = GroupCRemainders;
+                } else {
+                    GroupBCDRemainderPicked = GroupD;
+                }
+                int Points = GroupA + FirstOfGroupBPicked + FirstOfGroupCPicked + GroupBCDRemainderPicked;
+                exam.setExam2TotalMarks(String.valueOf(Points));
+                exam.setTotalOutOf("84");
+                StudentExamDAO.update(exam);
+            });
+        } catch (Exception ex) {
+            ConnClass.printError(ex);
         }
     }
 
     private void UpperFormSumtheExam3TotalPoints() {
         try {
-            int Rows = tableStudentMarks.getRowCount();
-            for (int row = 0; row < Rows; row++) {
-                String StudentID = tableStudentMarks.getValueAt(row, 0).toString();
-                lblProgress2.setText("Calculating Exam Total Points For: " + tableStudentMarks.getValueAt(row, 1).toString() + "ADM  :" + tableStudentMarks.getValueAt(row, 0).toString());
-                sql = "SELECT (CASE WHEN S1E3Points+0>0 THEN S1E3Points ELSE '' END) as S1,(CASE WHEN S2E3Points+0>0 THEN S2E3Points ELSE '' END) as S2,(CASE WHEN S3E3Points+0>0 THEN S3E3Points ELSE '' END) as S3,(CASE WHEN S4E3Points+0>0 THEN S4E3Points ELSE '' END) as S4,(CASE WHEN S5E3Points+0>0 THEN S5E3Points ELSE '' END) as S5,(CASE WHEN S6E3Points+0>0 THEN S6E3Points ELSE '' END) as S6,(CASE WHEN S7E3Points+0>0 THEN S7E3Points ELSE '' END) as S7,(CASE WHEN S8E3Points+0>0 THEN S8E3Points ELSE '' END) as S8,(CASE WHEN S9E3Points+0>0 THEN S9E3Points ELSE '' END) as S9,(CASE WHEN S10E3Points+0>0 THEN S10E3Points ELSE '' END) as S10,(CASE WHEN S11E3Points+0>0 THEN S11E3Points ELSE '' END) as S11,(CASE WHEN S12E3Points+0>0 THEN S12E3Points ELSE '' END) as S12,(CASE WHEN S13E3Points+0>0 THEN S13E3Points ELSE '' END) as S13,(CASE WHEN S14E3Points+0>0 THEN S14E3Points ELSE '' END) as S14 FROM students_exams WHERE (SE_Student_id='" + StudentID + "' AND substr(SE_StudentClass,1,1)='" + selectedClassroom.getName().substring(0, 1) + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                pst = Conn.prepareStatement(sql);
-                rs = pst.executeQuery();
-                if (rs.next()) {
-                    int GroupA = 0;
-                    int FirstOfGroupBPicked = 0;
-                    int GroupBRemainder = 0;
-                    int FirstOfGroupCPicked = 0;
-                    int GroupCRemainders = 0;
-                    int GroupD = 0;
-                    int GroupCRemaindersToGroupD = 0;
-                    int GroupBRemainderToGroupCToGroupD = 0;
+            List<StudentExam> exams = StudentExamDAO.getByForm(Form, Year, Term);
+            exams.forEach(exam -> {
+                int S1 = exam.getS1E3Points().isEmpty() ? 0 : Integer.parseInt(exam.getS1E3Points());
+                int S2 = exam.getS2E3Points().isEmpty() ? 0 : Integer.parseInt(exam.getS2E3Points());
+                int S3 = exam.getS3E3Points().isEmpty() ? 0 : Integer.parseInt(exam.getS3E3Points());
+                int S4 = exam.getS4E3Points().isEmpty() ? 0 : Integer.parseInt(exam.getS4E3Points());
+                int S5 = exam.getS5E3Points().isEmpty() ? 0 : Integer.parseInt(exam.getS5E3Points());
+                int S6 = exam.getS6E3Points().isEmpty() ? 0 : Integer.parseInt(exam.getS6E3Points());
+                int S7 = exam.getS7E3Points().isEmpty() ? 0 : Integer.parseInt(exam.getS7E3Points());
+                int S8 = exam.getS8E3Points().isEmpty() ? 0 : Integer.parseInt(exam.getS8E3Points());
+                int S9 = exam.getS9E3Points().isEmpty() ? 0 : Integer.parseInt(exam.getS9E3Points());
+                int S10 = exam.getS10E3Points().isEmpty() ? 0 : Integer.parseInt(exam.getS10E3Points());
+                int S11 = exam.getS11E3Points().isEmpty() ? 0 : Integer.parseInt(exam.getS11E3Points());
+                int S12 = exam.getS12E3Points().isEmpty() ? 0 : Integer.parseInt(exam.getS12E3Points());
+                int S13 = exam.getS13E3Points().isEmpty() ? 0 : Integer.parseInt(exam.getS13E3Points());
+                int S14 = exam.getS14E3Points().isEmpty() ? 0 : Integer.parseInt(exam.getS14E3Points());
 
-                    String S1P = rs.getString("S1");
-                    String S2P = rs.getString("S2");
-                    String S3P = rs.getString("S3");
-                    String S4P = rs.getString("S4");
-                    String S5P = rs.getString("S5");
-                    String S6P = rs.getString("S6");
-                    String S7P = rs.getString("S7");
-                    String S8P = rs.getString("S8");
-                    String S9P = rs.getString("S9");
-                    String S10P = rs.getString("S10");
-                    String S11P = rs.getString("S11");
-                    String S12P = rs.getString("S12");
-                    String S13P = rs.getString("S13");
-                    String S14P = rs.getString("S14");
+                int GroupA = S1 + S2 + S3;
+                int FirstOfGroupBPicked;
+                int GroupBRemainder;
+                int FirstOfGroupCPicked;
+                int GroupCRemainders;
+                int GroupBCDRemainderPicked;
+                int GroupD = S10 + S11 + S12 + S13 + S14;
 
-                    int S1 = 0;
-                    if (!S1P.equalsIgnoreCase("")) {
-                        S1 = Integer.parseInt(S1P);
-                    }
-                    int S2 = 0;
-                    if (!S2P.equalsIgnoreCase("")) {
-                        S2 = Integer.parseInt(S2P);
-                    }
-                    int S3 = 0;
-                    if (!S3P.equalsIgnoreCase("")) {
-                        S3 = Integer.parseInt(S3P);
-                    }
-                    int S4 = 0;
-                    if (!S4P.equalsIgnoreCase("")) {
-                        S4 = Integer.parseInt(S4P);
-                    }
-                    int S5 = 0;
-                    if (!S5P.equalsIgnoreCase("")) {
-                        S5 = Integer.parseInt(S5P);
-                    }
-                    int S6 = 0;
-                    if (!S6P.equalsIgnoreCase("")) {
-                        S6 = Integer.parseInt(S6P);
-                    }
-                    int S7 = 0;
-                    if (!S7P.isEmpty()) {
-                        S7 = Integer.parseInt(S7P);
-                    }
-                    int S8 = 0;
-                    if (!S8P.equalsIgnoreCase("")) {
-                        S8 = Integer.parseInt(S8P);
-                    }
-                    int S9 = 0;
-                    if (!S9P.equalsIgnoreCase("")) {
-                        S9 = Integer.parseInt(S9P);
-                    }
-                    int S10 = 0;
-                    if (!S10P.equalsIgnoreCase("")) {
-                        S10 = Integer.parseInt(S10P);
-                    }
-                    int S11 = 0;
-                    if (!S11P.equalsIgnoreCase("")) {
-                        S11 = Integer.parseInt(S11P);
-                    }
-                    int S12 = 0;
-                    if (!S12P.equalsIgnoreCase("")) {
-                        S12 = Integer.parseInt(S12P);
-                    }
-                    int S13 = 0;
-                    if (!S13P.equalsIgnoreCase("")) {
-                        S13 = Integer.parseInt(S13P);
-                    }
-                    int S14 = 0;
-                    if (!S14P.equalsIgnoreCase("")) {
-                        S14 = Integer.parseInt(S14P);
-                    }
-                    GroupA = S1 + S2 + S3;
-                    GroupD = S10 + S11 + S12 + S13 + S14;
-                    if ((S4 <= S5) && (S4 <= S6)) {
-                        FirstOfGroupBPicked = S5 + S6;
-                        GroupBRemainder = S4;
-                    } else if ((S5 <= S4) && (S5 <= S6)) {
-                        FirstOfGroupBPicked = S4 + S6;
-                        GroupBRemainder = S5;
-                    } else if ((S6 <= S4) && (S6 <= S5)) {
-                        FirstOfGroupBPicked = S4 + S5;
-                        GroupBRemainder = S6;
-                    }
-                    if ((S7 >= S8) && (S7 >= S9)) {
-                        FirstOfGroupCPicked = S7;
-                        GroupCRemainders = S8 + S9;
-                    } else if ((S8 >= S7) && (S8 >= S9)) {
-                        FirstOfGroupCPicked = S8;
-                        GroupCRemainders = S7 + S9;
-                    } else if ((S9 >= S7) && (S9 >= S8)) {
-                        FirstOfGroupCPicked = S9;
-                        GroupCRemainders = S7 + S8;
-                    }
-                    if (GroupCRemainders >= GroupD) {
-                        GroupCRemaindersToGroupD = GroupCRemainders;
-                    } else if (GroupD >= GroupCRemainders) {
-                        GroupCRemaindersToGroupD = GroupD;
-                    }
-                    if ((GroupBRemainder <= FirstOfGroupCPicked) && (GroupBRemainder <= GroupCRemaindersToGroupD)) {
-                        GroupBRemainderToGroupCToGroupD = FirstOfGroupCPicked + GroupCRemaindersToGroupD;
-                    } else if ((FirstOfGroupCPicked <= GroupBRemainder) && (FirstOfGroupCPicked <= GroupCRemaindersToGroupD)) {
-                        GroupBRemainderToGroupCToGroupD = GroupBRemainder + GroupCRemaindersToGroupD;
-                    } else if ((GroupCRemaindersToGroupD <= GroupBRemainder) && (GroupCRemaindersToGroupD <= FirstOfGroupCPicked)) {
-                        GroupBRemainderToGroupCToGroupD = GroupBRemainder + FirstOfGroupCPicked;
-                    }
-                    int Points = GroupA + FirstOfGroupBPicked + GroupBRemainderToGroupCToGroupD;
-                    sql = ("UPDATE students_exams SET Exam3TotalMarks='" + Points + "' WHERE (SE_Student_id='" + StudentID + "' AND substr(SE_StudentClass,1,1)='" + selectedClassroom.getName().substring(0, 1) + "' AND Year='" + Year + "' AND Term='" + Term + "')");
-                    pst = Conn.prepareStatement(sql);
-                    pst.executeUpdate();
+                if ((S4 <= S5) && (S4 <= S6)) {
+                    FirstOfGroupBPicked = S5 + S6;
+                    GroupBRemainder = S4;
+                } else if ((S5 <= S4) && (S5 <= S6)) {
+                    FirstOfGroupBPicked = S4 + S6;
+                    GroupBRemainder = S5;
+                } else {
+                    FirstOfGroupBPicked = S4 + S5;
+                    GroupBRemainder = S6;
                 }
-            }
-        } catch (HeadlessException | NumberFormatException | SQLException e) {
-            e.printStackTrace();
+
+                if ((S7 >= S8) && (S7 >= S9)) {
+                    FirstOfGroupCPicked = S7;
+                    GroupCRemainders = S8 + S9;
+                } else if ((S8 >= S7) && (S8 >= S9)) {
+                    FirstOfGroupCPicked = S8;
+                    GroupCRemainders = S7 + S9;
+                } else {
+                    FirstOfGroupCPicked = S9;
+                    GroupCRemainders = S7 + S8;
+                }
+
+                if (GroupBRemainder >= GroupCRemainders && GroupBRemainder >= GroupD) {
+                    GroupBCDRemainderPicked = GroupBRemainder;
+                } else if (GroupCRemainders >= GroupBRemainder && GroupCRemainders > GroupD) {
+                    GroupBCDRemainderPicked = GroupCRemainders;
+                } else {
+                    GroupBCDRemainderPicked = GroupD;
+                }
+                int Points = GroupA + FirstOfGroupBPicked + FirstOfGroupCPicked + GroupBCDRemainderPicked;
+                exam.setExam3TotalMarks(String.valueOf(Points));
+                exam.setTotalOutOf("84");
+                StudentExamDAO.update(exam);
+            });
+        } catch (Exception ex) {
+            ConnClass.printError(ex);
         }
     }
 
     private void UpperFormSumtheExamMeanPoints() {
-        try {
-            lblProgress2.setText("Calculating Exam Mean Points");
-            if (Exam.equalsIgnoreCase("Exam 1")) {
-                sql = "UPDATE students_exams SET Exam1MeanPoints=(Round((Exam1TotalMarks/7.0),2)) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
-            } else if (Exam.equalsIgnoreCase("Exam 2")) {
-                sql = "UPDATE students_exams SET Exam2MeanPoints=(Round((Exam2TotalMarks/7.0),2)) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
-            } else if (Exam.equalsIgnoreCase("Exam 3")) {
-                sql = "UPDATE students_exams SET Exam3MeanPoints=(Round((Exam3TotalMarks/7.0),2)) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
-            }
-            pst = Conn.prepareStatement(sql);
-            pst.setString(1, selectedClassroom.getName().substring(0, 1));
-            pst.setString(2, Year);
-            pst.setString(3, Term);
-            pst.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        lblProgress2.setText("Calculating Exam Mean Points");
+        if (Exam.equalsIgnoreCase("Exam 1")) {
+            sql = "UPDATE students_exams SET Exam1MeanPoints=(Round((Exam1TotalMarks/7.0),2)) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
+        } else if (Exam.equalsIgnoreCase("Exam 2")) {
+            sql = "UPDATE students_exams SET Exam2MeanPoints=(Round((Exam2TotalMarks/7.0),2)) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
+        } else if (Exam.equalsIgnoreCase("Exam 3")) {
+            sql = "UPDATE students_exams SET Exam3MeanPoints=(Round((Exam3TotalMarks/7.0),2)) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
         }
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, Form);
+        params.put(2, Year);
+        params.put(3, Term);
+        QueryRunner.update(sql, params);
     }
 
     private void UpperFormExamMeanGrade() {
-        try {
-            lblProgress2.setText("Calculating Exam Mean Grade");
-            if (Exam.equalsIgnoreCase("Exam 1")) {
-                sql = "UPDATE students_exams SET Exam1MeanGrade=(CASE WHEN (Exam1MeanPoints+0) >11.43 THEN 'A' WHEN ((Exam1MeanPoints+0)+0) >10.43 THEN 'A-' WHEN (Exam1MeanPoints+0) >9.43 THEN 'B+' WHEN (Exam1MeanPoints+0) >8.43 THEN 'B' WHEN (Exam1MeanPoints+0) >7.43 THEN 'B-' WHEN (Exam1MeanPoints+0) >6.43 THEN 'C+' WHEN (Exam1MeanPoints+0) >5.43 THEN 'C' WHEN (Exam1MeanPoints+0) >4.43 THEN 'C-' WHEN (Exam1MeanPoints+0) >3.43 THEN 'D+' WHEN (Exam1MeanPoints+0) >2.43 THEN 'D' WHEN (Exam1MeanPoints+0) >1.43 THEN 'D-' WHEN (Exam1MeanPoints+0) >0 THEN 'E' ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
-            } else if (Exam.equalsIgnoreCase("Exam 2")) {
-                sql = "UPDATE students_exams SET Exam2MeanGrade=(CASE WHEN (Exam2MeanPoints+0) >11.43 THEN 'A' WHEN ((Exam2MeanPoints+0)+0) >10.43 THEN 'A-' WHEN (Exam2MeanPoints+0) >9.43 THEN 'B+' WHEN (Exam2MeanPoints+0) >8.43 THEN 'B' WHEN (Exam2MeanPoints+0) >7.43 THEN 'B-' WHEN (Exam2MeanPoints+0) >6.43 THEN 'C+' WHEN (Exam2MeanPoints+0) >5.43 THEN 'C' WHEN (Exam2MeanPoints+0) >4.43 THEN 'C-' WHEN (Exam2MeanPoints+0) >3.43 THEN 'D+' WHEN (Exam2MeanPoints+0) >2.43 THEN 'D' WHEN (Exam2MeanPoints+0) >1.43 THEN 'D-' WHEN (Exam2MeanPoints+0) >0 THEN 'E' ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
-            } else if (Exam.equalsIgnoreCase("Exam 3")) {
-                sql = "UPDATE students_exams SET Exam3MeanGrade=(CASE WHEN (Exam3MeanPoints+0) >11.43 THEN 'A' WHEN ((Exam3MeanPoints+0)+0) >10.43 THEN 'A-' WHEN (Exam3MeanPoints+0) >9.43 THEN 'B+' WHEN (Exam3MeanPoints+0) >8.43 THEN 'B' WHEN (Exam3MeanPoints+0) >7.43 THEN 'B-' WHEN (Exam3MeanPoints+0) >6.43 THEN 'C+' WHEN (Exam3MeanPoints+0) >5.43 THEN 'C' WHEN (Exam3MeanPoints+0) >4.43 THEN 'C-' WHEN (Exam3MeanPoints+0) >3.43 THEN 'D+' WHEN (Exam3MeanPoints+0) >2.43 THEN 'D' WHEN (Exam3MeanPoints+0) >1.43 THEN 'D-' WHEN (Exam3MeanPoints+0) >0 THEN 'E' ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
-            }
-            pst = Conn.prepareStatement(sql);
-            pst.setString(1, selectedClassroom.getName().substring(0, 1));
-            pst.setString(2, Year);
-            pst.setString(3, Term);
-            pst.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        lblProgress2.setText("Calculating Exam Mean Grade");
+        if (Exam.equalsIgnoreCase("Exam 1")) {
+            sql = "UPDATE students_exams SET Exam1MeanGrade=(CASE WHEN (Exam1MeanPoints+0) >11.43 THEN 'A' WHEN ((Exam1MeanPoints+0)+0) >10.43 THEN 'A-' WHEN (Exam1MeanPoints+0) >9.43 THEN 'B+' WHEN (Exam1MeanPoints+0) >8.43 THEN 'B' WHEN (Exam1MeanPoints+0) >7.43 THEN 'B-' WHEN (Exam1MeanPoints+0) >6.43 THEN 'C+' WHEN (Exam1MeanPoints+0) >5.43 THEN 'C' WHEN (Exam1MeanPoints+0) >4.43 THEN 'C-' WHEN (Exam1MeanPoints+0) >3.43 THEN 'D+' WHEN (Exam1MeanPoints+0) >2.43 THEN 'D' WHEN (Exam1MeanPoints+0) >1.43 THEN 'D-' WHEN (Exam1MeanPoints+0) >0 THEN 'E' ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
+        } else if (Exam.equalsIgnoreCase("Exam 2")) {
+            sql = "UPDATE students_exams SET Exam2MeanGrade=(CASE WHEN (Exam2MeanPoints+0) >11.43 THEN 'A' WHEN ((Exam2MeanPoints+0)+0) >10.43 THEN 'A-' WHEN (Exam2MeanPoints+0) >9.43 THEN 'B+' WHEN (Exam2MeanPoints+0) >8.43 THEN 'B' WHEN (Exam2MeanPoints+0) >7.43 THEN 'B-' WHEN (Exam2MeanPoints+0) >6.43 THEN 'C+' WHEN (Exam2MeanPoints+0) >5.43 THEN 'C' WHEN (Exam2MeanPoints+0) >4.43 THEN 'C-' WHEN (Exam2MeanPoints+0) >3.43 THEN 'D+' WHEN (Exam2MeanPoints+0) >2.43 THEN 'D' WHEN (Exam2MeanPoints+0) >1.43 THEN 'D-' WHEN (Exam2MeanPoints+0) >0 THEN 'E' ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
+        } else if (Exam.equalsIgnoreCase("Exam 3")) {
+            sql = "UPDATE students_exams SET Exam3MeanGrade=(CASE WHEN (Exam3MeanPoints+0) >11.43 THEN 'A' WHEN ((Exam3MeanPoints+0)+0) >10.43 THEN 'A-' WHEN (Exam3MeanPoints+0) >9.43 THEN 'B+' WHEN (Exam3MeanPoints+0) >8.43 THEN 'B' WHEN (Exam3MeanPoints+0) >7.43 THEN 'B-' WHEN (Exam3MeanPoints+0) >6.43 THEN 'C+' WHEN (Exam3MeanPoints+0) >5.43 THEN 'C' WHEN (Exam3MeanPoints+0) >4.43 THEN 'C-' WHEN (Exam3MeanPoints+0) >3.43 THEN 'D+' WHEN (Exam3MeanPoints+0) >2.43 THEN 'D' WHEN (Exam3MeanPoints+0) >1.43 THEN 'D-' WHEN (Exam3MeanPoints+0) >0 THEN 'E' ELSE '' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
         }
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, Form);
+        params.put(2, Year);
+        params.put(3, Term);
+        QueryRunner.update(sql, params);
     }
 
     private void UpperFormSumtheEndTermTotalMarks() {
         try {
-            int Rows = tableStudentMarks.getRowCount();
-            for (int row = 0; row < Rows; row++) {
-                String StudentID = tableStudentMarks.getValueAt(row, 0).toString();
-                lblProgress2.setText("Calculating Exam Total Points For: " + tableStudentMarks.getValueAt(row, 1).toString() + "ADM  :" + tableStudentMarks.getValueAt(row, 0).toString());
-                sql = "SELECT (CASE WHEN S1AVGPoints+0>0 THEN S1AVGPoints ELSE '' END) as S1,(CASE WHEN S2AVGPoints+0>0 THEN S2AVGPoints ELSE '' END) as S2,(CASE WHEN S3AVGPoints+0>0 THEN S3AVGPoints ELSE '' END) as S3,(CASE WHEN S4AVGPoints+0>0 THEN S4AVGPoints ELSE '' END) as S4,(CASE WHEN S5AVGPoints+0>0 THEN S5AVGPoints ELSE '' END) as S5,(CASE WHEN S6AVGPoints+0>0 THEN S6AVGPoints ELSE '' END) as S6,(CASE WHEN S7AVGPoints+0>0 THEN S7AVGPoints ELSE '' END) as S7,(CASE WHEN S8AVGPoints+0>0 THEN S8AVGPoints ELSE '' END) as S8,(CASE WHEN S9AVGPoints+0>0 THEN S9AVGPoints ELSE '' END) as S9,(CASE WHEN S10AVGPoints+0>0 THEN S10AVGPoints ELSE '' END) as S10,(CASE WHEN S11AVGPoints+0>0 THEN S11AVGPoints ELSE '' END) as S11,(CASE WHEN S12AVGPoints+0>0 THEN S12AVGPoints ELSE '' END) as S12,(CASE WHEN S13AVGPoints+0>0 THEN S13AVGPoints ELSE '' END) as S13,(CASE WHEN S14AVGPoints+0>0 THEN S14AVGPoints ELSE '' END) as S14 FROM students_exams WHERE (SE_Student_id='" + StudentID + "' AND substr(SE_StudentClass,1,1)='" + selectedClassroom.getName().substring(0, 1) + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                pst = Conn.prepareStatement(sql);
-                rs = pst.executeQuery();
-                if (rs.next()) {
-                    int GroupA = 0;
-                    int FirstOfGroupBPicked = 0;
-                    int GroupBRemainder = 0;
-                    int FirstOfGroupCPicked = 0;
-                    int GroupCRemainders = 0;
-                    int GroupD = 0;
-                    int GroupCRemaindersToGroupD = 0;
-                    int GroupBRemainderToGroupCToGroupD = 0;
+            List<StudentExam> exams = StudentExamDAO.getByForm(Form, Year, Term);
+            exams.forEach(exam -> {
+                int S1 = exam.getS1AVGPoints().isEmpty() ? 0 : Integer.parseInt(exam.getS1AVGPoints());
+                int S2 = exam.getS2AVGPoints().isEmpty() ? 0 : Integer.parseInt(exam.getS2AVGPoints());
+                int S3 = exam.getS3AVGPoints().isEmpty() ? 0 : Integer.parseInt(exam.getS3AVGPoints());
+                int S4 = exam.getS4AVGPoints().isEmpty() ? 0 : Integer.parseInt(exam.getS4AVGPoints());
+                int S5 = exam.getS5AVGPoints().isEmpty() ? 0 : Integer.parseInt(exam.getS5AVGPoints());
+                int S6 = exam.getS6AVGPoints().isEmpty() ? 0 : Integer.parseInt(exam.getS6AVGPoints());
+                int S7 = exam.getS7AVGPoints().isEmpty() ? 0 : Integer.parseInt(exam.getS7AVGPoints());
+                int S8 = exam.getS8AVGPoints().isEmpty() ? 0 : Integer.parseInt(exam.getS8AVGPoints());
+                int S9 = exam.getS9AVGPoints().isEmpty() ? 0 : Integer.parseInt(exam.getS9AVGPoints());
+                int S10 = exam.getS10AVGPoints().isEmpty() ? 0 : Integer.parseInt(exam.getS10AVGPoints());
+                int S11 = exam.getS11AVGPoints().isEmpty() ? 0 : Integer.parseInt(exam.getS11AVGPoints());
+                int S12 = exam.getS12AVGPoints().isEmpty() ? 0 : Integer.parseInt(exam.getS12AVGPoints());
+                int S13 = exam.getS13AVGPoints().isEmpty() ? 0 : Integer.parseInt(exam.getS13AVGPoints());
+                int S14 = exam.getS14AVGPoints().isEmpty() ? 0 : Integer.parseInt(exam.getS14AVGPoints());
 
-                    String S1P = rs.getString("S1");
-                    String S2P = rs.getString("S2");
-                    String S3P = rs.getString("S3");
-                    String S4P = rs.getString("S4");
-                    String S5P = rs.getString("S5");
-                    String S6P = rs.getString("S6");
-                    String S7P = rs.getString("S7");
-                    String S8P = rs.getString("S8");
-                    String S9P = rs.getString("S9");
-                    String S10P = rs.getString("S10");
-                    String S11P = rs.getString("S11");
-                    String S12P = rs.getString("S12");
-                    String S13P = rs.getString("S13");
-                    String S14P = rs.getString("S14");
+                int GroupA = S1 + S2 + S3;
+                int FirstOfGroupBPicked;
+                int GroupBRemainder;
+                int FirstOfGroupCPicked;
+                int GroupCRemainders;
+                int GroupBCDRemainderPicked;
+                int GroupD = S10 + S11 + S12 + S13 + S14;
 
-                    int S1 = 0;
-                    if (!S1P.equalsIgnoreCase("")) {
-                        S1 = Integer.parseInt(S1P);
-                    }
-                    int S2 = 0;
-                    if (!S2P.equalsIgnoreCase("")) {
-                        S2 = Integer.parseInt(S2P);
-                    }
-                    int S3 = 0;
-                    if (!S3P.equalsIgnoreCase("")) {
-                        S3 = Integer.parseInt(S3P);
-                    }
-                    int S4 = 0;
-                    if (!S4P.equalsIgnoreCase("")) {
-                        S4 = Integer.parseInt(S4P);
-                    }
-                    int S5 = 0;
-                    if (!S5P.equalsIgnoreCase("")) {
-                        S5 = Integer.parseInt(S5P);
-                    }
-                    int S6 = 0;
-                    if (!S6P.equalsIgnoreCase("")) {
-                        S6 = Integer.parseInt(S6P);
-                    }
-                    int S7 = 0;
-                    if (!S7P.isEmpty()) {
-                        S7 = Integer.parseInt(S7P);
-                    }
-                    int S8 = 0;
-                    if (!S8P.equalsIgnoreCase("")) {
-                        S8 = Integer.parseInt(S8P);
-                    }
-                    int S9 = 0;
-                    if (!S9P.equalsIgnoreCase("")) {
-                        S9 = Integer.parseInt(S9P);
-                    }
-                    int S10 = 0;
-                    if (!S10P.equalsIgnoreCase("")) {
-                        S10 = Integer.parseInt(S10P);
-                    }
-                    int S11 = 0;
-                    if (!S11P.equalsIgnoreCase("")) {
-                        S11 = Integer.parseInt(S11P);
-                    }
-                    int S12 = 0;
-                    if (!S12P.equalsIgnoreCase("")) {
-                        S12 = Integer.parseInt(S12P);
-                    }
-                    int S13 = 0;
-                    if (!S13P.equalsIgnoreCase("")) {
-                        S13 = Integer.parseInt(S13P);
-                    }
-                    int S14 = 0;
-                    if (!S14P.equalsIgnoreCase("")) {
-                        S14 = Integer.parseInt(S14P);
-                    }
-                    GroupA = S1 + S2 + S3;
-                    GroupD = S10 + S11 + S12 + S13 + S14;
-                    if ((S4 <= S5) && (S4 <= S6)) {
-                        FirstOfGroupBPicked = S5 + S6;
-                        GroupBRemainder = S4;
-                    } else if ((S5 <= S4) && (S5 <= S6)) {
-                        FirstOfGroupBPicked = S4 + S6;
-                        GroupBRemainder = S5;
-                    } else if ((S6 <= S4) && (S6 <= S5)) {
-                        FirstOfGroupBPicked = S4 + S5;
-                        GroupBRemainder = S6;
-                    }
-                    if ((S7 >= S8) && (S7 >= S9)) {
-                        FirstOfGroupCPicked = S7;
-                        GroupCRemainders = S8 + S9;
-                    } else if ((S8 >= S7) && (S8 >= S9)) {
-                        FirstOfGroupCPicked = S8;
-                        GroupCRemainders = S7 + S9;
-                    } else if ((S9 >= S7) && (S9 >= S8)) {
-                        FirstOfGroupCPicked = S9;
-                        GroupCRemainders = S7 + S8;
-                    }
-                    if (GroupCRemainders >= GroupD) {
-                        GroupCRemaindersToGroupD = GroupCRemainders;
-                    } else if (GroupD >= GroupCRemainders) {
-                        GroupCRemaindersToGroupD = GroupD;
-                    }
-                    if ((GroupBRemainder <= FirstOfGroupCPicked) && (GroupBRemainder <= GroupCRemaindersToGroupD)) {
-                        GroupBRemainderToGroupCToGroupD = FirstOfGroupCPicked + GroupCRemaindersToGroupD;
-                    } else if ((FirstOfGroupCPicked <= GroupBRemainder) && (FirstOfGroupCPicked <= GroupCRemaindersToGroupD)) {
-                        GroupBRemainderToGroupCToGroupD = GroupBRemainder + GroupCRemaindersToGroupD;
-                    } else if ((GroupCRemaindersToGroupD <= GroupBRemainder) && (GroupCRemaindersToGroupD <= FirstOfGroupCPicked)) {
-                        GroupBRemainderToGroupCToGroupD = GroupBRemainder + FirstOfGroupCPicked;
-                    }
-                    int Points = GroupA + FirstOfGroupBPicked + GroupBRemainderToGroupCToGroupD;
-                    sql = ("UPDATE students_exams SET TotalMarks='" + Points + "',TotalOutOf='84' WHERE (SE_Student_id='" + StudentID + "' AND substr(SE_StudentClass,1,1)='" + selectedClassroom.getName().substring(0, 1) + "' AND Year='" + Year + "' AND Term='" + Term + "')");
-                    pst = Conn.prepareStatement(sql);
-                    pst.executeUpdate();
+                if ((S4 <= S5) && (S4 <= S6)) {
+                    FirstOfGroupBPicked = S5 + S6;
+                    GroupBRemainder = S4;
+                } else if ((S5 <= S4) && (S5 <= S6)) {
+                    FirstOfGroupBPicked = S4 + S6;
+                    GroupBRemainder = S5;
+                } else {
+                    FirstOfGroupBPicked = S4 + S5;
+                    GroupBRemainder = S6;
                 }
-            }
-        } catch (HeadlessException | NumberFormatException | SQLException e) {
-            e.printStackTrace();
+
+                if ((S7 >= S8) && (S7 >= S9)) {
+                    FirstOfGroupCPicked = S7;
+                    GroupCRemainders = S8 + S9;
+                } else if ((S8 >= S7) && (S8 >= S9)) {
+                    FirstOfGroupCPicked = S8;
+                    GroupCRemainders = S7 + S9;
+                } else {
+                    FirstOfGroupCPicked = S9;
+                    GroupCRemainders = S7 + S8;
+                }
+
+                if (GroupBRemainder >= GroupCRemainders && GroupBRemainder >= GroupD) {
+                    GroupBCDRemainderPicked = GroupBRemainder;
+                } else if (GroupCRemainders >= GroupBRemainder && GroupCRemainders > GroupD) {
+                    GroupBCDRemainderPicked = GroupCRemainders;
+                } else {
+                    GroupBCDRemainderPicked = GroupD;
+                }
+                int Points = GroupA + FirstOfGroupBPicked + FirstOfGroupCPicked + GroupBCDRemainderPicked;
+                exam.setTOTALMarks(String.valueOf(Points));
+                exam.setTotalOutOf("84");
+                StudentExamDAO.update(exam);
+            });
+        } catch (Exception ex) {
+            ConnClass.printError(ex);
         }
     }
 
     private void UpperFormSumtheEndTermMeanPoints() {
-        try {
-            lblProgress2.setText("Calculating End Term Mean Points");
-            sql = "UPDATE students_exams SET MeanPoints=Round((TotalMarks / 7.0),2) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
-            pst = Conn.prepareStatement(sql);
-            pst.setString(1, selectedClassroom.getName().substring(0, 1));
-            pst.setString(2, Year);
-            pst.setString(3, Term);
-            pst.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        lblProgress2.setText("Calculating End Term Mean Points");
+        sql = "UPDATE students_exams SET MeanPoints=Round((TotalMarks / 7.0),2) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND TERM=?)";
+
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, Form);
+        params.put(2, Year);
+        params.put(3, Term);
+        QueryRunner.update(sql, params);
     }
 
     private void UpperFormEndTermMeanGrade() {
-        try {
-            lblProgress2.setText("Calculating End Term Mean Grades");
-            sql = "UPDATE students_exams SET MeanGrade=(CASE WHEN (MeanPoints+0)>11.43 THEN 'A' WHEN (MeanPoints+0)>10.43 THEN 'A-' WHEN (MeanPoints+0)>9.43 THEN 'B+' WHEN (MeanPoints+0)>8.43 THEN 'B' WHEN (MeanPoints+0)>7.43 THEN 'B-' WHEN (MeanPoints+0)>6.43 THEN 'C+' WHEN (MeanPoints+0)>5.43 THEN 'C' WHEN (MeanPoints+0)>4.43 THEN 'C-' WHEN (MeanPoints+0)>3.43 THEN 'D+' WHEN (MeanPoints+0)>2.43 THEN 'D' WHEN (MeanPoints+0)>1.43 THEN 'D-' WHEN (MeanPoints+0)>0 THEN 'E' ELSE 'X' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
-            pst = Conn.prepareStatement(sql);
-            pst.setString(1, selectedClassroom.getName().substring(0, 1));
-            pst.setString(2, Year);
-            pst.setString(3, Term);
-            pst.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        lblProgress2.setText("Calculating End Term Mean Grades");
+        sql = "UPDATE students_exams SET MeanGrade=(CASE WHEN (MeanPoints+0)>11.43 THEN 'A' WHEN (MeanPoints+0)>10.43 THEN 'A-' WHEN (MeanPoints+0)>9.43 THEN 'B+' WHEN (MeanPoints+0)>8.43 THEN 'B' WHEN (MeanPoints+0)>7.43 THEN 'B-' WHEN (MeanPoints+0)>6.43 THEN 'C+' WHEN (MeanPoints+0)>5.43 THEN 'C' WHEN (MeanPoints+0)>4.43 THEN 'C-' WHEN (MeanPoints+0)>3.43 THEN 'D+' WHEN (MeanPoints+0)>2.43 THEN 'D' WHEN (MeanPoints+0)>1.43 THEN 'D-' WHEN (MeanPoints+0)>0 THEN 'E' ELSE 'X' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
+
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, Form);
+        params.put(2, Year);
+        params.put(3, Term);
+        QueryRunner.update(sql, params);
     }
 
     private void populateExamPosition() {
-        try {
-            if (Exam.equalsIgnoreCase("Exam 1")) {
-                lblProgress.setText("Populating Exam Position for :" + selectedClassroom.getName());
-                lblProgress2.setText("Populating Exam Position for :" + selectedClassroom.getName());
-                String Exam1StreamPosition = "(1+(SELECT COUNT(*) FROM students_exams As t2 WHERE  (t2.Exam1TotalMarks + 0 > Students_exams.Exam1TotalMarks + 0 AND SE_StudentClass='" + selectedClassroom.getName() + "' AND Year='" + Year + "' AND Term='" + Term + "')))";
-                String Exam1OverallPosition = "(1+(SELECT COUNT(*) FROM students_exams  As t2 WHERE (t2.Exam1TotalMarks + 0  > Students_exams.Exam1TotalMarks + 0 AND substr(SE_StudentClass,1,1)='" + selectedClassroom.getName().substring(0, 1) + "' AND Year='" + Year + "' AND Term='" + Term + "')))";
-                String query = "UPDATE students_exams SET Exam1StreamPosition=" + Exam1StreamPosition + ",Exam1OverallPosition=" + Exam1OverallPosition + " WHERE  (SE_StudentClass='" + selectedClassroom.getName() + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                pst = Conn.prepareStatement(query);
-                pst.executeUpdate();
-            } else if (Exam.equalsIgnoreCase("Exam 2")) {
-                lblProgress.setText("Populating Exam Position for :" + selectedClassroom.getName());
-                lblProgress2.setText("Populating Exam Position for :" + selectedClassroom.getName());
-                String Exam2StreamPosition = "(1+(SELECT COUNT(*) FROM students_exams As t2 WHERE  (t2.Exam2TotalMarks + 0 > Students_exams.Exam2TotalMarks + 0 AND SE_StudentClass='" + selectedClassroom.getName() + "' AND Year='" + Year + "' AND Term='" + Term + "')))";
-                String Exam2OverallPosition = "(1+(SELECT COUNT(*) FROM students_exams  As t2 WHERE (t2.Exam2TotalMarks + 0  > Students_exams.Exam2TotalMarks + 0 AND substr(SE_StudentClass,1,1)='" + selectedClassroom.getName().substring(0, 1) + "' AND Year='" + Year + "' AND Term='" + Term + "')))";
-                String query = "UPDATE students_exams SET Exam2StreamPosition=" + Exam2StreamPosition + ",Exam2OverallPosition=" + Exam2OverallPosition + " WHERE  (SE_StudentClass='" + selectedClassroom.getName() + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                pst = Conn.prepareStatement(query);
-                pst.executeUpdate();
-            } else if (Exam.equalsIgnoreCase("Exam 3")) {
-                lblProgress.setText("Populating Exam Position for :" + selectedClassroom.getName());
-                lblProgress2.setText("Populating Exam Position for :" + selectedClassroom.getName());
-                String Exam3StreamPosition = "(1+(SELECT COUNT(*) FROM students_exams As t2 WHERE  (t2.Exam3TotalMarks + 0 > Students_exams.Exam3TotalMarks + 0 AND SE_StudentClass='" + selectedClassroom.getName() + "' AND Year='" + Year + "' AND Term='" + Term + "')))";
-                String Exam3OverallPosition = "(1+(SELECT COUNT(*) FROM students_exams  As t2 WHERE (t2.Exam3TotalMarks + 0  > Students_exams.Exam3TotalMarks + 0 AND substr(SE_StudentClass,1,1)='" + selectedClassroom.getName().substring(0, 1) + "' AND Year='" + Year + "' AND Term='" + Term + "')))";
-                String query = "UPDATE students_exams SET Exam3StreamPosition=" + Exam3StreamPosition + ",Exam3OverallPosition=" + Exam3OverallPosition + " WHERE  (SE_StudentClass='" + selectedClassroom.getName() + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                pst = Conn.prepareStatement(query);
-                pst.executeUpdate();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (Exam.equalsIgnoreCase("Exam 1")) {
+            lblProgress.setText("Populating Exam Position for :" + Form);
+            lblProgress2.setText("Populating Exam Position for :" + Form);
+            String Exam1StreamPosition = "(1+(SELECT COUNT(*) FROM students_exams As t2 WHERE  (t2.Exam1TotalMarks + 0 > Students_exams.Exam1TotalMarks + 0 AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')))";
+            String Exam1OverallPosition = "(1+(SELECT COUNT(*) FROM students_exams  As t2 WHERE (t2.Exam1TotalMarks + 0  > Students_exams.Exam1TotalMarks + 0 AND substr(SE_StudentClass,1,1)='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')))";
+            sql = "UPDATE students_exams SET Exam1StreamPosition=" + Exam1StreamPosition + ",Exam1OverallPosition=" + Exam1OverallPosition + " WHERE  (SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+        } else if (Exam.equalsIgnoreCase("Exam 2")) {
+            lblProgress.setText("Populating Exam Position for :" + Form);
+            lblProgress2.setText("Populating Exam Position for :" + Form);
+            String Exam2StreamPosition = "(1+(SELECT COUNT(*) FROM students_exams As t2 WHERE  (t2.Exam2TotalMarks + 0 > Students_exams.Exam2TotalMarks + 0 AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')))";
+            String Exam2OverallPosition = "(1+(SELECT COUNT(*) FROM students_exams  As t2 WHERE (t2.Exam2TotalMarks + 0  > Students_exams.Exam2TotalMarks + 0 AND substr(SE_StudentClass,1,1)='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')))";
+            sql = "UPDATE students_exams SET Exam2StreamPosition=" + Exam2StreamPosition + ",Exam2OverallPosition=" + Exam2OverallPosition + " WHERE  (SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+        } else {
+            lblProgress.setText("Populating Exam Position for :" + Form);
+            lblProgress2.setText("Populating Exam Position for :" + Form);
+            String Exam3StreamPosition = "(1+(SELECT COUNT(*) FROM students_exams As t2 WHERE  (t2.Exam3TotalMarks + 0 > Students_exams.Exam3TotalMarks + 0 AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')))";
+            String Exam3OverallPosition = "(1+(SELECT COUNT(*) FROM students_exams  As t2 WHERE (t2.Exam3TotalMarks + 0  > Students_exams.Exam3TotalMarks + 0 AND substr(SE_StudentClass,1,1)='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')))";
+            sql = "UPDATE students_exams SET Exam3StreamPosition=" + Exam3StreamPosition + ",Exam3OverallPosition=" + Exam3OverallPosition + " WHERE  (SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
         }
+
+        QueryRunner.update(sql, null);
     }
 
     private void EndTermPosition() {
-        try {
-            lblProgress.setText("Populating end term position for :" + selectedClassroom.getName());
-            lblProgress2.setText("Populating end term position for :" + selectedClassroom.getName());
-            String StreamPosition = "(1+(SELECT Count(*) FROM students_exams AS t2 WHERE (t2.TotalMarks + 0 > students_exams.TotalMarks + 0 AND SE_StudentClass='" + selectedClassroom.getName() + "' AND Year='" + Year + "' AND Term='" + Term + "')))";
-            String OverallPosition = "(1+(SELECT Count(*) FROM students_exams AS t2 WHERE (t2.TotalMarks + 0 >students_exams.TotalMarks + 0 AND substr(SE_StudentClass,1,1)='" + selectedClassroom.getName().substring(0, 1) + "' AND Year='" + Year + "' AND Term='" + Term + "')))";
-            String StreamOutOf = "(SELECT Count(*) FROM students_exams WHERE (SE_StudentClass='" + selectedClassroom.getName() + "' AND Year='" + Year + "' AND Term='" + Term + "'))";
-            String OverallOutOf = "(SELECT Count(*) FROM students_exams WHERE (substr(SE_StudentClass,1,1)='" + selectedClassroom.getName().substring(0, 1) + "' AND Year='" + Year + "' AND Term='" + Term + "'))";
+        lblProgress.setText("Populating end term position for :" + Form);
+        lblProgress2.setText("Populating end term position for :" + Form);
+        String StreamPosition = "(1+(SELECT Count(*) FROM students_exams AS t2 WHERE (t2.TotalMarks + 0 > students_exams.TotalMarks + 0 AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')))";
+        String OverallPosition = "(1+(SELECT Count(*) FROM students_exams AS t2 WHERE (t2.TotalMarks + 0 >students_exams.TotalMarks + 0 AND substr(SE_StudentClass,1,1)='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')))";
+        String StreamOutOf = "(SELECT Count(*) FROM students_exams WHERE (SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "'))";
+        String OverallOutOf = "(SELECT Count(*) FROM students_exams WHERE (substr(SE_StudentClass,1,1)='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "'))";
 
-            String query = "UPDATE students_exams SET StreamPosition=" + StreamPosition + ",StreamOutOf=" + StreamOutOf + ",OverallPosition=" + OverallPosition + ",OverallOutOf=" + OverallOutOf + " WHERE (SE_StudentClass='" + selectedClassroom.getName() + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-            pst = Conn.prepareStatement(query);
-            pst.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        sql = "UPDATE students_exams SET StreamPosition=" + StreamPosition + ",StreamOutOf=" + StreamOutOf + ",OverallPosition=" + OverallPosition + ",OverallOutOf=" + OverallOutOf + " WHERE (SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+        QueryRunner.update(sql, null);
     }
 
     private void populateEndTermRemarks() {
-        try {
-            lblProgress.setText("Remarking Students perfomance...");
-            lblProgress2.setText("Remarking Students perfomance...");
-            sql = "UPDATE students_exams SET OverallRemarks=(CASE WHEN (MeanPoints+0)>9.5 THEN 'This is a wonderful performance. Keep working on your strengths to be able to maintain it or achieve even better results' WHEN (MeanPoints+0)>7.5 THEN 'This is work well done, continue working on your weak subjects. You have the potential and can achieve better results' WHEN (MeanPoints+0)>5.5 THEN 'This is an average performance. Consult your teachers on the various subjects. You can do better than this, work harder next term.' ELSE 'Your performance is below average. Better performance is expected of you. Work hard to improve your grades.' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
-            pst = Conn.prepareStatement(sql);
-            pst.setString(1, selectedClassroom.getName().substring(0, 1));
-            pst.setString(2, Year);
-            pst.setString(3, Term);
-            pst.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        lblProgress.setText("Remarking Students perfomance...");
+        lblProgress2.setText("Remarking Students perfomance...");
+        sql = "UPDATE students_exams SET OverallRemarks=(CASE WHEN (MeanPoints+0)>9.5 THEN 'This is a wonderful performance. Keep working on your strengths to be able to maintain it or achieve even better results' WHEN (MeanPoints+0)>7.5 THEN 'This is work well done, continue working on your weak subjects. You have the potential and can achieve better results' WHEN (MeanPoints+0)>5.5 THEN 'This is an average performance. Consult your teachers on the various subjects. You can do better than this, work harder next term.' ELSE 'Your performance is below average. Better performance is expected of you. Work hard to improve your grades.' END) WHERE (substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?)";
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, Form);
+        params.put(2, Year);
+        params.put(3, Term);
+        QueryRunner.update(sql, params);
     }
 
     private void SaveMarksToTermlyPerfomanceOnStudentsTable() {
-        try {
-            for (int row = 0; row < tableStudentMarks.getRowCount(); row++) {
-                String StudentID = tableStudentMarks.getValueAt(row, 0).toString();
-                lblProgress.setText("Updating Termly perfomance for: " + tableStudentMarks.getValueAt(row, 1).toString() + " ADM: " + tableStudentMarks.getValueAt(row, 0).toString());
-                lblProgress2.setText("Updating Termly perfomance for: " + tableStudentMarks.getValueAt(row, 1).toString() + " ADM: " + tableStudentMarks.getValueAt(row, 0).toString());
-                sql = ("SELECT MeanPoints,MeanGrade,OverallPosition,OverallOutOf FROM students_exams WHERE (SE_Student_id='" + StudentID + "' AND substr(SE_StudentClass,1,1)='" + selectedClassroom.getName().substring(0, 1) + "' AND Year='" + Year + "' AND Term='" + Term + "')");
-                pst = Conn.prepareStatement(sql);
-                rs = pst.executeQuery();
-                if (rs.next()) {
-                    String Points = rs.getString("MeanPoints");
-                    String Grade = rs.getString("MeanGrade");
-                    String Position = rs.getString("OverallPosition");
-                    String Overall = rs.getString("OverallOutOf");
-                    if ((selectedClassroom.getName().substring(0, 1).equalsIgnoreCase("1")) && (Term.equalsIgnoreCase("Term 1"))) {
-                        sql = ("UPDATE student_details SET F1T1M='" + Points + "',F1T1MG = '" + Grade + "', F1T1OP='" + Overall + "', F1T1P='" + Position + "' WHERE student_id='" + StudentID + "'");
-                        pst = Conn.prepareStatement(sql);
-                        pst.executeUpdate();
-                    } else if ((selectedClassroom.getName().substring(0, 1).equalsIgnoreCase("1")) && (Term.equalsIgnoreCase("Term 2"))) {
-                        sql = ("UPDATE student_details SET F1T2M='" + Points + "', F1T2MG = '" + Grade + "', F1T2OP='" + Overall + "', F1T2P='" + Position + "' WHERE student_id='" + StudentID + "'");
-                        pst = Conn.prepareStatement(sql);
-                        pst.executeUpdate();
-                    } else if ((selectedClassroom.getName().substring(0, 1).equalsIgnoreCase("1")) && (Term.equalsIgnoreCase("Term 3"))) {
-                        sql = ("UPDATE student_details SET F1T3M='" + Points + "',F1T3MG = '" + Grade + "', F1T3OP='" + Overall + "', F1T3P='" + Position + "' WHERE student_id='" + StudentID + "'");
-                        pst = Conn.prepareStatement(sql);
-                        pst.executeUpdate();
-                    } else if ((selectedClassroom.getName().substring(0, 1).equalsIgnoreCase("2")) && (Term.equalsIgnoreCase("Term 1"))) {
-                        sql = ("UPDATE student_details SET F2T1M='" + Points + "',F2T1MG = '" + Grade + "', F2T1OP='" + Overall + "', F2T1P='" + Position + "' WHERE student_id='" + StudentID + "'");
-                        pst = Conn.prepareStatement(sql);
-                        pst.executeUpdate();
-                    } else if ((selectedClassroom.getName().substring(0, 1).equalsIgnoreCase("2")) && (Term.equalsIgnoreCase("Term 2"))) {
-                        sql = ("UPDATE student_details SET F2T2M='" + Points + "', F2T2MG = '" + Grade + "', F2T2OP='" + Overall + "', F2T2P='" + Position + "' WHERE student_id='" + StudentID + "'");
-                        pst = Conn.prepareStatement(sql);
-                        pst.executeUpdate();
-                    } else if ((selectedClassroom.getName().substring(0, 1).equalsIgnoreCase("2")) && (Term.equalsIgnoreCase("Term 3"))) {
-                        sql = ("UPDATE student_details SET F2T3M='" + Points + "',F2T3MG = '" + Grade + "', F2T3OP='" + Overall + "', F2T3P='" + Position + "' WHERE student_id='" + StudentID + "'");
-                        pst = Conn.prepareStatement(sql);
-                        pst.executeUpdate();
-                    } else if ((selectedClassroom.getName().substring(0, 1).equalsIgnoreCase("3")) && (Term.equalsIgnoreCase("Term 1"))) {
-                        sql = ("UPDATE student_details SET F3T1M='" + Points + "',F3T1MG = '" + Grade + "', F3T1OP='" + Overall + "', F3T1P='" + Position + "' WHERE student_id='" + StudentID + "'");
-                        pst = Conn.prepareStatement(sql);
-                        pst.executeUpdate();
-                    } else if ((selectedClassroom.getName().substring(0, 1).equalsIgnoreCase("3")) && (Term.equalsIgnoreCase("Term 2"))) {
-                        sql = ("UPDATE student_details SET F3T2M='" + Points + "',F3T2MG = '" + Grade + "', F3T2OP='" + Overall + "', F3T2P='" + Position + "' WHERE student_id='" + StudentID + "'");
-                        pst = Conn.prepareStatement(sql);
-                        pst.executeUpdate();
-                    } else if ((selectedClassroom.getName().substring(0, 1).equalsIgnoreCase("3")) && (Term.equalsIgnoreCase("Term 3"))) {
-                        sql = ("UPDATE student_details SET F3T3M='" + Points + "',F3T3MG = '" + Grade + "', F3T3OP='" + Overall + "', F3T3P='" + Position + "' WHERE student_id='" + StudentID + "'");
-                        pst = Conn.prepareStatement(sql);
-                        pst.executeUpdate();
-                    } else if ((selectedClassroom.getName().substring(0, 1).equalsIgnoreCase("4")) && (Term.equalsIgnoreCase("Term 1"))) {
-                        sql = ("UPDATE student_details SET F4T1M='" + Points + "', F4T1MG = '" + Grade + "', F4T1OP='" + Overall + "', F4T1P='" + Position + "' WHERE student_id='" + StudentID + "'");
-                        pst = Conn.prepareStatement(sql);
-                        pst.executeUpdate();
-                    } else if ((selectedClassroom.getName().substring(0, 1).equalsIgnoreCase("4")) && (Term.equalsIgnoreCase("Term 2"))) {
-                        sql = ("UPDATE student_details SET F4T2M='" + Points + "', F4T2MG = '" + Grade + "', F4T2OP='" + Overall + "', F4T2P='" + Position + "' WHERE student_id='" + StudentID + "'");
-                        pst = Conn.prepareStatement(sql);
-                        pst.executeUpdate();
-                    } else if ((selectedClassroom.getName().substring(0, 1).equalsIgnoreCase("4")) && (Term.equalsIgnoreCase("Term 3"))) {
-                        sql = ("UPDATE student_details SET F4T3M='" + Points + "', F4T3MG = '" + Grade + "', F4T3OP='" + Overall + "', F4T3P='" + Position + "' WHERE student_id='" + StudentID + "'");
-                        pst = Conn.prepareStatement(sql);
-                        pst.executeUpdate();
-                    }
-                }
-            }
-            lblProgress.setText("Refreshing...");
-            lblProgress2.setText("Refreshing...");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        List<StudentExam> exams = StudentExamDAO.getByForm(Form, Year, Term);
+        String t = Term.equalsIgnoreCase("Term 1") ? "1" : Term.equalsIgnoreCase("Term 2") ? "2" : "3";
+        String f = Form;
+        exams.forEach(exam -> {
+            String points = exam.getMeanPoints();
+            String grade = exam.getMeanGrade();
+            String p = exam.getOverallPosition();
+            String op = exam.getOverallOutOf();
+            String sql = String.format("UPDATE student_details SET F%sT%sM=?,F%sT%sMG = ?, F%sT%sOP=?, F%sT%sP=? WHERE student_id=?", f, t, f, t, f, t, f, t);
+            Map<Integer, String> params = new HashMap<>();
+            params.put(1, exam.getStudentId());
+            QueryRunner.update(sql, params);
+        });
+
+        lblProgress.setText("Refreshing...");
+        lblProgress2.setText("Refreshing...");
     }
 
     private void AnalyzeLowerForms() {
@@ -1175,10 +832,8 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
                 AnalysisModeDlg.dispose();
                 AnalysisProg.setIndeterminate(true);
 
-                PopulateSubjectMeanMarks();
-                PopulateSubjectMeanPoints();
-                PopulateSubjectMeanGrade();
-                PopulateStudentSubjectPositions();
+                populateSubjectMeanMarks();
+                populateStudentSubjectPositions();
                 PopulateSubjectRemarks();
 
                 LowerFormSumtheExamTotalMarks();
@@ -1201,7 +856,7 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
             protected void done() {
                 AnalysisProg.setIndeterminate(false);
                 AnalysisProg.setValue(0);
-                t.start();
+                timer.start();
             }
         };
         worker.execute();
@@ -1214,10 +869,8 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
                 AnalysisModeDlg.dispose();
                 AnalysisProg1.setIndeterminate(true);
 
-                PopulateSubjectMeanMarks();
-                PopulateSubjectMeanPoints();
-                PopulateSubjectMeanGrade();
-                PopulateStudentSubjectPositions();
+                populateSubjectMeanMarks();
+                populateStudentSubjectPositions();
                 PopulateSubjectRemarks();
                 if (Exam.equalsIgnoreCase("Exam 1")) {
                     UpperFormSumtheExam1TotalPoints();
@@ -1245,7 +898,7 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
             protected void done() {
                 AnalysisProg1.setIndeterminate(false);
                 AnalysisProg1.setValue(0);
-                t.start();
+                timer.start();
             }
         };
         worker.execute();
@@ -1264,8 +917,6 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
         AnalysisModeDlg = new javax.swing.JDialog();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         btnExamResult = new javax.swing.JButton();
         btnAnalyze = new javax.swing.JButton();
@@ -1352,6 +1003,7 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
                 .addContainerGap(44, Short.MAX_VALUE))
         );
 
+        AnalysisModeDlg.setTitle("Select Analysis Type");
         AnalysisModeDlg.setModal(true);
 
         jButton1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
@@ -1370,46 +1022,25 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
             }
         });
 
-        jPanel2.setBackground(new java.awt.Color(0, 204, 0));
-
-        jLabel3.setFont(new java.awt.Font("Old English Text MT", 1, 36)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Set the Analisys Type for this Class");
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 640, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, Short.MAX_VALUE)
-        );
-
         javax.swing.GroupLayout AnalysisModeDlgLayout = new javax.swing.GroupLayout(AnalysisModeDlg.getContentPane());
         AnalysisModeDlg.getContentPane().setLayout(AnalysisModeDlgLayout);
         AnalysisModeDlgLayout.setHorizontalGroup(
             AnalysisModeDlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(AnalysisModeDlgLayout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, AnalysisModeDlgLayout.createSequentialGroup()
-                .addGap(33, 33, 33)
+                .addContainerGap(31, Short.MAX_VALUE)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(40, 40, 40)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(22, 22, 22))
         );
         AnalysisModeDlgLayout.setVerticalGroup(
             AnalysisModeDlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, AnalysisModeDlgLayout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+            .addGroup(AnalysisModeDlgLayout.createSequentialGroup()
+                .addGap(29, 29, 29)
                 .addGroup(AnalysisModeDlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -1432,10 +1063,10 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
             }
         });
 
-        btnAnalyze.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnAnalyze.setBackground(new java.awt.Color(0, 102, 51));
+        btnAnalyze.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         btnAnalyze.setText("Analyze");
-        btnAnalyze.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 153, 0), 2, true));
-        btnAnalyze.setContentAreaFilled(false);
+        btnAnalyze.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 255, 255), 2, true));
         btnAnalyze.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAnalyzeActionPerformed(evt);
@@ -1575,7 +1206,17 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 501, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(btnAnalyze, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnExamResult, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnTermResult, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnExportToExcel, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(9, 9, 9)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(comboForm, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -1591,19 +1232,10 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addGap(18, 18, 18)
                                 .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                                 .addGap(18, 18, 18)
-                                .addComponent(comboExam, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 501, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(btnAnalyze, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnExamResult, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnTermResult, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnExportToExcel, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(comboExam, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(8, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1660,10 +1292,6 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
         } else if (comboExam.getSelectedIndex() == 0) {
             JOptionPane.showMessageDialog(null, "Select a the Examination from the dropdown", "Error", 1);
         } else {
-            selectedClassroom = classrooms.get(comboForm.getSelectedIndex() - 1);
-            Year = comboYear.getSelectedItem().toString();
-            Term = comboYear.getSelectedItem().toString();
-            Exam = comboYear.getSelectedItem().toString();
             getToolkit().beep();
             int res = JOptionPane.showConfirmDialog(null, "Analysing " + Exam + " will affect the End Term Perfomance. Do you want to proceed?", "acme", 0);
             if (res == 0) {
@@ -1689,11 +1317,6 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnExportToExcelActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        try {
-            Conn.close();
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
         this.dispose();
         new AdminPanelFrm().setVisible(true);
     }//GEN-LAST:event_formWindowClosing
@@ -1727,35 +1350,39 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void comboTermPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_comboTermPopupMenuWillBecomeInvisible
-        selectedClassroom = classrooms.get(comboForm.getSelectedIndex() - 1);
+        Form = String.valueOf(comboForm.getSelectedIndex());
         Year = comboYear.getSelectedItem().toString();
         Term = comboTerm.getSelectedItem().toString();
         Exam = comboExam.getSelectedItem().toString();
-        UpdateTableFromStudentsExamsTable();
+        getClassrooms();
+        getStudentExams();
     }//GEN-LAST:event_comboTermPopupMenuWillBecomeInvisible
 
     private void comboFormPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_comboFormPopupMenuWillBecomeInvisible
-        selectedClassroom = classrooms.get(comboForm.getSelectedIndex() - 1);
+        Form = String.valueOf(comboForm.getSelectedIndex());
         Year = comboYear.getSelectedItem().toString();
         Term = comboTerm.getSelectedItem().toString();
         Exam = comboExam.getSelectedItem().toString();
-        UpdateTableFromStudentsExamsTable();
+        getClassrooms();
+        getStudentExams();
     }//GEN-LAST:event_comboFormPopupMenuWillBecomeInvisible
 
     private void comboYearPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_comboYearPopupMenuWillBecomeInvisible
-        selectedClassroom = classrooms.get(comboForm.getSelectedIndex() - 1);
+        Form = String.valueOf(comboForm.getSelectedIndex());
         Year = comboYear.getSelectedItem().toString();
         Term = comboTerm.getSelectedItem().toString();
         Exam = comboExam.getSelectedItem().toString();
-        UpdateTableFromStudentsExamsTable();
+        getClassrooms();
+        getStudentExams();
     }//GEN-LAST:event_comboYearPopupMenuWillBecomeInvisible
 
     private void comboExamPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_comboExamPopupMenuWillBecomeInvisible
-        selectedClassroom = classrooms.get(comboForm.getSelectedIndex() - 1);
+        Form = String.valueOf(comboForm.getSelectedIndex());
         Year = comboYear.getSelectedItem().toString();
         Term = comboTerm.getSelectedItem().toString();
         Exam = comboExam.getSelectedItem().toString();
-        UpdateTableFromStudentsExamsTable();
+        getClassrooms();
+        getStudentExams();
     }//GEN-LAST:event_comboExamPopupMenuWillBecomeInvisible
 
     /**
@@ -1810,11 +1437,9 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

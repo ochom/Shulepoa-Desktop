@@ -17,13 +17,21 @@ import java.util.Map;
  *
  * @author mspace-dev
  */
-public  class SubjectDAO {
+public class SubjectDAO {
 
     static String table = Mapping.getTableName(Subject.class);
 
     public static List<Subject> get() {
         String SQL = String.format("SELECT * FROM %s ORDER BY S_NO+0 ASC", table);
         return QueryRunner.run(SQL, null, Subject.class);
+    }
+
+    public static Subject getByCode(String subjectCode) {
+        String SQL = String.format("SELECT * FROM %s WHERE Subject_Code=?", table);
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, subjectCode);
+        List<Subject> list = QueryRunner.run(SQL, params, Subject.class);
+        return list.size() > 0 ? list.get(0) : null;
     }
 
     public static boolean add(Subject data) {
@@ -49,7 +57,7 @@ public  class SubjectDAO {
     }
 
     public static boolean delete(String pk) {
-        String SQL = String.format("DELETE FROM %s WHERE Subject_id=%s",table, pk);
+        String SQL = String.format("DELETE FROM %s WHERE Subject_id=%s", table, pk);
         Map<Integer, String> params = new HashMap<>();
         return QueryRunner.update(SQL, params);
     }

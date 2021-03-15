@@ -4,24 +4,33 @@ import com.lysofts.utils.ConnClass;
 import com.jtattoo.plaf.DecorationHelper;
 import com.lysofts.dao.ExamDAO;
 import com.lysofts.dao.SchoolDAO;
+import com.lysofts.dao.StudentDAO;
+import com.lysofts.dao.StudentExamDAO;
+import com.lysofts.dao.StudentSubjectDAO;
+import com.lysofts.dao.SubjectDAO;
 import com.lysofts.entities.Exam;
 import com.lysofts.entities.School;
-import java.sql.*;
+import com.lysofts.entities.Student;
+import com.lysofts.entities.StudentExam;
+import com.lysofts.entities.StudentSubject;
+import com.lysofts.entities.Subject;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 
 public class RegisterExaminationsFrm extends javax.swing.JFrame {
 
-    Connection Conn = ConnClass.connectDB();
-    PreparedStatement pst = null;
-    ResultSet rs = null;
     String sql = null;
 
     List<Exam> exams = new ArrayList<>();
+    List<Subject> subjects = new ArrayList<>();
+    Map<String, Subject> subjectsMap = null;
     School school = null;
 
     public RegisterExaminationsFrm() {
@@ -37,6 +46,12 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
     private void updateUI() {
         Thread t = new Thread(() -> {
             school = SchoolDAO.get();
+
+            subjectsMap = new HashMap<>();
+            SubjectDAO.get().forEach(subject -> {
+                subjectsMap.put(subject.getCode(), subject);
+            });
+
             comboYear.removeAllItems();
             ExamDAO.getYears().forEach(exam -> {
                 comboYear.addItem(exam.getYear());
@@ -51,51 +66,82 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
         t.start();
     }
 
+    private Subject getSubjectNumber(String subjectCode) {
+        return subjectsMap.get(subjectCode);
+    }
+
     private void UpdateStudentsEntriesForAnExam(String Year, String Term) {
         SwingWorker<Void, Integer> worker = new SwingWorker<Void, Integer>() {
             int Total = 0;
+
             @Override
             protected Void doInBackground() throws Exception {
                 jLabel3.setVisible(true);
                 jProgressBar1.setVisible(true);
                 ProgressNo.setVisible(true);
                 try {
-                    PreparedStatement ps = Conn.prepareStatement("Select Count(*)  AS Total From student_details WHERE (Student_class != 'Completed')");
-                    ResultSet rst = ps.executeQuery();
-                    if (rst.next()) {
-                        Total = Integer.parseInt(rst.getString("Total"));
-                    }
-                    pst = Conn.prepareStatement("SELECT * FROM Student_details WHERE (Student_class != 'Completed')");
-                    rs = pst.executeQuery();
-                    int i = 0;
-                    while (rs.next()) {
-                        i++;
-                        String StudentID = rs.getString("Student_id");
-                        String StudentClass = rs.getString("Student_Class");
-                        String sql1 = "Select Count(*) from Students_exams WHERE (SE_Student_id = '" + StudentID + "' AND Year='" + Year + "' AND Term='" + Term + "' AND SE_StudentClass='" + StudentClass + "')";
-                        PreparedStatement pst1 = Conn.prepareStatement(sql1);
-                        ResultSet rs1 = pst1.executeQuery();
-                        if (rs1.next()) {
-                            int Count = Integer.parseInt(rs1.getString("Count(*)"));
-                            if (Count < 1) {
-                                pst = Conn.prepareStatement("INSERT INTO Students_Exams (SE_Student_id,SE_StudentClass,Year,Term)VALUES(?,?,?,?)");
-                                pst.setString(1, StudentID);
-                                pst.setString(2, StudentClass);
-                                pst.setString(3, Year);
-                                pst.setString(4, Term);
-                                pst.executeUpdate();
-                            }
+                    List<Student> students = StudentDAO.get();
+                    students.forEach(student -> {
+                        if (!student.getClassroom().equalsIgnoreCase("Completed")) {
+                            Total++;
                         }
+                    });
+
+                    int i = 0;
+                    for (Student student : students) {
+                        if (!student.getClassroom().equalsIgnoreCase("Completed")) {
+                            StudentExam studentExam = StudentExamDAO.get(student.getRegNumber(), student.getClassroom(), Year, Term);
+                            if (studentExam == null) {
+                                studentExam = new StudentExam();
+                                studentExam.setStudentId(student.getRegNumber());
+                                studentExam.setForm(student.getClassroom());
+                                studentExam.setYear(Year);
+                                studentExam.setTerm(Term);
+
+                                List<StudentSubject> mySubjects = StudentSubjectDAO.get(student.getRegNumber());
+                                for (StudentSubject mySubject : mySubjects) {
+                                    Subject subject = getSubjectNumber(mySubject.getSubjectCode());
+                                    try {
+                                        Field codeField = studentExam.getClass().getDeclaredField(String.format("S%sCODE", subject.getNumber()));
+                                        Field nameField = studentExam.getClass().getDeclaredField(String.format("S%sNAME", subject.getNumber()));
+                                        codeField.setAccessible(true);
+                                        nameField.setAccessible(true);
+                                        codeField.set(studentExam, subject.getCode());
+                                        nameField.set(studentExam, subject.getName());
+                                    } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
+                                        ConnClass.printError(ex);
+                                    }
+                                }
+                                i++;
+                                StudentExamDAO.add(studentExam);
+                            } else {
+                                studentExam.setStudentId(student.getRegNumber());
+                                studentExam.setForm(student.getClassroom());
+                                studentExam.setYear(Year);
+                                studentExam.setTerm(Term);
+
+                                List<StudentSubject> mySubjects = StudentSubjectDAO.get(student.getRegNumber());
+                                for (StudentSubject mySubject : mySubjects) {
+                                    Subject subject = getSubjectNumber(mySubject.getSubjectCode());
+                                    try {
+                                        Field codeField = studentExam.getClass().getDeclaredField(String.format("S%sCODE", subject.getNumber()));
+                                        Field nameField = studentExam.getClass().getDeclaredField(String.format("S%sNAME", subject.getNumber()));
+                                        codeField.setAccessible(true);
+                                        nameField.setAccessible(true);
+                                        codeField.set(studentExam, subject.getCode());
+                                        nameField.set(studentExam, subject.getName());
+                                    } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
+                                        ConnClass.printError(ex);
+                                    }
+                                }
+                                i++;
+                                StudentExamDAO.update(studentExam);
+                            }
+                        } 
                         publish(i);
                     }
-                } catch (SQLException e) {
-                    System.out.println(e);
-                } finally {
-                    try {
-                        Conn.close();
-                    } catch (SQLException e) {
-                        System.out.println(e);
-                    }
+                } catch (Exception ex) {
+                    ConnClass.printError(ex);
                 }
                 return null;
             }
@@ -156,9 +202,6 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
-            }
-            public void windowClosed(java.awt.event.WindowEvent evt) {
-                formWindowClosed(evt);
             }
         });
 
@@ -270,33 +313,14 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
         } else if (Term.equalsIgnoreCase("Select")) {
             JOptionPane.showMessageDialog(null, "Select the current term of Examination");
         } else {
-            btnSave.setEnabled(false);
-            boolean examExists = false;
-            for (Exam exam : exams) {
-                if (exam.getYear().equals(Year) && exam.getTerm().equals(Term)) {
-                    examExists = true;
-                }
-            }
-            if (!examExists) {
-                Exam exam = new Exam();
-                exam.setYear(Year);
-                exam.setTerm(Term);
-                exam.setName("Default");
-                ExamDAO.add(exam);
-                UpdateStudentsEntriesForAnExam(Year, Term);
-            } else {
-                UpdateStudentsEntriesForAnExam(Year, Term);
-            }
+            Exam exam = new Exam();
+            exam.setYear(Year);
+            exam.setTerm(Term);
+            exam.setName("Default");
+            ExamDAO.add(exam);
+            UpdateStudentsEntriesForAnExam(Year, Term);
         }
     }//GEN-LAST:event_btnSaveActionPerformed
-
-    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        try {
-            Conn.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }//GEN-LAST:event_formWindowClosed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         updateUI();

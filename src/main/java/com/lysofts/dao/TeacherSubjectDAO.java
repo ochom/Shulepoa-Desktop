@@ -17,7 +17,6 @@ import java.util.Map;
  *
  * @author mspace-dev
  */
-
 public class TeacherSubjectDAO {
 
     static String table = Mapping.getTableName(TeacherSubject.class);
@@ -27,6 +26,15 @@ public class TeacherSubjectDAO {
         Map<Integer, String> params = new HashMap<>();
         params.put(1, teacherId);
         return QueryRunner.run(SQL, params, TeacherSubject.class);
+    }
+
+    public static TeacherSubject get(String className, String subjectCode) {
+        String SQL = String.format("SELECT * FROM %s WHERE Teaching_class=? AND Subject_code=?", table);
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, className);
+        params.put(2, subjectCode);
+        List<TeacherSubject> list = QueryRunner.run(SQL, params, TeacherSubject.class);
+        return list.size() > 0 ? list.get(0) : null;
     }
 
     public static boolean add(TeacherSubject data) {
