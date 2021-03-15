@@ -24,7 +24,7 @@ public class Launcher {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         String today = dateFormat.format(new java.util.Date());
         int leo = Integer.parseInt(today), installed = Integer.parseInt(school.getInstalled());
-        return (leo - installed) >= 10;
+        return (leo - installed) >= 15;
     }
     
     private  void checkExpiry(){  

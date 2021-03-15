@@ -79,11 +79,11 @@ public class ConnClass {
 
     public static void printError(Exception ex) {
         try {
-            boolean append = true;
-            FileHandler handler = new FileHandler("logs.txt", append);
-            LOG.addHandler(handler);
+            //boolean append = true;
+            //FileHandler handler = new FileHandler("logs.txt", append);
+            //LOG.addHandler(handler);
             LOG.log(Level.SEVERE, null, ex);
-        } catch (IOException | SecurityException ex1) {
+        } catch (Exception ex1) {
             Logger.getLogger(ConnClass.class.getName()).log(Level.SEVERE, null, ex1);
         }
     }
