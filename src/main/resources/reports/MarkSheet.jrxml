@@ -34,7 +34,7 @@
 	<parameter name="ExamForm" class="java.lang.String"/>
 	<parameter name="bgImage" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT Basic_SubjectNumbers.S1CODE as CODE1,Basic_SubjectNumbers.S2CODE as CODE2,Basic_SubjectNumbers.S3CODE as CODE3,Basic_SubjectNumbers.S4CODE as CODE4,Basic_SubjectNumbers.S5CODE as CODE5 ,Basic_SubjectNumbers.S6CODE as CODE6,Basic_SubjectNumbers.S7CODE as CODE7,Basic_SubjectNumbers.S8CODE as CODE8,Basic_SubjectNumbers.S9CODE as CODE9,Basic_SubjectNumbers.S10CODE as CODE10,Basic_SubjectNumbers.S11CODE as CODE11,Basic_SubjectNumbers.S12CODE as CODE12,Basic_SubjectNumbers.S13CODE as CODE13,Basic_SubjectNumbers.S14CODE as CODE14,tblschool.*,student_details.* FROM Basic_SubjectNumbers inner join (tblschool inner join(student_details)) WHERE (student_details.Student_Class=$P{ExamForm}) ORDER BY Student_details.Student_id]]>
+		<![CDATA[SELECT Basic_SubjectNumbers.S1CODE as CODE1,Basic_SubjectNumbers.S2CODE as CODE2,Basic_SubjectNumbers.S3CODE as CODE3,Basic_SubjectNumbers.S4CODE as CODE4,Basic_SubjectNumbers.S5CODE as CODE5 ,Basic_SubjectNumbers.S6CODE as CODE6,Basic_SubjectNumbers.S7CODE as CODE7,Basic_SubjectNumbers.S8CODE as CODE8,Basic_SubjectNumbers.S9CODE as CODE9,Basic_SubjectNumbers.S10CODE as CODE10,Basic_SubjectNumbers.S11CODE as CODE11,Basic_SubjectNumbers.S12CODE as CODE12,Basic_SubjectNumbers.S13CODE as CODE13,Basic_SubjectNumbers.S14CODE as CODE14,tblschool.*,student_details.* FROM Basic_SubjectNumbers inner join (tblschool inner join(student_details)) WHERE (student_details.Student_Class=$P{ExamForm}) ORDER BY Student_details.Student_id+0 ASC]]>
 	</queryString>
 	<field name="CODE1" class="java.lang.Object"/>
 	<field name="CODE2" class="java.lang.Object"/>

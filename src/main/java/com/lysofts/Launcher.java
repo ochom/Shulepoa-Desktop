@@ -7,6 +7,9 @@ package com.lysofts;
 
 import com.lysofts.utils.ConnClass;
 import com.jtattoo.plaf.DecorationHelper;
+import com.lysofts.dao.SchoolDAO;
+import com.lysofts.entities.School;
+import java.text.SimpleDateFormat;
 import javax.swing.UIManager;
 
 /**
@@ -14,6 +17,25 @@ import javax.swing.UIManager;
  * @author Ritch
  */
 public class Launcher {
+    
+    static School school = null;
+
+    private boolean hasExpired() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        String today = dateFormat.format(new java.util.Date());
+        int leo = Integer.parseInt(today), installed = Integer.parseInt(school.getInstalled());
+        return (leo - installed) >= 10;
+    }
+    
+    private  void checkExpiry(){  
+        school = SchoolDAO.get();
+        if (school == null || (school.isActivated().equals("0") && hasExpired())) {
+           new ActivationFrm().setVisible(true);
+        } else {
+        new LoginFrm().setVisible(true);
+        }
+    }
+    
     public static void main(String[] args) {
         try {
             com.jtattoo.plaf.acryl.AcrylLookAndFeel.setTheme("Default", "", "acme");
@@ -23,6 +45,7 @@ public class Launcher {
         }
 
         DecorationHelper.decorateWindows(false);
-        new LoginFrm().setVisible(true);
+        
+        new Launcher().checkExpiry();
     }
 }

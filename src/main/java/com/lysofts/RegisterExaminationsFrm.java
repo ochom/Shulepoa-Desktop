@@ -26,12 +26,9 @@ import javax.swing.UIManager;
 
 public class RegisterExaminationsFrm extends javax.swing.JFrame {
 
-    String sql = null;
-
     List<Exam> exams = new ArrayList<>();
     List<Subject> subjects = new ArrayList<>();
     Map<String, Subject> subjectsMap = null;
-    School school = null;
 
     public RegisterExaminationsFrm() {
         initComponents();
@@ -45,7 +42,6 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
 
     private void updateUI() {
         Thread t = new Thread(() -> {
-            school = SchoolDAO.get();
 
             subjectsMap = new HashMap<>();
             SubjectDAO.get().forEach(subject -> {
@@ -121,6 +117,18 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
                                 studentExam.setTerm(Term);
 
                                 List<StudentSubject> mySubjects = StudentSubjectDAO.get(student.getRegNumber());
+
+                                //Empty code and subject name fields
+                                for (int j = 1; j < 15; j++) {
+                                    Field codeField = studentExam.getClass().getDeclaredField(String.format("S%dCODE", j));
+                                    Field nameField = studentExam.getClass().getDeclaredField(String.format("S%dNAME", j));
+                                    codeField.setAccessible(true);
+                                    nameField.setAccessible(true);
+                                    codeField.set(studentExam, "");
+                                    nameField.set(studentExam, "");
+                                }
+
+                                // set code and subject name fields
                                 for (StudentSubject mySubject : mySubjects) {
                                     Subject subject = getSubjectNumber(mySubject.getSubjectCode());
                                     try {
@@ -137,7 +145,7 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
                                 i++;
                                 StudentExamDAO.update(studentExam);
                             }
-                        } 
+                        }
                         publish(i);
                     }
                 } catch (Exception ex) {
@@ -158,25 +166,12 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
                 jLabel3.setVisible(false);
                 jProgressBar1.setVisible(false);
                 ProgressNo.setVisible(false);
-
-                if (school == null || (school.isActivated().equals("0") && hasExpired())) {
-                    RegisterExaminationsFrm.this.dispose();
-                    new ActivationFrm().setVisible(true);
-                } else {
-                    RegisterExaminationsFrm.this.dispose();
-                    new AdminPanelFrm().setVisible(true);
-                }
+                RegisterExaminationsFrm.this.dispose();
+                new AdminPanelFrm().setVisible(true);
             }
         };
         worker.execute();
 
-    }
-
-    private boolean hasExpired() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        String today = dateFormat.format(new java.util.Date());
-        int leo = Integer.parseInt(today), installed = Integer.parseInt(school.getInstalled());
-        return (leo - installed) >= 15;
     }
 
     @SuppressWarnings("unchecked")

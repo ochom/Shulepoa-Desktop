@@ -604,11 +604,11 @@ public class StudentsSubjectFrm extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        btnAssignToAll.setBackground(new java.awt.Color(0, 0, 102));
+        btnAssignToAll.setBackground(new java.awt.Color(0, 0, 153));
         btnAssignToAll.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         btnAssignToAll.setForeground(new java.awt.Color(255, 255, 255));
         btnAssignToAll.setText("Assign to list");
-        btnAssignToAll.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 204, 0), 1, true));
+        btnAssignToAll.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 255, 255), 2, true));
         btnAssignToAll.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAssignToAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -616,11 +616,11 @@ public class StudentsSubjectFrm extends javax.swing.JFrame {
             }
         });
 
-        btnResetThisSubjectAssignment.setBackground(new java.awt.Color(102, 0, 0));
+        btnResetThisSubjectAssignment.setBackground(new java.awt.Color(204, 0, 0));
         btnResetThisSubjectAssignment.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         btnResetThisSubjectAssignment.setForeground(new java.awt.Color(255, 255, 255));
         btnResetThisSubjectAssignment.setText("Delete allocated subjects");
-        btnResetThisSubjectAssignment.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 204, 0), 1, true));
+        btnResetThisSubjectAssignment.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 255, 255), 2, true));
         btnResetThisSubjectAssignment.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnResetThisSubjectAssignment.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -628,11 +628,11 @@ public class StudentsSubjectFrm extends javax.swing.JFrame {
             }
         });
 
-        btnStudentDetails.setBackground(new java.awt.Color(0, 51, 51));
+        btnStudentDetails.setBackground(new java.awt.Color(0, 153, 0));
         btnStudentDetails.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         btnStudentDetails.setForeground(new java.awt.Color(255, 255, 255));
         btnStudentDetails.setText("Student details");
-        btnStudentDetails.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 204, 0), 1, true));
+        btnStudentDetails.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 255, 255), 2, true));
         btnStudentDetails.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnStudentDetails.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

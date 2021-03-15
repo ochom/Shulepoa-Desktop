@@ -93,9 +93,8 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         jButton9 = new javax.swing.JButton();
         jButton16 = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
-        jButton18 = new javax.swing.JButton();
         jButton13 = new javax.swing.JButton();
-        jButton14 = new javax.swing.JButton();
+        jButton18 = new javax.swing.JButton();
         txtSchoolName = new javax.swing.JLabel();
         txtTerm = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
@@ -601,22 +600,6 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     jToolBar1.add(jButton16);
     jToolBar1.add(jSeparator2);
 
-    jButton18.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
-    jButton18.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/sales-report-icon.png"))
-    );
-    jButton18.setText("Fee");
-    jButton18.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-    jButton18.setFocusable(false);
-    jButton18.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    jButton18.setPreferredSize(new java.awt.Dimension(55, 40));
-    jButton18.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    jButton18.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jButton18ActionPerformed(evt);
-        }
-    });
-    jToolBar1.add(jButton18);
-
     jButton13.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
     jButton13.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/Report Card_24px.png"))
     );
@@ -633,20 +616,21 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     });
     jToolBar1.add(jButton13);
 
-    jButton14.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
-    jButton14.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/sales-report-icon.png")));
-    jButton14.setText("SMS");
-    jButton14.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-    jButton14.setFocusable(false);
-    jButton14.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    jButton14.setPreferredSize(new java.awt.Dimension(55, 40));
-    jButton14.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    jButton14.addActionListener(new java.awt.event.ActionListener() {
+    jButton18.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+    jButton18.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/sales-report-icon.png"))
+    );
+    jButton18.setText("Fee");
+    jButton18.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    jButton18.setFocusable(false);
+    jButton18.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    jButton18.setPreferredSize(new java.awt.Dimension(55, 40));
+    jButton18.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    jButton18.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jButton14ActionPerformed(evt);
+            jButton18ActionPerformed(evt);
         }
     });
-    jToolBar1.add(jButton14);
+    jToolBar1.add(jButton18);
 
     txtSchoolName.setFont(new java.awt.Font("Script MT Bold", 1, 36)); // NOI18N
     txtSchoolName.setForeground(new java.awt.Color(0, 153, 0));
@@ -1029,10 +1013,6 @@ public class AdminPanelFrm extends javax.swing.JFrame {
         updateUI();
     }//GEN-LAST:event_formWindowOpened
 
-    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton14ActionPerformed
-
     public static void main(String args[]) {
         try {
             com.jtattoo.plaf.acryl.AcrylLookAndFeel.setTheme("Default", "", "acme");
@@ -1053,7 +1033,6 @@ public class AdminPanelFrm extends javax.swing.JFrame {
     private javax.swing.JDialog AboutDlg;
     private javax.swing.JDialog DialogDates;
     private javax.swing.JButton jButton13;
-    private javax.swing.JButton jButton14;
     private javax.swing.JButton jButton15;
     private javax.swing.JButton jButton16;
     private javax.swing.JButton jButton17;
