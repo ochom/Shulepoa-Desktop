@@ -30,6 +30,7 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
 
     List<Classroom> classrooms = new ArrayList<>();
     List<StudentExam> studentExams = new ArrayList<>();
+    List<Subject> subjects = new ArrayList<>();
 
     private Timer timer;
     private ActionListener al;
@@ -44,6 +45,7 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
 
     private void updateUI() {
         getYears();
+        getSubjects();
     }
 
     private void runprogressBar() {
@@ -71,6 +73,10 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
         });
     }
 
+    private void getSubjects(){
+        subjects = SubjectDAO.get();
+    }
+    
     private void getClassrooms() {
         classrooms = new ArrayList<>();
         ClassroomDAO.get().forEach(classroom -> {
@@ -91,7 +97,13 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
     }
 
     private String[] getSubjectGrade(String subjectCode, String marks) {
-        Subject subject = SubjectDAO.getByCode(subjectCode);
+        Subject subject = new Subject();
+        for(Subject sub:subjects){
+            if (sub.getCode().equals(subjectCode)) {
+                subject = sub;
+            }
+        }
+        
         Map<String, String[]> gradeMap = new HashMap<>();
         gradeMap.put("A", new String[]{"100", subject.getGrade1(), "12"});
         gradeMap.put("A-", new String[]{subject.getGrade1(), subject.getGrade2(), "11"});
@@ -369,7 +381,7 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
                 int[] S = new int[14];
                 for (int i = 1; i < 15; i++) {
                     try {
-                        Field marksField = exam.getClass().getDeclaredField(TYPE.equals("END") ? String.format("S%dAVGPoints", i) : String.format("S%dE%dMarks", i, E));
+                        Field marksField = exam.getClass().getDeclaredField(TYPE.equals("END") ? String.format("S%dAVGMarks", i) : String.format("S%dE%dMarks", i, E));
                         marksField.setAccessible(true);
                         String marks = marksField.get(exam).toString();
                         totalMarks += marks.isEmpty() ? 0 : Integer.parseInt(marks);
