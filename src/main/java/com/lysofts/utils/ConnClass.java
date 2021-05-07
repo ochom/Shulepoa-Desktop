@@ -1,15 +1,10 @@
 package com.lysofts.utils;
 
 import java.awt.Toolkit;
-import java.awt.Window;
-import java.io.IOException;
 import java.sql.*;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 
 public class ConnClass {
 
