@@ -44,11 +44,6 @@
             <url>https://repo.maven.apache.org/maven2</url>
         </repository>
         <repository>
-            <id>netbeans</id>
-            <name>Netbeans rep</name>
-            <url>http://bits.netbeans.org/maven2/</url>
-        </repository>
-        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
@@ -59,11 +54,6 @@
             <groupId>com.jtattoo</groupId>
             <artifactId>JTattoo</artifactId>
             <version>1.6.7</version>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.external</groupId>
-            <artifactId>AbsoluteLayout</artifactId>
-            <version>RELEASE802</version>
         </dependency>
         <dependency>
             <groupId>com.toedter</groupId>

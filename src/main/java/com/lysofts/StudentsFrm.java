@@ -255,7 +255,7 @@ public class StudentsFrm extends javax.swing.JFrame {
                                 final int ss = selected;
                                 SwingUtilities.invokeLater(() -> {
                                     jLabel1.setText(String.format("Promoting students: %d/%d", ss, tt));
-                                    jProgressBar1.setValue((int) ((ss*1.0 / tt) * 100));
+                                    jProgressBar1.setValue((int) ((ss * 1.0 / tt) * 100));
                                     jProgressBar1.update(jProgressBar1.getGraphics());
                                 });
                             }
@@ -1254,10 +1254,12 @@ public class StudentsFrm extends javax.swing.JFrame {
         chooser.setFileFilter(filter);
         chooser.showOpenDialog(null);
         File f = chooser.getSelectedFile();
-        filepath = f.getAbsolutePath();
+        if (f != null) {
+            filepath = f.getAbsolutePath();
 
-        filepath = filepath.replace("\\", "/");
-        getProfilePic();
+            filepath = filepath.replace("\\", "/");
+            getProfilePic();
+        }
     }//GEN-LAST:event_btnUploadProfilePictureActionPerformed
 
     private void txtKCPEKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtKCPEKeyReleased
