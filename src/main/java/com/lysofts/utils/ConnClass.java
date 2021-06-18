@@ -11,21 +11,14 @@ public class ConnClass {
     private static Connection conn;
     private static PreparedStatement pst;
     private static ResultSet rs;
-    private static String url;
-
-    private final static boolean DEBUG = false;
+    private static final String URL = "jdbc:sqlite:struct";
 
     static final Logger LOG = Logger.getLogger(ConnClass.class.getName());
 
-    public static String API_END = DEBUG
-            ? "http://localhost:8000/accounts/"
-            : "https://acme-accounts.herokuapp.com/accounts/";
-
     public static Connection connectDB() {
         try {
-            url = "jdbc:sqlite:struct";
             Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection(url);
+            conn = DriverManager.getConnection(URL);
         } catch (ClassNotFoundException | SQLException e) {
             printError(e);
         }
@@ -34,9 +27,8 @@ public class ConnClass {
     
     public static Connection getDB() {
         try {
-            url = "jdbc:sqlite:struct";
             Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection(url);
+            conn = DriverManager.getConnection(URL);
         } catch (ClassNotFoundException | SQLException e) {
             printError(e);
         }
@@ -74,9 +66,6 @@ public class ConnClass {
 
     public static void printError(Exception ex) {
         try {
-            //boolean append = true;
-            //FileHandler handler = new FileHandler("logs.txt", append);
-            //LOG.addHandler(handler);
             LOG.log(Level.SEVERE, null, ex);
         } catch (Exception ex1) {
             Logger.getLogger(ConnClass.class.getName()).log(Level.SEVERE, null, ex1);
