@@ -27,7 +27,7 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
     public TeachersSubjectFrm() {
         initComponents();
 
-        new ConnClass().setFrameIcon(TeachersSubjectFrm.this);
+        ConnClass.setFrameIcon(TeachersSubjectFrm.this);
 
     }
 
@@ -324,12 +324,13 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
     }//GEN-LAST:event_Table_TeachersMouseClicked
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        if (comboSubjectForMe.getSelectedIndex() == 0) {
+        evt.getID();
+        if (selectedTeacher == null) {
+            JOptionPane.showMessageDialog(null, "Select the teacher you want to assign the Subject to", "acme", 1);
+        } else if (comboSubjectForMe.getSelectedIndex() == 0) {
             JOptionPane.showMessageDialog(null, "Select a Subject to Assign", "acme", 1);
         } else if (comboFormToTeach.getSelectedIndex() == 0) {
             JOptionPane.showMessageDialog(null, "Select a Class you want to Assign Subject To", "acme", 1);
-        } else if (selectedTeacher == null) {
-            JOptionPane.showMessageDialog(null, "Select the teacher you want to assign the Subject to", "acme", 1);
         } else {
             String subjectCode = comboSubjectForMe.getSelectedItem().toString();
             String classroom = comboFormToTeach.getSelectedItem().toString();
@@ -347,6 +348,8 @@ public class TeachersSubjectFrm extends javax.swing.JFrame {
                 ts.setClassroom(classroom);
                 if (TeacherSubjectDAO.add(ts)) {
                     JOptionPane.showMessageDialog(null, "Subject Assigned to " + selectedTeacher.getName() + " Succesfully");
+                    
+                    tsMap.put(String.format("%s_%s", ts.getSubjectCode(), ts.getClassroom()), selectedTeacher);
                     updateMySubjects();
                 } else {
                     JOptionPane.showMessageDialog(null, "Subject could not be assigned");

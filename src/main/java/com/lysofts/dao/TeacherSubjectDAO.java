@@ -39,7 +39,6 @@ public class TeacherSubjectDAO {
 
     public static boolean add(TeacherSubject data) {
         try {
-            delete(data.getTeacherId(), data.getSubjectCode());
             Mapping.Param param = new Mapping().insertQuery(data);
             String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(), param.getValuesString());
             return QueryRunner.update(SQL, param.getDatMap());
