@@ -4,15 +4,15 @@ import com.lysofts.dao.ClassroomDAO;
 import com.lysofts.dao.ExamDAO;
 import com.lysofts.utils.ConnClass;
 import java.awt.Dimension;
+import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -33,7 +33,7 @@ public class ReportsFrm extends javax.swing.JFrame {
 
     public ReportsFrm() {
         initComponents();
-        ConnClass.setFrameIcon(this);
+        ConnClass.setFrameIcon(ReportsFrm.this);
         GetAcedmicYears();
         getFormNames();
 
@@ -74,8 +74,8 @@ public class ReportsFrm extends javax.swing.JFrame {
             jf.setLocationRelativeTo(this);
             jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             jf.setVisible(true);
-        } catch (Exception ex) {
-            Logger.getLogger(ReportsFrm.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (HeadlessException | JRException ex) {
+            ConnClass.printError(ex);
         }
     }
 
@@ -519,7 +519,7 @@ public class ReportsFrm extends javax.swing.JFrame {
                 pst = conn.prepareStatement(sql);
                 pst.executeUpdate();
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "System Err : " + e, "Error", 0);
         }
 
@@ -548,7 +548,7 @@ public class ReportsFrm extends javax.swing.JFrame {
             pst = conn.prepareStatement(sql);
             pst.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            ConnClass.printError(e);
         }
 
     }
@@ -558,7 +558,7 @@ public class ReportsFrm extends javax.swing.JFrame {
             sql = "UPDATE ClassSubjectPerfomance set SubjectPosition=(1+(SELECT Count(*) From ClassSubjectPerfomance as t2 WHERE ((t2.SubjectMeanPoints+0)>(ClassSubjectPerfomance.SubjectMeanPoints+0)))) WHERE(SubjectMeanPoints+0>0)";
             pst = conn.prepareStatement(sql);
             pst.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "System Err : " + e, "Error", 0);
         }
     }
@@ -632,11 +632,11 @@ public class ReportsFrm extends javax.swing.JFrame {
                     pst.executeUpdate();
                     System.out.println("Classes Ranked, Form: " + Form);
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    ConnClass.printError(e);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            ConnClass.printError(e);
         }
 
     }
@@ -646,7 +646,7 @@ public class ReportsFrm extends javax.swing.JFrame {
             sql = "UPDATE tblClasses set Position=(1+(SELECT Count(*) From tblClasses as t2 WHERE ((t2.MeanPoints+0)>(tblClasses.MeanPoints+0) AND substr(Class_name,1,1)='" + ExamFormLevel + "') )) WHERE(MeanPoints+0>0)";
             pst = conn.prepareStatement(sql);
             pst.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "System Err : " + e, "Error", 0);
         }
     }
@@ -1059,9 +1059,6 @@ public class ReportsFrm extends javax.swing.JFrame {
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
-            }
-            public void windowDeactivated(java.awt.event.WindowEvent evt) {
-                formWindowDeactivated(evt);
             }
         });
 
@@ -1588,8 +1585,8 @@ public class ReportsFrm extends javax.swing.JFrame {
         Form = comboForm.getSelectedItem().toString();
         Year = cmbYear.getSelectedItem().toString();
         Term = comboTerm.getSelectedItem().toString();
-        String Exam = "END TERM";
-        String ExamFormLevel = Form.replaceAll(" ", "").substring(0, 1);
+        Exam = "END TERM";
+        ExamFormLevel = Form.replaceAll(" ", "").substring(0, 1);
         if (Form.equalsIgnoreCase("Select Form")) {
             JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
         } else if (Year.equalsIgnoreCase("")) {
@@ -1733,7 +1730,7 @@ public class ReportsFrm extends javax.swing.JFrame {
                 conn.close();
             }
         } catch (SQLException e) {
-            System.out.println(e);
+            ConnClass.printError(e);
         }
         this.dispose();
         new AdminPanelFrm().setVisible(true);
@@ -1810,10 +1807,6 @@ public class ReportsFrm extends javax.swing.JFrame {
         };
         worker.execute();
     }//GEN-LAST:event_ReportDlgWindowGainedFocus
-
-    private void formWindowDeactivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowDeactivated
-        // TODO add your handling code here:
-    }//GEN-LAST:event_formWindowDeactivated
 
     /**
      * @param args the command line arguments
