@@ -7,6 +7,7 @@ import com.lysofts.dao.StudentExamDAO;
 import com.lysofts.dao.SubjectDAO;
 import com.lysofts.dao.TeacherSubjectDAO;
 import com.lysofts.entities.Classroom;
+import com.lysofts.entities.Student;
 import com.lysofts.entities.StudentExam;
 import com.lysofts.entities.Subject;
 import com.lysofts.entities.TeacherSubject;
@@ -88,23 +89,26 @@ public class MarksRecordFrm extends javax.swing.JFrame {
         studentExams.forEach(studentExam -> {
             String num = selectedSubject.getNumber();
             String admno = studentExam.getStudentId();
-            String name = StudentDAO.get(admno).getName();
-            try {
-                Field codeField = studentExam.getClass().getDeclaredField(String.format("S%sCODE", num));
-                Field marksField = studentExam.getClass().getDeclaredField(String.format("S%sE%sMarks", num, exam));
-                Field gradeField = studentExam.getClass().getDeclaredField(String.format("S%sE%sGrade", num, exam));
-                Field pointsField = studentExam.getClass().getDeclaredField(String.format("S%sE%sPoints", num, exam));
-                codeField.setAccessible(true);
-                Object code = codeField.get(studentExam);
-                if (!code.toString().isEmpty()) {
-                    marksField.setAccessible(true);
-                    gradeField.setAccessible(true);
-                    pointsField.setAccessible(true);
-                    marksList.add(studentExam);
-                    model.addRow(new Object[]{admno, name, marksField.get(studentExam), gradeField.get(studentExam), pointsField.get(studentExam)});
+            Student student = StudentDAO.get(admno);
+            if (!(student==null)) {
+                String name = student.getName();
+                try {
+                    Field codeField = studentExam.getClass().getDeclaredField(String.format("S%sCODE", num));
+                    Field marksField = studentExam.getClass().getDeclaredField(String.format("S%sE%sMarks", num, exam));
+                    Field gradeField = studentExam.getClass().getDeclaredField(String.format("S%sE%sGrade", num, exam));
+                    Field pointsField = studentExam.getClass().getDeclaredField(String.format("S%sE%sPoints", num, exam));
+                    codeField.setAccessible(true);
+                    Object code = codeField.get(studentExam);
+                    if (!code.toString().isEmpty()) {
+                        marksField.setAccessible(true);
+                        gradeField.setAccessible(true);
+                        pointsField.setAccessible(true);
+                        marksList.add(studentExam);
+                        model.addRow(new Object[]{admno, name, marksField.get(studentExam), gradeField.get(studentExam), pointsField.get(studentExam)});
+                    }
+                } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
+                    ConnClass.printError(ex);
                 }
-            } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
-                ConnClass.printError(ex);
             }
         });
     }
