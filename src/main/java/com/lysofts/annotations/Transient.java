@@ -12,8 +12,9 @@ import java.lang.annotation.Target;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface Transient {}
+public @interface Transient {
+}

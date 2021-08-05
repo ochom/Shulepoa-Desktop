@@ -10,58 +10,58 @@ import com.lysofts.annotations.Table;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
-@Table(name="student_details")
-public class Student {   
-    
+@Table(name = "student_details")
+public class Student {
+
     private String id;
-    
+
     @Column(name = "Student_ID")
     private String regNumber;
-    
+
     @Column(name = "Student_name")
     private String name;
-    
+
     @Column(name = "Student_Class")
     private String classroom;
-    
+
     @Column(name = "kcpe_marks")
     private String kcpeMarks;
-    
+
     @Column(name = "kcpe_grade")
     private String kcpeGrade;
-    
+
     @Column(name = "Picture")
     private String passport;
-    
+
     @Column(name = "DOA")
     private String doa;
-    
+
     @Column(name = "DOB")
     private String dob;
-    
+
     @Column(name = "Gender")
     private String sex;
-    
+
     @Column(name = "House")
     private String house;
-    
+
     @Column(name = "Father")
     private String kinName;
-    
+
     @Column(name = "Phone1")
     private String kinPhone;
-    
+
     @Column(name = "FeeRequired")
     private String feeReuired;
-    
+
     @Column(name = "FeePaid")
     private String feePaid;
-    
+
     @Column(name = "FeeBalance")
     private String feeBalance;
-    
+
     @Column(name = "SubjectEntries")
     private String subjectEntry;
 

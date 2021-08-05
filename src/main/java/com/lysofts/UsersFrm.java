@@ -16,7 +16,7 @@ public class UsersFrm extends javax.swing.JFrame {
     public UsersFrm() {
         initComponents();
 
-        new ConnClass().setFrameIcon(UsersFrm.this);
+        ConnClass.setFrameIcon(UsersFrm.this);
     }
 
     private void AddUser() {

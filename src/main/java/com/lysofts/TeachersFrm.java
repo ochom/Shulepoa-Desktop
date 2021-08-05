@@ -18,7 +18,7 @@ public class TeachersFrm extends javax.swing.JFrame {
 
     public TeachersFrm() {
         initComponents();
-        new ConnClass().setFrameIcon(TeachersFrm.this);
+        ConnClass.setFrameIcon(TeachersFrm.this);
 
         initializeSalutations();
     }

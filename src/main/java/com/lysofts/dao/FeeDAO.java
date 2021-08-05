@@ -15,10 +15,10 @@ import java.util.Map;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 public class FeeDAO {
-    
+
     static String table = Mapping.getTableName(Fee.class);
 
     public static List<Fee> get() {
@@ -36,7 +36,8 @@ public class FeeDAO {
     public static boolean add(Fee data) {
         try {
             Mapping.Param param = new Mapping().insertQuery(data);
-            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(), param.getValuesString());
+            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(),
+                    param.getValuesString());
             return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
@@ -56,7 +57,7 @@ public class FeeDAO {
     }
 
     public static boolean delete(String pk) {
-        String SQL = String.format("DELETE FROM %s WHERE id=%s",table, pk);
+        String SQL = String.format("DELETE FROM %s WHERE id=%s", table, pk);
         Map<Integer, String> params = new HashMap<>();
         return QueryRunner.update(SQL, params);
     }

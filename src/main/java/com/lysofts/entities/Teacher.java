@@ -12,11 +12,11 @@ import java.util.List;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 @Table(name = "tblteachers")
-public class Teacher{
-    
+public class Teacher {
+
     private String id;
 
     @Column(name = "T_name")
@@ -33,13 +33,13 @@ public class Teacher{
 
     @Column(name = "T_initials")
     private String initials;
-    
+
     @Transient
     private List<TeacherSubject> subjects;
 
     public Teacher() {
     }
-    
+
     public String getId() {
         return id;
     }

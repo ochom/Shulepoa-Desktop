@@ -9,12 +9,14 @@ import java.util.Scanner;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 public class KeyGen {
+    private static Scanner sc;
+
     public static void main(String[] args) {
         System.out.println("Enter SChool Name:");
-        Scanner sc = new Scanner(System.in);
+        sc = new Scanner(System.in);
         String schoolName = sc.nextLine();
         generateKey(schoolName);
     }

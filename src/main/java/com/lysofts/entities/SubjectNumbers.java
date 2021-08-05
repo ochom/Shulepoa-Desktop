@@ -7,14 +7,13 @@ package com.lysofts.entities;
 
 import com.lysofts.annotations.Table;
 
-
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 @Table(name = "Basic_SubjectNumbers")
 public class SubjectNumbers {
-    
+
     private String id;
 
     public SubjectNumbers() {

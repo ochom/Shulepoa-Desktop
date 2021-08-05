@@ -5,7 +5,6 @@
  */
 package com.lysofts.dao;
 
-import static com.lysofts.dao.ExamDAO.table;
 import com.lysofts.entities.Exam;
 import com.lysofts.pa.Mapping;
 import com.lysofts.pa.QueryRunner;
@@ -16,7 +15,7 @@ import java.util.Map;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 public class ExamDAO {
 
@@ -38,14 +37,15 @@ public class ExamDAO {
         Map<Integer, String> params = new HashMap<>();
         params.put(1, year);
         params.put(2, term);
-        List l = QueryRunner.run(SQL, params, Exam.class);
+        List<Exam> l = QueryRunner.run(SQL, params, Exam.class);
         return l.size() > 0 ? (Exam) l.get(0) : null;
     }
 
     public static boolean add(Exam data) {
         try {
             Mapping.Param param = new Mapping().insertQuery(data);
-            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(), param.getValuesString());
+            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(),
+                    param.getValuesString());
             return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);

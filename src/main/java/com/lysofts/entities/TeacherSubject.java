@@ -10,7 +10,7 @@ import com.lysofts.annotations.Table;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  * 
  */
 
@@ -44,7 +44,6 @@ public class TeacherSubject {
     public void setId(String id) {
         this.id = id;
     }
-    
 
     public String getTeacherId() {
         return teacherId;
@@ -86,5 +85,4 @@ public class TeacherSubject {
         this.classroom = classroom;
     }
 
-    
 }

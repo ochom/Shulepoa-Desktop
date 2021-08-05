@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 public class SchoolDAO {
 
@@ -30,7 +30,8 @@ public class SchoolDAO {
     public static boolean add(School data) {
         try {
             Mapping.Param param = new Mapping().insertQuery(data);
-            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(), param.getValuesString());
+            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(),
+                    param.getValuesString());
             return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
@@ -41,7 +42,8 @@ public class SchoolDAO {
     public static boolean update(School data) {
         try {
             Mapping.Param param = new Mapping().updateQuery(data);
-            String SQL = String.format("UPDATE %s SET %s WHERE School_id=%s", table, param.getFieldString(), data.getId());
+            String SQL = String.format("UPDATE %s SET %s WHERE School_id=%s", table, param.getFieldString(),
+                    data.getId());
             return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);

@@ -10,11 +10,11 @@ import com.lysofts.annotations.Table;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 @Table(name = "tblstudents_subjects")
 public class StudentSubject {
-    
+
     @Column(name = "SS_Student_id")
     private String studentId;
 
@@ -50,4 +50,4 @@ public class StudentSubject {
     public void setSubjectName(String subjectName) {
         this.subjectName = subjectName;
     }
- }
+}

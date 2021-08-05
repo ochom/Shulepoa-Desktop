@@ -8,15 +8,14 @@ package com.lysofts.entities;
 import com.lysofts.annotations.Column;
 import com.lysofts.annotations.Table;
 
-
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 @Table(name = "tblexams")
 public class Exam {
-    
-    @Column(name ="Examination_id")
+
+    @Column(name = "Examination_id")
     private String id;
 
     @Column(name = "Exam_name")
@@ -30,7 +29,6 @@ public class Exam {
 
     public Exam() {
     }
-
 
     public String getId() {
         return id;
@@ -63,5 +61,5 @@ public class Exam {
     public void setTerm(String Term) {
         this.Term = Term;
     }
-    
+
 }

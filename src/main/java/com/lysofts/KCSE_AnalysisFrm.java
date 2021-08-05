@@ -208,7 +208,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
     private void registerSubjectsForRanking() {
         try {
-            SubsForRanking = new ArrayList();
+            SubsForRanking = new ArrayList<>();
             rs = Conn.prepareStatement("SELECT * FROM Subjects").executeQuery();
             int i = 0;
             while (rs.next()) {
