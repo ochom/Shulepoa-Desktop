@@ -8,14 +8,13 @@ package com.lysofts.entities;
 import com.lysofts.annotations.Column;
 import com.lysofts.annotations.Table;
 
-
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 @Table(name = "tblschool")
-public class School  {
-    
+public class School {
+
     @Column(name = "School_id")
     String id;
 
@@ -48,9 +47,9 @@ public class School  {
 
     @Column(name = "OpeningDate")
     String openingDate;
-    
+
     private String activated;
-    
+
     private String installed;
 
     public School() {

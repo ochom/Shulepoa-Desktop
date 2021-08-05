@@ -7,12 +7,12 @@ package com.lysofts.pa;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 public class TableException extends Exception {
 
     public TableException(String exception) {
         System.out.print(exception);
     }
-    
+
 }

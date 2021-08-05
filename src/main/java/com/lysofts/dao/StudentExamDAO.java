@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 public class StudentExamDAO {
 
@@ -27,7 +27,8 @@ public class StudentExamDAO {
     }
 
     public static StudentExam get(String studentId, String classroom, String year, String term) {
-        String SQL = String.format("SELECT * FROM %s  WHERE SE_Student_id=? AND SE_StudentClass=? AND Year=? AND Term=?", table);
+        String SQL = String
+                .format("SELECT * FROM %s  WHERE SE_Student_id=? AND SE_StudentClass=? AND Year=? AND Term=?", table);
         Map<Integer, String> params = new HashMap<>();
         params.put(1, studentId);
         params.put(2, classroom);
@@ -47,7 +48,8 @@ public class StudentExamDAO {
     }
 
     public static List<StudentExam> getByForm(String form, String year, String term) {
-        String SQL = String.format("SELECT * FROM %s  WHERE substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?", table);
+        String SQL = String.format("SELECT * FROM %s  WHERE substr(SE_StudentClass,1,1)=? AND Year=? AND Term=?",
+                table);
         Map<Integer, String> params = new HashMap<>();
         params.put(1, form);
         params.put(2, year);
@@ -65,7 +67,8 @@ public class StudentExamDAO {
     public static boolean add(StudentExam data) {
         try {
             Mapping.Param param = new Mapping().insertQuery(data);
-            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(), param.getValuesString());
+            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(),
+                    param.getValuesString());
             return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);

@@ -10,11 +10,11 @@ import com.lysofts.annotations.Table;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 @Table(name = "tblHouses")
 public class House {
-    
+
     @Column(name = "HouseNumber")
     private String id;
 
@@ -22,7 +22,7 @@ public class House {
     private String name;
 
     public House() {
-    }    
+    }
 
     public House(String name) {
         this.name = name;
@@ -43,5 +43,5 @@ public class House {
     public void setName(String name) {
         this.name = name;
     }
-    
+
 }

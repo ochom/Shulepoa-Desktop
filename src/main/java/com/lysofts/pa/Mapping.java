@@ -15,13 +15,13 @@ import java.util.Map;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 public class Mapping {
-    
-    public static boolean isTransient(Object object){
+
+    public static boolean isTransient(Object object) {
         Field field = (Field) object;
-        return field.isAnnotationPresent(Transient.class);        
+        return field.isAnnotationPresent(Transient.class);
     }
 
     public static String getTableName(Class<?> clazz) {

@@ -9,12 +9,14 @@ import java.util.Scanner;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 public class KeyGen {
+    private static Scanner sc;
+
     public static void main(String[] args) {
         System.out.println("Enter SChool Name:");
-        Scanner sc  = new Scanner(System.in);
+        sc = new Scanner(System.in);
         String schoolName = sc.nextLine();
         generateKey(schoolName);
     }
@@ -31,7 +33,7 @@ public class KeyGen {
         String sk8 = "";
 
         if (!schoolName.isEmpty()) {
-            sk1 = schoolName.substring(1, 2);//2nd char
+            sk1 = schoolName.substring(1, 2);// 2nd char
             sk2 = schoolName.substring(3, 4);
             sk3 = schoolName.substring(2, 3);
             sk4 = schoolName.substring(5, 6);
@@ -40,12 +42,12 @@ public class KeyGen {
             sk7 = schoolName.substring(3, 4);
             sk8 = schoolName.substring(4, 5);
         }
-        
-        String newKey = "L"+sk2+"A"+sk3+"-"+sk5+"POH-"+sk4+sk6+"8R-"+sk7+sk8+sk1+"S";
-        System.out.println("New Key:"+ newKey);
-        
-        String updateKey = "K"+sk2+"LC-"+sk3+sk5+"AC-5"+sk4+sk6+"P-"+sk7+sk8+sk1+"J";
-        System.out.println("Update Key:"+ updateKey);
-        
+
+        String newKey = "L" + sk2 + "A" + sk3 + "-" + sk5 + "POH-" + sk4 + sk6 + "8R-" + sk7 + sk8 + sk1 + "S";
+        System.out.println("New Key:" + newKey);
+
+        String updateKey = "K" + sk2 + "LC-" + sk3 + sk5 + "AC-5" + sk4 + sk6 + "P-" + sk7 + sk8 + sk1 + "J";
+        System.out.println("Update Key:" + updateKey);
+
     }
 }

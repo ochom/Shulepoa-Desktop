@@ -17,13 +17,14 @@ import java.util.Map;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 public class QueryRunner {
 
-    public static List run(String SQL, Map<Integer, String> params, Class<?> clazz) {
+    @SuppressWarnings("unchecked")
+    public static <T extends Object> List<T> run(String SQL, Map<Integer, String> params, Class<T> clazz) {
         Connection CONNECTION = ConnClass.getDB();
-        List list = new ArrayList<>();
+        List<T> list = new ArrayList<>();
         try {
             PreparedStatement pst = CONNECTION.prepareStatement(SQL);
             if (params != null) {
@@ -43,9 +44,10 @@ public class QueryRunner {
                         field.set(dto, field.getType().cast(value));
                     }
                 }
-                list.add(dto);
+                list.add((T) dto);
             }
-        } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | SecurityException | SQLException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | SecurityException
+                | SQLException e) {
             ConnClass.printError(e);
         } finally {
             try {

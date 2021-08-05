@@ -5,7 +5,6 @@
  */
 package com.lysofts.dao;
 
-import static com.lysofts.dao.ExamDAO.table;
 import com.lysofts.entities.Exam;
 import com.lysofts.pa.Mapping;
 import com.lysofts.pa.QueryRunner;
@@ -16,10 +15,9 @@ import java.util.Map;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 public class ExamDAO {
-    
 
     static String table = Mapping.getTableName(Exam.class);
 
@@ -34,10 +32,20 @@ public class ExamDAO {
         return QueryRunner.run(SQL, params, Exam.class);
     }
 
+    public static Exam getByYearAndTerm(String year, String term) {
+        String SQL = String.format("SELECT * FROM %s WHERE Year=? AND Term=?", table, year, term);
+        Map<Integer, String> params = new HashMap<>();
+        params.put(1, year);
+        params.put(2, term);
+        List<Exam> l = QueryRunner.run(SQL, params, Exam.class);
+        return l.size() > 0 ? (Exam) l.get(0) : null;
+    }
+
     public static boolean add(Exam data) {
         try {
             Mapping.Param param = new Mapping().insertQuery(data);
-            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(), param.getValuesString());
+            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(),
+                    param.getValuesString());
             return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
@@ -57,7 +65,7 @@ public class ExamDAO {
     }
 
     public static boolean delete(String pk) {
-        String SQL = String.format("DELETE FROM %s WHERE id=%s",table, pk);
+        String SQL = String.format("DELETE FROM %s WHERE id=%s", table, pk);
         Map<Integer, String> params = new HashMap<>();
         return QueryRunner.update(SQL, params);
     }

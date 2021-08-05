@@ -8,15 +8,14 @@ package com.lysofts.entities;
 import com.lysofts.annotations.Column;
 import com.lysofts.annotations.Table;
 
-
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 @Table(name = "subjects")
-public class Subject {    
-    
-    @Column(name ="Subject_id")
+public class Subject {
+
+    @Column(name = "Subject_id")
     private String id;
 
     @Column(name = "S_NO")
@@ -29,8 +28,7 @@ public class Subject {
     private String name;
 
     @Column(name = "Subject_group")
-    private String group="";
-
+    private String group = "";
 
     @Column(name = "Grade1")
     private String grade1;
@@ -38,42 +36,32 @@ public class Subject {
     @Column(name = "Grade2")
     private String grade2;
 
-
     @Column(name = "Grade3")
     private String grade3;
-
 
     @Column(name = "Grade4")
     private String grade4;
 
-
     @Column(name = "Grade5")
     private String grade5;
-
 
     @Column(name = "Grade6")
     private String grade6;
 
-
     @Column(name = "Grade7")
     private String grade7;
-
 
     @Column(name = "Grade8")
     private String grade8;
 
-
     @Column(name = "Grade9")
     private String grade9;
-
 
     @Column(name = "Grade10")
     private String grade10;
 
-
     @Column(name = "Grade11")
     private String grade11;
-
 
     @Column(name = "Grade12")
     private String grade12;
@@ -216,6 +204,5 @@ public class Subject {
     public void setGrade12(String grade12) {
         this.grade12 = grade12;
     }
-    
-    
+
 }

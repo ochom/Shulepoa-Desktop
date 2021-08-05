@@ -332,7 +332,9 @@ public class RegisterExaminationsFrm extends javax.swing.JFrame {
             exam.setYear(Year);
             exam.setTerm(Term);
             exam.setName("Default");
-            ExamDAO.add(exam);
+            if(ExamDAO.getByYearAndTerm(Year, Term) == null){
+                ExamDAO.add(exam);                
+            }
             UpdateStudentsEntriesForAnExam(Year, Term);
         }
     }//GEN-LAST:event_btnSaveActionPerformed

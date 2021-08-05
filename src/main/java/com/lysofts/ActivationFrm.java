@@ -11,10 +11,11 @@ public class ActivationFrm extends javax.swing.JFrame {
         initComponents();
         ConnClass.setFrameIcon(this);
     }
-    
-    private void Activate() {        
+
+    private void Activate() {
         School school = SchoolDAO.get();
-        String keyExtract = (school.getName().toUpperCase().replaceAll("\\.", "").replaceAll("\\'", "")).replaceAll(" ", "");
+        String keyExtract = (school.getName().toUpperCase().replaceAll("\\.", "").replaceAll("\\'", "")).replaceAll(" ",
+                "");
         String sk1 = "";
         String sk2 = "";
         String sk3 = "";
@@ -25,7 +26,7 @@ public class ActivationFrm extends javax.swing.JFrame {
         String sk8 = "";
 
         if (!keyExtract.isEmpty()) {
-            sk1 = keyExtract.substring(1, 2);//2nd char
+            sk1 = keyExtract.substring(1, 2);// 2nd char
             sk2 = keyExtract.substring(3, 4);
             sk3 = keyExtract.substring(2, 3);
             sk4 = keyExtract.substring(5, 6);
@@ -35,40 +36,34 @@ public class ActivationFrm extends javax.swing.JFrame {
             sk8 = keyExtract.substring(4, 5);
 
         }
-        //Reminder Key school code Order = 3,1,4,2
-        String MyKey = key1TXT.getText() + key2TXT.getText() + key3TXT.getText() + key4TXT.getText();//Entered by the user
+        // Reminder Key school code Order = 3,1,4,2
+        String MyKey = key1TXT.getText() + key2TXT.getText() + key3TXT.getText() + key4TXT.getText();// Entered by the
+                                                                                                     // user
         int len = MyKey.length();
         if (len < 16) {
             JOptionPane.showMessageDialog(null, "This key is Incomplete. Ensure that each area is filled", "Error", 0);
         } else {
-            boolean key_new_system = (MyKey.contains(sk1)
-                    && MyKey.contains(sk2)
-                    && MyKey.contains(sk3 + sk5)
-                    && MyKey.contains(sk4)
-                    && MyKey.contains(sk6)
-                    && MyKey.contains(sk7 + sk8)
-                    && MyKey.contains("L")
-                    && MyKey.contains("OH")
-                    && MyKey.contains("A")
-                    && MyKey.contains("8R")
-                    && MyKey.contains("P")
+            boolean key_new_system = (MyKey.contains(sk1) && MyKey.contains(sk2) && MyKey.contains(sk3 + sk5)
+                    && MyKey.contains(sk4) && MyKey.contains(sk6) && MyKey.contains(sk7 + sk8) && MyKey.contains("L")
+                    && MyKey.contains("OH") && MyKey.contains("A") && MyKey.contains("8R") && MyKey.contains("P")
                     && MyKey.contains("S"));
 
-            
             school.setActivated("1");
             if (key_new_system && SchoolDAO.update(school)) {
-                JOptionPane.showMessageDialog(null, "Full License Activated succesfull", "Activation", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Full License Activated successful", "Activation",
+                        JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
                 new AdminPanelFrm().setVisible(true);
             } else {
-                JOptionPane.showMessageDialog(null, "Wrong Activation Key Entered for the Updated System ", "Activation", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Wrong Activation Key Entered for the Updated System ",
+                        "Activation", JOptionPane.INFORMATION_MESSAGE);
             }
         }
     }
 
-
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated
+    // Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
@@ -105,6 +100,7 @@ public class ActivationFrm extends javax.swing.JFrame {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 key4TXTKeyReleased(evt);
             }
+
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 key4TXTKeyTyped(evt);
             }
@@ -116,6 +112,7 @@ public class ActivationFrm extends javax.swing.JFrame {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 key1TXTKeyReleased(evt);
             }
+
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 key1TXTKeyTyped(evt);
             }
@@ -127,6 +124,7 @@ public class ActivationFrm extends javax.swing.JFrame {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 key2TXTKeyReleased(evt);
             }
+
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 key2TXTKeyTyped(evt);
             }
@@ -138,6 +136,7 @@ public class ActivationFrm extends javax.swing.JFrame {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 key3TXTKeyReleased(evt);
             }
+
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 key3TXTKeyTyped(evt);
             }
@@ -154,33 +153,46 @@ public class ActivationFrm extends javax.swing.JFrame {
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(key1TXT, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(key2TXT, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(key3TXT, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(key4TXT, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(key1TXT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(key2TXT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(key3TXT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(key4TXT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
+        jPanel2Layout
+                .setHorizontalGroup(
+                        jPanel2Layout
+                                .createParallelGroup(
+                                        javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addComponent(key1TXT, javax.swing.GroupLayout.PREFERRED_SIZE, 90,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, 0)
+                                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, 0)
+                                        .addComponent(key2TXT, javax.swing.GroupLayout.PREFERRED_SIZE, 90,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, 0)
+                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 30,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, 0)
+                                        .addComponent(key3TXT, javax.swing.GroupLayout.PREFERRED_SIZE, 90,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, 0)
+                                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, 0).addComponent(key4TXT, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                90, javax.swing.GroupLayout.PREFERRED_SIZE)));
+        jPanel2Layout.setVerticalGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(key1TXT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(key2TXT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 30,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(key3TXT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30,
+                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(key4TXT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE));
 
         jButton2.setFont(new java.awt.Font("Cambria", 1, 24)); // NOI18N
         jButton2.setForeground(new java.awt.Color(0, 204, 51));
@@ -197,67 +209,71 @@ public class ActivationFrm extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 0, 0));
         jLabel5.setText("Activation Key is sent to you via Email or Phone. !!");
-        jLabel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Reminder", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12), new java.awt.Color(0, 0, 204))); // NOI18N
+        jLabel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Reminder",
+                javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
+                new java.awt.Font("Tahoma", 1, 12), new java.awt.Color(0, 0, 204))); // NOI18N
 
         jTextArea1.setEditable(false);
         jTextArea1.setColumns(20);
         jTextArea1.setFont(new java.awt.Font("Calibri Light", 1, 13)); // NOI18N
         jTextArea1.setLineWrap(true);
         jTextArea1.setRows(5);
-        jTextArea1.setText(">>  Your System must be a genuine Copy\n>>  Call or Text +254708113456 for payment Information\n>>  Make your Payment as Instructed\n>>  Activate the system using the Activation Key Sent to You");
+        jTextArea1.setText(
+                ">>  Your System must be a genuine Copy\n>>  Call or Text +254708113456 for payment Information\n>>  Make your Payment as Instructed\n>>  Activate the system using the Activation Key Sent to You");
         jTextArea1.setWrapStyleWord(true);
         jTextArea1.setAutoscrolls(false);
-        jTextArea1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Procedure", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Cambria Math", 1, 12), new java.awt.Color(0, 204, 51))); // NOI18N
+        jTextArea1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Procedure",
+                javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
+                new java.awt.Font("Cambria Math", 1, 12), new java.awt.Color(0, 204, 51))); // NOI18N
         jTextArea1.setOpaque(false);
         jScrollPane1.setViewportView(jTextArea1);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(81, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(59, 59, 59))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(4, 4, 4)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(36, 36, 36)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(24, 24, 24))
-        );
+        jPanel1Layout.setHorizontalGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addContainerGap(81, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        Short.MAX_VALUE)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 206,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(59, 59, 59)));
+        jPanel1Layout.setVerticalGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup().addGap(30, 30, 30)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 38,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(4, 4, 4)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 133,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(36, 36, 36).addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 37,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(24, 24, 24)));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
+        layout.setHorizontalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(
+                jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
+        layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(
+                jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
 
         setSize(new java.awt.Dimension(602, 392));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton2ActionPerformed
         Activate();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }// GEN-LAST:event_jButton2ActionPerformed
 
-    private void key1TXTKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_key1TXTKeyTyped
+    private void key1TXTKeyTyped(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_key1TXTKeyTyped
         int count = key1TXT.getText().length();
         if (count >= 4) {
             evt.consume();
@@ -265,9 +281,9 @@ public class ActivationFrm extends javax.swing.JFrame {
             key2TXT.setText(c);
             key2TXT.requestFocus();
         }
-    }//GEN-LAST:event_key1TXTKeyTyped
+    }// GEN-LAST:event_key1TXTKeyTyped
 
-    private void key2TXTKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_key2TXTKeyTyped
+    private void key2TXTKeyTyped(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_key2TXTKeyTyped
         int count = key2TXT.getText().length();
         if (count >= 4) {
             evt.consume();
@@ -275,9 +291,9 @@ public class ActivationFrm extends javax.swing.JFrame {
             key3TXT.setText(c);
             key3TXT.requestFocus();
         }
-    }//GEN-LAST:event_key2TXTKeyTyped
+    }// GEN-LAST:event_key2TXTKeyTyped
 
-    private void key3TXTKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_key3TXTKeyTyped
+    private void key3TXTKeyTyped(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_key3TXTKeyTyped
         int count = key3TXT.getText().length();
         if (count >= 4) {
             evt.consume();
@@ -285,40 +301,43 @@ public class ActivationFrm extends javax.swing.JFrame {
             key4TXT.setText(c);
             key4TXT.requestFocus();
         }
-    }//GEN-LAST:event_key3TXTKeyTyped
+    }// GEN-LAST:event_key3TXTKeyTyped
 
-    private void key4TXTKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_key4TXTKeyTyped
+    private void key4TXTKeyTyped(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_key4TXTKeyTyped
         int count = key4TXT.getText().length();
         if (count >= 4) {
             evt.consume();
         }
-    }//GEN-LAST:event_key4TXTKeyTyped
+    }// GEN-LAST:event_key4TXTKeyTyped
 
-    private void key1TXTKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_key1TXTKeyReleased
+    private void key1TXTKeyReleased(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_key1TXTKeyReleased
         key1TXT.setText(key1TXT.getText().toUpperCase());
-    }//GEN-LAST:event_key1TXTKeyReleased
+    }// GEN-LAST:event_key1TXTKeyReleased
 
-    private void key2TXTKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_key2TXTKeyReleased
+    private void key2TXTKeyReleased(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_key2TXTKeyReleased
         key2TXT.setText(key2TXT.getText().toUpperCase());
-    }//GEN-LAST:event_key2TXTKeyReleased
+    }// GEN-LAST:event_key2TXTKeyReleased
 
-    private void key3TXTKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_key3TXTKeyReleased
+    private void key3TXTKeyReleased(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_key3TXTKeyReleased
         key3TXT.setText(key3TXT.getText().toUpperCase());
-    }//GEN-LAST:event_key3TXTKeyReleased
+    }// GEN-LAST:event_key3TXTKeyReleased
 
-    private void key4TXTKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_key4TXTKeyReleased
+    private void key4TXTKeyReleased(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_key4TXTKeyReleased
         key4TXT.setText(key4TXT.getText().toUpperCase());
-    }//GEN-LAST:event_key4TXTKeyReleased
+    }// GEN-LAST:event_key4TXTKeyReleased
 
-    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {// GEN-FIRST:event_formWindowClosing
 
-    }//GEN-LAST:event_formWindowClosing
-    
+    }// GEN-LAST:event_formWindowClosing
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+        // <editor-fold defaultstate="collapsed" desc=" Look and feel setting code
+        // (optional) ">
+        /*
+         * If Nimbus (introduced in Java SE 6) is not available, stay with the default
+         * look and feel. For details see
+         * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -328,16 +347,20 @@ public class ActivationFrm extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ActivationFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ActivationFrm.class.getName()).log(java.util.logging.Level.SEVERE, null,
+                    ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ActivationFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ActivationFrm.class.getName()).log(java.util.logging.Level.SEVERE, null,
+                    ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ActivationFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ActivationFrm.class.getName()).log(java.util.logging.Level.SEVERE, null,
+                    ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ActivationFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ActivationFrm.class.getName()).log(java.util.logging.Level.SEVERE, null,
+                    ex);
         }
-        //</editor-fold>
-        //</editor-fold>
+        // </editor-fold>
+        // </editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {

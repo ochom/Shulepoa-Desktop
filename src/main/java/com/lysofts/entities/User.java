@@ -9,7 +9,7 @@ import com.lysofts.annotations.Table;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 @Table(name = "user")
 public class User {

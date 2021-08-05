@@ -40,7 +40,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
     PreparedStatement pst;
     ResultSet rs;
 
-    //project
+    // project
     DefaultTableModel model1, model2, model3;
     String project_title = "";
     int no_of_subjects = 0;
@@ -76,13 +76,14 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         model2 = (DefaultTableModel) table_students.getModel();
         try {
             model2.setRowCount(0);
-            pst = Conn.prepareStatement("SELECT * FROM Student_details WHERE Student_Class='" + classname + "' ORDER BY (Student_ID+0) ASC");
+            pst = Conn.prepareStatement("SELECT * FROM Student_details WHERE Student_Class='" + classname
+                    + "' ORDER BY (Student_ID+0) ASC");
             rs = pst.executeQuery();
             while (rs.next()) {
                 String adm = rs.getString("Student_ID");
                 String Name = rs.getString("Student_Name");
                 String Gender = rs.getString("Gender");
-                model2.addRow(new Object[]{false, adm, "", Name, Gender});
+                model2.addRow(new Object[] { false, adm, "", Name, Gender });
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "System Err : " + e, "Error", 1);
@@ -107,7 +108,8 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
             model3 = new DefaultTableModel(null, column_names);
             model3.setRowCount(0);
 
-            pst = Conn.prepareStatement("SELECT * FROM tbl_kcse_marks WHERE project_title='" + project_title + "' ORDER BY (index_no + 0) ASC,(adm + 0) ASC");
+            pst = Conn.prepareStatement("SELECT * FROM tbl_kcse_marks WHERE project_title='" + project_title
+                    + "' ORDER BY (index_no + 0) ASC,(adm + 0) ASC");
             rs = pst.executeQuery();
             String[] row_data = null;
             while (rs.next()) {
@@ -177,8 +179,8 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
             return p;
         }
         float mp = Math.round(Float.parseFloat(String.valueOf(Integer.parseInt(Total_Points) / 7.00)));
-        double[] checks = {11.43, 10.43, 9.43, 8.43, 7.43, 6.43, 5.43, 4.43, 3.43, 2.43, 1.43, 0};
-        String[] grades = {"A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "E"};
+        double[] checks = { 11.43, 10.43, 9.43, 8.43, 7.43, 6.43, 5.43, 4.43, 3.43, 2.43, 1.43, 0 };
+        String[] grades = { "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "E" };
         int i = 0;
         for (double k : checks) {
             if (k > mp) {
@@ -190,9 +192,12 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
     private void CalculateStudentsPositions() {
         try {
-            String position = "(1+(SELECT COUNT(*) FROM tbl_kcse_marks as t2 WHERE ((t2.total_p+0)>(tbl_kcse_marks.total_p+0) AND t2.project_title='" + project_title + "')))";
-            String gender_position = "(1+(SELECT COUNT(*) FROM tbl_kcse_marks as t2 WHERE ((t2.total_p+0)>(tbl_kcse_marks.total_p+0) AND t2.sex=tbl_kcse_marks.sex AND t2.project_title='" + project_title + "')))";
-            pst = Conn.prepareStatement("UPDATE tbl_kcse_marks SET position=" + position + ",gender_position=" + gender_position + " WHERE project_title='" + project_title + "'");
+            String position = "(1+(SELECT COUNT(*) FROM tbl_kcse_marks as t2 WHERE ((t2.total_p+0)>(tbl_kcse_marks.total_p+0) AND t2.project_title='"
+                    + project_title + "')))";
+            String gender_position = "(1+(SELECT COUNT(*) FROM tbl_kcse_marks as t2 WHERE ((t2.total_p+0)>(tbl_kcse_marks.total_p+0) AND t2.sex=tbl_kcse_marks.sex AND t2.project_title='"
+                    + project_title + "')))";
+            pst = Conn.prepareStatement("UPDATE tbl_kcse_marks SET position=" + position + ",gender_position="
+                    + gender_position + " WHERE project_title='" + project_title + "'");
             pst.executeUpdate();
 
             registerSubjectsForRanking();
@@ -203,7 +208,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
     private void registerSubjectsForRanking() {
         try {
-            SubsForRanking = new ArrayList();
+            SubsForRanking = new ArrayList<>();
             rs = Conn.prepareStatement("SELECT * FROM Subjects").executeQuery();
             int i = 0;
             while (rs.next()) {
@@ -211,60 +216,129 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
                 String subject_name = rs.getString("Subject_name");
                 String sub_p = "sub_" + i + "_p";
                 String sub_g = "sub_" + i + "_g";
-                int entry = ConnClass.CountRows("SELECT count(*) as total FROM tblstudents_subjects WHERE SS_Subject_name='" + subject_name + "' AND SS_Student_id IN (SELECT adm from tbl_kcse_marks WHERE project_title='" + project_title + "')");
-                String sub_mean = String.valueOf(Float.parseFloat(ConnClass.QueryWithResult("SELECT sum(" + sub_p + ")  AS field1 from tbl_kcse_marks WHERE (project_title='" + project_title + "')").getString("field1")) / entry * 1.0);
+                int entry = ConnClass.CountRows(
+                        "SELECT count(*) as total FROM tblstudents_subjects WHERE SS_Subject_name='" + subject_name
+                                + "' AND SS_Student_id IN (SELECT adm from tbl_kcse_marks WHERE project_title='"
+                                + project_title + "')");
+                String sub_mean = String.valueOf(Float.parseFloat(ConnClass
+                        .QueryWithResult("SELECT sum(" + sub_p
+                                + ")  AS field1 from tbl_kcse_marks WHERE (project_title='" + project_title + "')")
+                        .getString("field1")) / entry * 1.0);
 
-                int b_entry = ConnClass.CountRows("SELECT count(*) as total FROM tblstudents_subjects WHERE SS_Subject_name='" + subject_name + "' AND SS_Student_id IN (SELECT adm from tbl_kcse_marks WHERE project_title='" + project_title + "' AND sex='Male')");
-                int bA = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Male' AND " + sub_g + " ='A')");
-                int bA_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Male' AND " + sub_g + " ='A-')");
-                int bB_plus = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Male' AND " + sub_g + " ='B+')");
-                int bB = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Male' AND " + sub_g + " ='B')");
-                int bB_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Male' AND " + sub_g + " ='B-')");
-                int bC_plus = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Male' AND " + sub_g + " ='C+')");
-                int bC = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Male' AND " + sub_g + " ='C')");
-                int bC_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Male' AND " + sub_g + " ='C-')");
-                int bD_plus = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Male' AND " + sub_g + " ='D+')");
-                int bD = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Male' AND " + sub_g + " ='D')");
-                int bD_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Male' AND " + sub_g + " ='D-')");
-                int bE = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Male' AND " + sub_g + " ='E')");
-                int bX = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Male' AND " + sub_g + " ='X')");
-                int bY = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Male' AND " + sub_g + " ='Y')");
+                int b_entry = ConnClass.CountRows(
+                        "SELECT count(*) as total FROM tblstudents_subjects WHERE SS_Subject_name='" + subject_name
+                                + "' AND SS_Student_id IN (SELECT adm from tbl_kcse_marks WHERE project_title='"
+                                + project_title + "' AND sex='Male')");
+                int bA = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Male' AND " + sub_g + " ='A')");
+                int bA_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Male' AND " + sub_g + " ='A-')");
+                int bB_plus = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Male' AND " + sub_g + " ='B+')");
+                int bB = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Male' AND " + sub_g + " ='B')");
+                int bB_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Male' AND " + sub_g + " ='B-')");
+                int bC_plus = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Male' AND " + sub_g + " ='C+')");
+                int bC = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Male' AND " + sub_g + " ='C')");
+                int bC_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Male' AND " + sub_g + " ='C-')");
+                int bD_plus = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Male' AND " + sub_g + " ='D+')");
+                int bD = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Male' AND " + sub_g + " ='D')");
+                int bD_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Male' AND " + sub_g + " ='D-')");
+                int bE = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Male' AND " + sub_g + " ='E')");
+                int bX = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Male' AND " + sub_g + " ='X')");
+                int bY = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Male' AND " + sub_g + " ='Y')");
 
-                String b_m_points = String.valueOf(Float.parseFloat(ConnClass.QueryWithResult("SELECT sum(" + sub_p + ") AS field1 from tbl_kcse_marks WHERE (project_title='" + project_title + "' AND  Sex='Male')").getString("field1")) / b_entry * 1.0);
+                String b_m_points = String
+                        .valueOf(Float
+                                .parseFloat(ConnClass.QueryWithResult(
+                                        "SELECT sum(" + sub_p + ") AS field1 from tbl_kcse_marks WHERE (project_title='"
+                                                + project_title + "' AND  Sex='Male')")
+                                        .getString("field1"))
+                                / b_entry * 1.0);
 
-                int g_entry = ConnClass.CountRows("SELECT count(*) as total FROM tblstudents_subjects WHERE SS_Subject_name='" + subject_name + "' AND SS_Student_id IN (SELECT adm from tbl_kcse_marks WHERE project_title='" + project_title + "' AND sex='Female')");
-                int gA = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Female' AND " + sub_g + " ='A')");
-                int gA_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Female' AND " + sub_g + " ='A-')");
-                int gB_plus = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Female' AND " + sub_g + " ='B+')");
-                int gB = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Female' AND " + sub_g + " ='B')");
-                int gB_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Female' AND " + sub_g + " ='B-')");
-                int gC_plus = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Female' AND " + sub_g + " ='C+')");
-                int gC = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Female' AND " + sub_g + " ='C')");
-                int gC_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Female' AND " + sub_g + " ='C-')");
-                int gD_plus = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Female' AND " + sub_g + " ='D+')");
-                int gD = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Female' AND " + sub_g + " ='D')");
-                int gD_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Female' AND " + sub_g + " ='D-')");
-                int gE = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Female' AND " + sub_g + " ='E')");
-                int gX = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Female' AND " + sub_g + " ='X')");
-                int gY = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND Sex='Female' AND " + sub_g + " ='Y')");
-                String g_m_points = String.valueOf(Float.parseFloat(ConnClass.QueryWithResult("SELECT sum(" + sub_p + ") AS field1 from tbl_kcse_marks WHERE (project_title='" + project_title + "' AND  Sex='Female')").getString("field1")) / b_entry * 1.0);
+                int g_entry = ConnClass.CountRows(
+                        "SELECT count(*) as total FROM tblstudents_subjects WHERE SS_Subject_name='" + subject_name
+                                + "' AND SS_Student_id IN (SELECT adm from tbl_kcse_marks WHERE project_title='"
+                                + project_title + "' AND sex='Female')");
+                int gA = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Female' AND " + sub_g + " ='A')");
+                int gA_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Female' AND " + sub_g + " ='A-')");
+                int gB_plus = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Female' AND " + sub_g + " ='B+')");
+                int gB = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Female' AND " + sub_g + " ='B')");
+                int gB_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Female' AND " + sub_g + " ='B-')");
+                int gC_plus = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Female' AND " + sub_g + " ='C+')");
+                int gC = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Female' AND " + sub_g + " ='C')");
+                int gC_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Female' AND " + sub_g + " ='C-')");
+                int gD_plus = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Female' AND " + sub_g + " ='D+')");
+                int gD = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Female' AND " + sub_g + " ='D')");
+                int gD_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Female' AND " + sub_g + " ='D-')");
+                int gE = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Female' AND " + sub_g + " ='E')");
+                int gX = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Female' AND " + sub_g + " ='X')");
+                int gY = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND Sex='Female' AND " + sub_g + " ='Y')");
+                String g_m_points = String
+                        .valueOf(Float
+                                .parseFloat(ConnClass.QueryWithResult(
+                                        "SELECT sum(" + sub_p + ") AS field1 from tbl_kcse_marks WHERE (project_title='"
+                                                + project_title + "' AND  Sex='Female')")
+                                        .getString("field1"))
+                                / b_entry * 1.0);
 
-                int oA = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND " + sub_g + " ='A')");
-                int oA_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND " + sub_g + " ='A-')");
-                int oB_plus = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND " + sub_g + " ='B+')");
-                int oB = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND " + sub_g + " ='B')");
-                int oB_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND " + sub_g + " ='B-')");
-                int oC_plus = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND " + sub_g + " ='C+')");
-                int oC = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND " + sub_g + " ='C')");
-                int oC_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND " + sub_g + " ='C-')");
-                int oD_plus = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND " + sub_g + " ='D+')");
-                int oD = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND " + sub_g + " ='D')");
-                int oD_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND " + sub_g + " ='D-')");
-                int oE = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND " + sub_g + " ='E')");
-                int oX = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND " + sub_g + " ='X')");
-                int oY = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND " + sub_g + " ='Y')");
+                int oA = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND " + sub_g + " ='A')");
+                int oA_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND " + sub_g + " ='A-')");
+                int oB_plus = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND " + sub_g + " ='B+')");
+                int oB = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND " + sub_g + " ='B')");
+                int oB_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND " + sub_g + " ='B-')");
+                int oC_plus = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND " + sub_g + " ='C+')");
+                int oC = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND " + sub_g + " ='C')");
+                int oC_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND " + sub_g + " ='C-')");
+                int oD_plus = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND " + sub_g + " ='D+')");
+                int oD = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND " + sub_g + " ='D')");
+                int oD_min = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND " + sub_g + " ='D-')");
+                int oE = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND " + sub_g + " ='E')");
+                int oX = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND " + sub_g + " ='X')");
+                int oY = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                        + project_title + "' AND " + sub_g + " ='Y')");
 
-                SubsForRanking.add(new Subject(subject_name, sub_mean, null, entry, b_entry, bA, bA_min, bB_plus, bB, bB_min, bC_plus, bC, bC_min, bD_plus, bD, bD_min, bE, bX, bY, b_m_points, g_entry, gA, gA_min, gB_plus, gB, gB_min, gC_plus, gC, gC_min, gD_plus, gD, gD_min, gE, gX, gY, g_m_points, oA, oA_min, oB_plus, oB, oB_min, oC_plus, oC, oC_min, oD_plus, oD, oD_min, oE, oX, oY));
+                SubsForRanking.add(new Subject(subject_name, sub_mean, null, entry, b_entry, bA, bA_min, bB_plus, bB,
+                        bB_min, bC_plus, bC, bC_min, bD_plus, bD, bD_min, bE, bX, bY, b_m_points, g_entry, gA, gA_min,
+                        gB_plus, gB, gB_min, gC_plus, gC, gC_min, gD_plus, gD, gD_min, gE, gX, gY, g_m_points, oA,
+                        oA_min, oB_plus, oB, oB_min, oC_plus, oC, oC_min, oD_plus, oD, oD_min, oE, oX, oY));
             }
         } catch (SQLException ex) {
             Logger.getLogger(KCSE_AnalysisFrm.class.getName()).log(Level.SEVERE, null, ex);
@@ -273,11 +347,11 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         SubsForRanking.forEach((sub) -> {
             String vals = "";
             for (Object SubjectArrayDetail : sub.SubjectArrayDetails()) {
-                vals += "\'"+SubjectArrayDetail+"\'" + ",";
+                vals += "\'" + SubjectArrayDetail + "\'" + ",";
             }
             String subs = vals.substring(0, vals.lastIndexOf(","));
-            //System.out.println(subs);
-            ConnClass.Query("INSERT INTO tbl_kcse_subject_ranks VALUES ("+subs+")");
+            // System.out.println(subs);
+            ConnClass.Query("INSERT INTO tbl_kcse_subject_ranks VALUES (" + subs + ")");
         });
         String position = "1+(SELECT count(*) FROM tbl_kcse_subject_ranks as t2 WHERE t2.mean_points+0>tbl_kcse_subject_ranks.mean_points+0)";
         ConnClass.Query("UPDATE tbl_kcse_subject_ranks SET position=" + position + "");
@@ -297,7 +371,12 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
         int oA, oA_min, oB_plus, oB, oB_min, oC_plus, oC, oC_min, oD_plus, oD, oD_min, oE, oX, oY;
 
-        public Subject(String name, String sub_mean, String position, int entry, int b_entry, int bA, int bA_min, int bB_plus, int bB, int bB_min, int bC_plus, int bC, int bC_min, int bD_plus, int bD, int bD_min, int bE, int bX, int bY, String b_m_points, int g_entry, int gA, int gA_min, int gB_plus, int gB, int gB_min, int gC_plus, int gC, int gC_min, int gD_plus, int gD, int gD_min, int gE, int gX, int gY, String g_m_points, int oA, int oA_min, int oB_plus, int oB, int oB_min, int oC_plus, int oC, int oC_min, int oD_plus, int oD, int oD_min, int oE, int oX, int oY) {
+        public Subject(String name, String sub_mean, String position, int entry, int b_entry, int bA, int bA_min,
+                int bB_plus, int bB, int bB_min, int bC_plus, int bC, int bC_min, int bD_plus, int bD, int bD_min,
+                int bE, int bX, int bY, String b_m_points, int g_entry, int gA, int gA_min, int gB_plus, int gB,
+                int gB_min, int gC_plus, int gC, int gC_min, int gD_plus, int gD, int gD_min, int gE, int gX, int gY,
+                String g_m_points, int oA, int oA_min, int oB_plus, int oB, int oB_min, int oC_plus, int oC, int oC_min,
+                int oD_plus, int oD, int oD_min, int oE, int oX, int oY) {
             this.name = name;
             this.mean = sub_mean;
             this.position = position;
@@ -351,7 +430,10 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         }
 
         public Object[] SubjectArrayDetails() {
-            return new Object[]{name, mean, null, entry, b_entry, bA, bA_min, bB_plus, bB, bB_min, bC_plus, bC, bC_min, bD_plus, bD, bD_min, bE, bX, bY, b_m_points, g_entry, gA, gA_min, gB_plus, gB, gB_min, gC_plus, gC, gC_min, gD_plus, gD, gD_min, gE, gX, gY, g_m_points, oA, oA_min, oB_plus, oB, oB_min, oC_plus, oC, oC_min, oD_plus, oD, oD_min, oE, oX, oY};
+            return new Object[] { name, mean, null, entry, b_entry, bA, bA_min, bB_plus, bB, bB_min, bC_plus, bC,
+                    bC_min, bD_plus, bD, bD_min, bE, bX, bY, b_m_points, g_entry, gA, gA_min, gB_plus, gB, gB_min,
+                    gC_plus, gC, gC_min, gD_plus, gD, gD_min, gE, gX, gY, g_m_points, oA, oA_min, oB_plus, oB, oB_min,
+                    oC_plus, oC, oC_min, oD_plus, oD, oD_min, oE, oX, oY };
         }
 
         public String getName() {
@@ -562,7 +644,8 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
      * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated
+    // Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         OpenProjectDLG = new javax.swing.JDialog();
@@ -622,20 +705,13 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 255, 204)));
 
         table_projects_list.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        table_projects_list.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
+        table_projects_list.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {
 
-            },
-            new String [] {
-                "Project", "Title"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false
-            };
+        }, new String[] { "Project", "Title" }) {
+            boolean[] canEdit = new boolean[] { false, false };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
+                return canEdit[columnIndex];
             }
         });
         table_projects_list.setFillsViewportHeight(true);
@@ -659,31 +735,27 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 357, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
+        jPanel6Layout.setHorizontalGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel6Layout.createSequentialGroup().addContainerGap()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap()));
+        jPanel6Layout
+                .setVerticalGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel6Layout.createSequentialGroup().addContainerGap().addComponent(jScrollPane1,
+                                javax.swing.GroupLayout.PREFERRED_SIZE, 357, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap()));
 
         javax.swing.GroupLayout OpenProjectDLGLayout = new javax.swing.GroupLayout(OpenProjectDLG.getContentPane());
         OpenProjectDLG.getContentPane().setLayout(OpenProjectDLGLayout);
-        OpenProjectDLGLayout.setHorizontalGroup(
-            OpenProjectDLGLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
-        OpenProjectDLGLayout.setVerticalGroup(
-            OpenProjectDLGLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
+        OpenProjectDLGLayout
+                .setHorizontalGroup(OpenProjectDLGLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE));
+        OpenProjectDLGLayout
+                .setVerticalGroup(OpenProjectDLGLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE));
 
         NewProjectDLG.setTitle("Enter Project Title");
         NewProjectDLG.setType(java.awt.Window.Type.UTILITY);
@@ -714,51 +786,48 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txt_no_of_subjects)
-                    .addComponent(txtProjectTitle)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 160, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtProjectTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txt_no_of_subjects, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(70, Short.MAX_VALUE))
-        );
+        jPanel5Layout.setHorizontalGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel5Layout.createSequentialGroup().addContainerGap().addGroup(jPanel5Layout
+                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(txt_no_of_subjects)
+                        .addComponent(txtProjectTitle)
+                        .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel1).addComponent(jLabel7,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE, 288,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 160, Short.MAX_VALUE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                                jPanel5Layout.createSequentialGroup().addGap(0, 0, Short.MAX_VALUE).addComponent(
+                                        jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 149,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap()));
+        jPanel5Layout
+                .setVerticalGroup(
+                        jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel5Layout.createSequentialGroup().addContainerGap().addComponent(jLabel1)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtProjectTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 29,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18).addComponent(jLabel7)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txt_no_of_subjects, javax.swing.GroupLayout.PREFERRED_SIZE, 29,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addContainerGap(70, Short.MAX_VALUE)));
 
         javax.swing.GroupLayout NewProjectDLGLayout = new javax.swing.GroupLayout(NewProjectDLG.getContentPane());
         NewProjectDLG.getContentPane().setLayout(NewProjectDLGLayout);
         NewProjectDLGLayout.setHorizontalGroup(
-            NewProjectDLGLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        NewProjectDLGLayout.setVerticalGroup(
-            NewProjectDLGLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(NewProjectDLGLayout.createSequentialGroup()
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
+                NewProjectDLGLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(jPanel5,
+                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
+        NewProjectDLGLayout
+                .setVerticalGroup(NewProjectDLGLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(NewProjectDLGLayout.createSequentialGroup()
+                                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)));
 
         SelectStudentsDLG.setTitle("Select students");
         SelectStudentsDLG.setType(java.awt.Window.Type.UTILITY);
@@ -776,27 +845,19 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         jLabel4.setText("Find By Admission Number or name");
 
         table_students.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        table_students.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
+        table_students.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {
 
-            },
-            new String [] {
-                "#", "ADM", "Index No.", "NAME", "Gender"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Boolean.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
-            };
-            boolean[] canEdit = new boolean [] {
-                true, false, true, false, false
-            };
+        }, new String[] { "#", "ADM", "Index No.", "NAME", "Gender" }) {
+            Class[] types = new Class[] { java.lang.Boolean.class, java.lang.Object.class, java.lang.Object.class,
+                    java.lang.Object.class, java.lang.Object.class };
+            boolean[] canEdit = new boolean[] { true, false, true, false, false };
 
             public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
+                return types[columnIndex];
             }
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
+                return canEdit[columnIndex];
             }
         });
         table_students.setFillsViewportHeight(true);
@@ -830,9 +891,11 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         comboForm.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
             public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
             }
+
             public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
                 comboFormPopupMenuWillBecomeInvisible(evt);
             }
+
             public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
             }
         });
@@ -853,78 +916,88 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
-                            .addGap(29, 29, 29)
-                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(ProgressNo, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
-                            .addGap(20, 20, 20)
-                            .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 754, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 772, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(comboForm, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(39, 39, 39)
-                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jTextField2)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                .addContainerGap(14, Short.MAX_VALUE))
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(comboForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCheckBox1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
+        jPanel4Layout.setHorizontalGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel4Layout.createSequentialGroup().addGroup(jPanel4Layout
+                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING,
+                                        jPanel4Layout.createSequentialGroup().addGap(29, 29, 29)
+                                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 101,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 270,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                                                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(ProgressNo, javax.swing.GroupLayout.PREFERRED_SIZE, 85,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING,
+                                        jPanel4Layout.createSequentialGroup().addGap(20, 20, 20).addComponent(
+                                                jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 754,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel4Layout.createSequentialGroup().addGap(20, 20, 20).addGroup(jPanel4Layout
+                                .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 91,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 772,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(jPanel4Layout.createSequentialGroup()
+                                        .addGroup(jPanel4Layout
+                                                .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                .addComponent(comboForm, 0, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                        Short.MAX_VALUE)
+                                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 189,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(39, 39, 39)
+                                        .addGroup(jPanel4Layout
+                                                .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                .addComponent(jTextField2).addComponent(jLabel4,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 233,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                        .addContainerGap(14, Short.MAX_VALUE)));
+        jPanel4Layout.setVerticalGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel4Layout.createSequentialGroup().addContainerGap()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(ProgressNo, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(40, 40, 40))
-        );
+                                .addComponent(jLabel3).addComponent(jLabel4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(comboForm, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(jCheckBox1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 354,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel4Layout.createSequentialGroup().addGap(15, 15, 15)
+                                        .addGroup(jPanel4Layout
+                                                .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                .addComponent(jLabel5).addComponent(ProgressNo,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 15,
+                                                        javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 31,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(jProgressBar1,
+                                javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(40, 40, 40)));
 
-        javax.swing.GroupLayout SelectStudentsDLGLayout = new javax.swing.GroupLayout(SelectStudentsDLG.getContentPane());
+        javax.swing.GroupLayout SelectStudentsDLGLayout = new javax.swing.GroupLayout(
+                SelectStudentsDLG.getContentPane());
         SelectStudentsDLG.getContentPane().setLayout(SelectStudentsDLGLayout);
         SelectStudentsDLGLayout.setHorizontalGroup(
-            SelectStudentsDLGLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(SelectStudentsDLGLayout.createSequentialGroup()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        SelectStudentsDLGLayout.setVerticalGroup(
-            SelectStudentsDLGLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(SelectStudentsDLGLayout.createSequentialGroup()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
+                SelectStudentsDLGLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(SelectStudentsDLGLayout.createSequentialGroup()
+                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)));
+        SelectStudentsDLGLayout
+                .setVerticalGroup(SelectStudentsDLGLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(SelectStudentsDLGLayout.createSequentialGroup()
+                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)));
 
         progressDlg.setUndecorated(true);
         progressDlg.setResizable(false);
@@ -947,41 +1020,38 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(114, 114, 114)
-                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(ProgressNo1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jProgressBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 527, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(ProgressNo1, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jProgressBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
+        jPanel3Layout.setHorizontalGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createSequentialGroup().addContainerGap()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(jPanel3Layout.createSequentialGroup().addGap(114, 114, 114)
+                                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 270,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(ProgressNo1, javax.swing.GroupLayout.PREFERRED_SIZE, 39,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jProgressBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 527,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap()));
+        jPanel3Layout.setVerticalGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createSequentialGroup().addContainerGap()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel6).addComponent(ProgressNo1, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        15, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(jProgressBar2,
+                                javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap()));
 
         javax.swing.GroupLayout progressDlgLayout = new javax.swing.GroupLayout(progressDlg.getContentPane());
         progressDlg.getContentPane().setLayout(progressDlgLayout);
         progressDlgLayout.setHorizontalGroup(
-            progressDlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
+                progressDlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(jPanel3,
+                        javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE));
         progressDlgLayout.setVerticalGroup(
-            progressDlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
+                progressDlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(jPanel3,
+                        javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+                        javax.swing.GroupLayout.PREFERRED_SIZE));
 
         ViewReportsDlg.setType(java.awt.Window.Type.UTILITY);
 
@@ -1056,55 +1126,59 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
-        jPanel7Layout.setHorizontalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                        .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                        .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(20, 20, 20))
-        );
+        jPanel7Layout.setHorizontalGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel7Layout.createSequentialGroup().addGap(18, 18, 18).addGroup(jPanel7Layout
+                        .createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jButton11, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
+                                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(18, 18, 18).addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 298,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING,
+                                jPanel7Layout.createSequentialGroup()
+                                        .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 200,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 161,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 200,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(20, 20, 20)));
 
-        jPanel7Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jButton10, jButton8, jButton9});
+        jPanel7Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL,
+                new java.awt.Component[] { jButton10, jButton8, jButton9 });
 
-        jPanel7Layout.setVerticalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(33, 33, 33)
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(32, 32, 32)
-                .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(50, Short.MAX_VALUE))
-        );
+        jPanel7Layout.setVerticalGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel7Layout.createSequentialGroup().addGap(27, 27, 27)
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 54,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 54,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(33, 33, 33)
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 54,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 54,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 54,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(32, 32, 32).addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 54,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(50, Short.MAX_VALUE)));
 
         javax.swing.GroupLayout ViewReportsDlgLayout = new javax.swing.GroupLayout(ViewReportsDlg.getContentPane());
         ViewReportsDlg.getContentPane().setLayout(ViewReportsDlgLayout);
-        ViewReportsDlgLayout.setHorizontalGroup(
-            ViewReportsDlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        ViewReportsDlgLayout.setVerticalGroup(
-            ViewReportsDlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
+        ViewReportsDlgLayout.setHorizontalGroup(ViewReportsDlgLayout
+                .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(jPanel7,
+                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
+        ViewReportsDlgLayout.setVerticalGroup(ViewReportsDlgLayout
+                .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(jPanel7,
+                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Custom Exams Analysis");
@@ -1119,14 +1193,11 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(153, 255, 204));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {
 
-            },
-            new String [] {
+        }, new String[] {
 
-            }
-        ));
+        }));
         jTable1.setFillsViewportHeight(true);
         jTable1.setGridColor(new java.awt.Color(204, 204, 204));
         jTable1.setRowHeight(25);
@@ -1138,21 +1209,19 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-            .addComponent(jScrollPane3)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 455, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
+        jPanel2Layout.setHorizontalGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                        jPanel2Layout.createSequentialGroup().addContainerGap()
+                                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addContainerGap())
+                .addComponent(jScrollPane3));
+        jPanel2Layout.setVerticalGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 25,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED).addComponent(jScrollPane3,
+                                javax.swing.GroupLayout.PREFERRED_SIZE, 455, javax.swing.GroupLayout.PREFERRED_SIZE)));
 
         jButton3.setBackground(new java.awt.Color(255, 255, 255));
         jButton3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -1201,33 +1270,36 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(95, 95, 95)
-                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(31, 31, 31)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(262, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
-                    .addComponent(jButton4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(16, 16, 16))
-        );
+        jPanel1Layout
+                .setHorizontalGroup(
+                        jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel1Layout.createSequentialGroup().addContainerGap()
+                                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addContainerGap())
+                                .addGroup(jPanel1Layout.createSequentialGroup().addGap(95, 95, 95)
+                                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 134,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(31, 31, 31)
+                                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 114,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 148,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addContainerGap(262, Short.MAX_VALUE)));
+        jPanel1Layout.setVerticalGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup().addContainerGap()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
+                                .addComponent(jButton4, javax.swing.GroupLayout.Alignment.TRAILING,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        Short.MAX_VALUE)
+                                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(16, 16, 16)));
 
         jMenu1.setText("Projects");
 
@@ -1253,28 +1325,25 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
+        layout.setHorizontalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(
+                jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
+        layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)));
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem1ActionPerformed
         NewProjectDLG.pack();
         NewProjectDLG.setLocationRelativeTo(this);
         NewProjectDLG.setVisible(true);
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }// GEN-LAST:event_jMenuItem1ActionPerformed
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem2ActionPerformed
         OpenProjectDLG.pack();
         OpenProjectDLG.setLocationRelativeTo(this);
         OpenProjectDLG.setVisible(true);
@@ -1285,14 +1354,14 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
             pst = Conn.prepareStatement("SELECT * FROM tbl_kcse_year");
             rs = pst.executeQuery();
             while (rs.next()) {
-                model1.addRow(new Object[]{rs.getString("id"), rs.getString("project_title")});
+                model1.addRow(new Object[] { rs.getString("id"), rs.getString("project_title") });
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+    }// GEN-LAST:event_jMenuItem2ActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton1ActionPerformed
         project_title = txtProjectTitle.getText();
         no_of_subjects = Integer.parseInt(txt_no_of_subjects.getText());
         if (no_of_subjects < 7 || no_of_subjects > 15) {
@@ -1303,7 +1372,8 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Enter the title of the new project u want to create");
             return;
         }
-        int total_rows = ConnClass.CountRows("SELECT Count(*) AS total FROM tbl_kcse_year WHERE project_title='" + project_title + "'");
+        int total_rows = ConnClass
+                .CountRows("SELECT Count(*) AS total FROM tbl_kcse_year WHERE project_title='" + project_title + "'");
         if (total_rows == 0) {
             if (ConnClass.Query("insert into tbl_kcse_year (project_title) values ('" + project_title + "')")) {
                 this.setTitle(project_title);
@@ -1318,14 +1388,14 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "This project name is already used");
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }// GEN-LAST:event_jButton1ActionPerformed
 
-    private void comboFormPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_comboFormPopupMenuWillBecomeInvisible
+    private void comboFormPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {// GEN-FIRST:event_comboFormPopupMenuWillBecomeInvisible
         String classname = comboForm.getSelectedItem().toString();
         getStudents(classname);
-    }//GEN-LAST:event_comboFormPopupMenuWillBecomeInvisible
+    }// GEN-LAST:event_comboFormPopupMenuWillBecomeInvisible
 
-    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBox1ActionPerformed
         int rows = model2.getRowCount();
         if (jCheckBox1.isSelected()) {
             for (int i = 0; i < rows; i++) {
@@ -1336,21 +1406,22 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
                 model2.setValueAt(false, i, 0);
             }
         }
-    }//GEN-LAST:event_jCheckBox1ActionPerformed
+    }// GEN-LAST:event_jCheckBox1ActionPerformed
 
-    private void table_projects_listMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_projects_listMouseClicked
+    private void table_projects_listMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_table_projects_listMouseClicked
         project_title = model1.getValueAt(table_projects_list.getSelectedRow(), 1).toString();
         GetStudentsInExamsTable();
         jLabel2.setText(project_title + " Grades Entry Panel");
         this.setTitle(project_title);
         OpenProjectDLG.setVisible(false);
-    }//GEN-LAST:event_table_projects_listMouseClicked
+    }// GEN-LAST:event_table_projects_listMouseClicked
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton2ActionPerformed
         int rows = model2.getRowCount();
         int total_selected = 0;
         if (rows <= 0) {
-            JOptionPane.showMessageDialog(this, "There are not students on the list of selection", "NO Students", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "There are not students on the list of selection", "NO Students",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
         for (int i = 0; i < rows; i++) {
@@ -1359,7 +1430,8 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
             }
         }
         if (total_selected <= 0) {
-            JOptionPane.showMessageDialog(this, "You have not selected any student to add", "NO Student Selected", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "You have not selected any student to add", "NO Student Selected",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -1378,7 +1450,8 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
                     pst = Conn.prepareStatement("SELECT * FROM subjects");
                     rs = pst.executeQuery();
                     while (rs.next()) {
-                        String[] subjectsDetails = {rs.getString("S_NO"), rs.getString("Subject_Code"), rs.getString("Subject_name")};
+                        String[] subjectsDetails = { rs.getString("S_NO"), rs.getString("Subject_Code"),
+                                rs.getString("Subject_name") };
                         subjects.add(subjectsDetails);
                     }
                 } catch (Exception e) {
@@ -1398,9 +1471,12 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
                     if ((boolean) model2.getValueAt(i, 0)) {
                         try {
-                            int total_rows = ConnClass.CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='" + project_title + "' AND adm='" + adm + "')");
+                            int total_rows = ConnClass
+                                    .CountRows("SELECT count(*) as total FROM tbl_kcse_marks WHERE (project_title='"
+                                            + project_title + "' AND adm='" + adm + "')");
                             if (total_rows == 0) {
-                                pst = Conn.prepareStatement("INSERT INTO tbl_kcse_marks (project_title,adm,index_no,name,sex) values (?,?,?,?,?)");
+                                pst = Conn.prepareStatement(
+                                        "INSERT INTO tbl_kcse_marks (project_title,adm,index_no,name,sex) values (?,?,?,?,?)");
                                 pst.setString(1, project_title);
                                 pst.setString(2, adm);
                                 pst.setString(3, index_no);
@@ -1408,13 +1484,17 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
                                 pst.setString(5, sex);
                                 pst.executeUpdate();
                             }
-                            //loop through the subjects and update subject details
-                            //loop subjects
+                            // loop through the subjects and update subject details
+                            // loop subjects
                             for (String[] subject : subjects) {
-                                total_rows = ConnClass.CountRows("SELECT count(*) as total FROM tblstudents_subjects WHERE SS_Student_id='" + adm + "' AND SS_Subject_code='" + subject[1] + "'");
+                                total_rows = ConnClass.CountRows(
+                                        "SELECT count(*) as total FROM tblstudents_subjects WHERE SS_Student_id='" + adm
+                                                + "' AND SS_Subject_code='" + subject[1] + "'");
                                 if (total_rows > 0) {
                                     String s_code = "sub_" + subject[0] + "_C", s_name = "sub_" + subject[0] + "_N";
-                                    pst = Conn.prepareStatement("UPDATE tbl_kcse_marks SET " + s_code + "=?," + s_name + "=?" + " WHERE adm='" + adm + "' AND project_title='" + project_title + "'");
+                                    pst = Conn.prepareStatement("UPDATE tbl_kcse_marks SET " + s_code + "=?," + s_name
+                                            + "=?" + " WHERE adm='" + adm + "' AND project_title='" + project_title
+                                            + "'");
                                     pst.setString(1, subject[1]);
                                     pst.setString(2, subject[2]);
                                     pst.executeUpdate();
@@ -1424,11 +1504,13 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
                             publish(count);
                         } catch (Exception ex) {
                             ConnClass.printError(ex);
-                            JOptionPane.showMessageDialog(null, ex.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
+                            JOptionPane.showMessageDialog(null, ex.getMessage(), "Warning",
+                                    JOptionPane.WARNING_MESSAGE);
                         }
                     }
                 }
-                JOptionPane.showMessageDialog(null, "Students addded successfully", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Students addded successfully", "Info",
+                        JOptionPane.INFORMATION_MESSAGE);
                 GetStudentsInExamsTable();
                 return null;
             }
@@ -1451,19 +1533,20 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         };
 
         worker.execute();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }// GEN-LAST:event_jButton2ActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton5ActionPerformed
         if (project_title.equals("")) {
-            JOptionPane.showMessageDialog(this, "There is no open project. Create or open a project first", "Info", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "There is no open project. Create or open a project first", "Info",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else {
             SelectStudentsDLG.pack();
             SelectStudentsDLG.setLocationRelativeTo(this);
             SelectStudentsDLG.setVisible(true);
         }
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }// GEN-LAST:event_jButton5ActionPerformed
 
-    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {// GEN-FIRST:event_formWindowClosing
         try {
             Conn.close();
         } catch (SQLException e) {
@@ -1471,12 +1554,13 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         }
         this.dispose();
         new AdminPanelFrm().setVisible(true);
-    }//GEN-LAST:event_formWindowClosing
+    }// GEN-LAST:event_formWindowClosing
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton4ActionPerformed
         jButton4.setEnabled(false);
         if (project_title.equals("")) {
-            JOptionPane.showMessageDialog(this, "There is no open project. Create or open a project first", "Info", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "There is no open project. Create or open a project first", "Info",
+                    JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         model3 = (DefaultTableModel) jTable1.getModel();
@@ -1524,7 +1608,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
                         String adm = adms.get(i);
                         String[] subjects_points = points.get(i);
                         String[] subjects_grades = grades.get(i);
-                        //                Grading starts here
+                        // Grading starts here
 
                         String Total_Points = "Y";
                         int GroupA = 0;
@@ -1595,7 +1679,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
                         GroupA = S1 + S2 + S3;
                         GroupD = S10 + S11 + S12 + S13 + S14;
-                        //              start from here
+                        // start from here
 
                         if ((S4 <= S5) && (S4 <= S6)) {
                             FirstOfGroupBPicked = S5 + S6;
@@ -1624,9 +1708,11 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
                         }
                         if ((GroupBRemainder <= FirstOfGroupCPicked) && (GroupBRemainder <= GroupCRemaindersToGroupD)) {
                             GroupBRemainderToGroupCToGroupD = FirstOfGroupCPicked + GroupCRemaindersToGroupD;
-                        } else if ((FirstOfGroupCPicked <= GroupBRemainder) && (FirstOfGroupCPicked <= GroupCRemaindersToGroupD)) {
+                        } else if ((FirstOfGroupCPicked <= GroupBRemainder)
+                                && (FirstOfGroupCPicked <= GroupCRemaindersToGroupD)) {
                             GroupBRemainderToGroupCToGroupD = GroupBRemainder + GroupCRemaindersToGroupD;
-                        } else if ((GroupCRemaindersToGroupD <= GroupBRemainder) && (GroupCRemaindersToGroupD <= FirstOfGroupCPicked)) {
+                        } else if ((GroupCRemaindersToGroupD <= GroupBRemainder)
+                                && (GroupCRemaindersToGroupD <= FirstOfGroupCPicked)) {
                             GroupBRemainderToGroupCToGroupD = GroupBRemainder + FirstOfGroupCPicked;
                         }
                         int Points = GroupA + FirstOfGroupBPicked + GroupBRemainderToGroupCToGroupD;
@@ -1634,25 +1720,13 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
                             Total_Points = String.valueOf(Points);
                         }
                         String MP = getMeanP(Total_Points), MG = getMeanG(Total_Points);
-                        pst = Conn.prepareStatement(
-                                "UPDATE tbl_kcse_marks SET "
-                                + "sub_1_G=?,sub_1_P=?,"
-                                + "sub_2_G=?,sub_2_P=?,"
-                                + "sub_3_G=?,sub_3_P=?,"
-                                + "sub_4_G=?,sub_4_P=?,"
-                                + "sub_5_G=?,sub_5_P=?,"
-                                + "sub_6_G=?,sub_6_P=?,"
-                                + "sub_7_G=?,sub_7_P=?,"
-                                + "sub_8_G=?,sub_8_P=?,"
-                                + "sub_9_G=?,sub_9_P=?,"
-                                + "sub_10_G=?,sub_10_P=?,"
-                                + "sub_11_G=?,sub_11_P=?,"
-                                + "sub_12_G=?,sub_12_P=?,"
-                                + "sub_13_G=?,sub_13_P=?,"
-                                + "sub_14_G=?,sub_14_P=?,"
-                                + "total_p=?,mean_P=?,mean_G=? WHERE "
-                                + "adm='" + adm + "' AND project_title='" + project_title + "' "
-                        );
+                        pst = Conn.prepareStatement("UPDATE tbl_kcse_marks SET " + "sub_1_G=?,sub_1_P=?,"
+                                + "sub_2_G=?,sub_2_P=?," + "sub_3_G=?,sub_3_P=?," + "sub_4_G=?,sub_4_P=?,"
+                                + "sub_5_G=?,sub_5_P=?," + "sub_6_G=?,sub_6_P=?," + "sub_7_G=?,sub_7_P=?,"
+                                + "sub_8_G=?,sub_8_P=?," + "sub_9_G=?,sub_9_P=?," + "sub_10_G=?,sub_10_P=?,"
+                                + "sub_11_G=?,sub_11_P=?," + "sub_12_G=?,sub_12_P=?," + "sub_13_G=?,sub_13_P=?,"
+                                + "sub_14_G=?,sub_14_P=?," + "total_p=?,mean_P=?,mean_G=? WHERE " + "adm='" + adm
+                                + "' AND project_title='" + project_title + "' ");
 
                         for (int m = 1; m < 29; m++) {
                             if (m % 2 == 0) {
@@ -1669,7 +1743,8 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
                     }
                     jLabel6.setText("Calculating Positions...");
                     CalculateStudentsPositions();
-                    JOptionPane.showMessageDialog(null, "Grades saved and analysed succesfully", "Info", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Grades saved and analysed successfully", "Info",
+                            JOptionPane.INFORMATION_MESSAGE);
 
                 } catch (Exception ex) {
                     Logger.getLogger(KCSE_AnalysisFrm.class.getName()).log(Level.SEVERE, null, ex);
@@ -1691,18 +1766,19 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         };
         worker.execute();
 
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }// GEN-LAST:event_jButton4ActionPerformed
 
-    private void txt_no_of_subjectsKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_no_of_subjectsKeyTyped
+    private void txt_no_of_subjectsKeyTyped(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_txt_no_of_subjectsKeyTyped
         char c = evt.getKeyChar();
         if (!(Character.isDigit(c) || c == KeyEvent.VK_BACK_SPACE || c == KeyEvent.VK_DELETE)) {
             evt.consume();
         }
-    }//GEN-LAST:event_txt_no_of_subjectsKeyTyped
+    }// GEN-LAST:event_txt_no_of_subjectsKeyTyped
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton3ActionPerformed
         if (project_title.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "You have not opened any project", "Acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "You have not opened any project", "Acme",
+                    JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
@@ -1710,9 +1786,9 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         ViewReportsDlg.setLocationRelativeTo(this);
         ViewReportsDlg.setVisible(true);
 
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }// GEN-LAST:event_jButton3ActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton6ActionPerformed
         InputStream Report = null;
         try {
             Report = getClass().getClassLoader().getResourceAsStream("reports/kcse/School_Mean.jrxml");
@@ -1725,7 +1801,8 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
             JFrame jf = new JFrame();
             jf.getContentPane().add(jv);
-            jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
+            jf.setIconImage(Toolkit.getDefaultToolkit()
+                    .getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
             jf.setType(Type.UTILITY);
             jf.validate();
             jf.setVisible(true);
@@ -1736,35 +1813,36 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         } catch (HeadlessException | JRException e) {
             System.out.println(e);
         }
-    }//GEN-LAST:event_jButton6ActionPerformed
+    }// GEN-LAST:event_jButton6ActionPerformed
 
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton7ActionPerformed
         InputStream Report = null;
-            try {
-                Report = getClass().getClassLoader().getResourceAsStream("reports/kcse/Subject_gender.jrxml");
-                HashMap param = new HashMap();
-                param.put("project_title", project_title);
-                JasperDesign jd = JRXmlLoader.load(Report);
-                JasperReport jr = JasperCompileManager.compileReport(jd);
-                JasperPrint jp = JasperFillManager.fillReport(jr, param, Conn);
-                JRViewer jv = new JRViewer(jp);
+        try {
+            Report = getClass().getClassLoader().getResourceAsStream("reports/kcse/Subject_gender.jrxml");
+            HashMap param = new HashMap();
+            param.put("project_title", project_title);
+            JasperDesign jd = JRXmlLoader.load(Report);
+            JasperReport jr = JasperCompileManager.compileReport(jd);
+            JasperPrint jp = JasperFillManager.fillReport(jr, param, Conn);
+            JRViewer jv = new JRViewer(jp);
 
-                JFrame jf = new JFrame();
-                jf.getContentPane().add(jv);
-                jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
-                jf.setType(Type.UTILITY);
-                jf.validate();
-                jf.setVisible(true);
-                jf.setSize(new Dimension(1200, 700));
-                jf.setLocationRelativeTo(this);
-                jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                jf.setTitle("Report");
-            } catch (HeadlessException | JRException e) {
-                System.out.println(e);
-            }
-    }//GEN-LAST:event_jButton7ActionPerformed
+            JFrame jf = new JFrame();
+            jf.getContentPane().add(jv);
+            jf.setIconImage(Toolkit.getDefaultToolkit()
+                    .getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
+            jf.setType(Type.UTILITY);
+            jf.validate();
+            jf.setVisible(true);
+            jf.setSize(new Dimension(1200, 700));
+            jf.setLocationRelativeTo(this);
+            jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            jf.setTitle("Report");
+        } catch (HeadlessException | JRException e) {
+            System.out.println(e);
+        }
+    }// GEN-LAST:event_jButton7ActionPerformed
 
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton8ActionPerformed
         InputStream Report = null;
         try {
             Report = getClass().getClassLoader().getResourceAsStream("reports/kcse/TopGender.jrxml");
@@ -1779,7 +1857,8 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
             JFrame jf = new JFrame();
             jf.getContentPane().add(jv);
-            jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
+            jf.setIconImage(Toolkit.getDefaultToolkit()
+                    .getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
             jf.setType(Type.UTILITY);
             jf.validate();
             jf.setVisible(true);
@@ -1790,9 +1869,9 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         } catch (HeadlessException | JRException e) {
             System.out.println(e);
         }
-    }//GEN-LAST:event_jButton8ActionPerformed
+    }// GEN-LAST:event_jButton8ActionPerformed
 
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton9ActionPerformed
         InputStream Report = null;
         try {
             Report = getClass().getClassLoader().getResourceAsStream("reports/kcse/TopGender.jrxml");
@@ -1807,7 +1886,8 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
             JFrame jf = new JFrame();
             jf.getContentPane().add(jv);
-            jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
+            jf.setIconImage(Toolkit.getDefaultToolkit()
+                    .getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
             jf.setType(Type.UTILITY);
             jf.validate();
             jf.setVisible(true);
@@ -1818,9 +1898,9 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         } catch (HeadlessException | JRException e) {
             System.out.println(e);
         }
-    }//GEN-LAST:event_jButton9ActionPerformed
+    }// GEN-LAST:event_jButton9ActionPerformed
 
-    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton10ActionPerformed
         InputStream Report = null;
         try {
             Report = getClass().getClassLoader().getResourceAsStream("reports/kcse/TopOverall.jrxml");
@@ -1833,7 +1913,8 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
             JFrame jf = new JFrame();
             jf.getContentPane().add(jv);
-            jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
+            jf.setIconImage(Toolkit.getDefaultToolkit()
+                    .getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
             jf.setType(Type.UTILITY);
             jf.validate();
             jf.setVisible(true);
@@ -1844,9 +1925,9 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         } catch (HeadlessException | JRException e) {
             System.out.println(e);
         }
-    }//GEN-LAST:event_jButton10ActionPerformed
+    }// GEN-LAST:event_jButton10ActionPerformed
 
-    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton11ActionPerformed
         InputStream Report = null;
         try {
             Report = getClass().getClassLoader().getResourceAsStream("reports/kcse/Subject_Ranking.jrxml");
@@ -1859,7 +1940,8 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
 
             JFrame jf = new JFrame();
             jf.getContentPane().add(jv);
-            jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
+            jf.setIconImage(Toolkit.getDefaultToolkit()
+                    .getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
             jf.setType(Type.UTILITY);
             jf.validate();
             jf.setVisible(true);
@@ -1870,16 +1952,19 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         } catch (HeadlessException | JRException e) {
             System.out.println(e);
         }
-    }//GEN-LAST:event_jButton11ActionPerformed
+    }// GEN-LAST:event_jButton11ActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+        // <editor-fold defaultstate="collapsed" desc=" Look and feel setting code
+        // (optional) ">
+        /*
+         * If Nimbus (introduced in Java SE 6) is not available, stay with the default
+         * look and feel. For details see
+         * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -1889,16 +1974,20 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(KCSE_AnalysisFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KCSE_AnalysisFrm.class.getName()).log(java.util.logging.Level.SEVERE,
+                    null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(KCSE_AnalysisFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KCSE_AnalysisFrm.class.getName()).log(java.util.logging.Level.SEVERE,
+                    null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(KCSE_AnalysisFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KCSE_AnalysisFrm.class.getName()).log(java.util.logging.Level.SEVERE,
+                    null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(KCSE_AnalysisFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KCSE_AnalysisFrm.class.getName()).log(java.util.logging.Level.SEVERE,
+                    null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
+        // </editor-fold>
+        // </editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {

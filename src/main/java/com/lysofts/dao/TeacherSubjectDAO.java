@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 public class TeacherSubjectDAO {
 
@@ -40,7 +40,8 @@ public class TeacherSubjectDAO {
     public static boolean add(TeacherSubject data) {
         try {
             Mapping.Param param = new Mapping().insertQuery(data);
-            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(), param.getValuesString());
+            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(),
+                    param.getValuesString());
             return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);

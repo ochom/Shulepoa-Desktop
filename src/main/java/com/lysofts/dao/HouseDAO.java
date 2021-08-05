@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 public class HouseDAO {
 
@@ -29,7 +29,8 @@ public class HouseDAO {
     public static boolean add(House data) {
         try {
             Mapping.Param param = new Mapping().insertQuery(data);
-            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(), param.getValuesString());
+            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(),
+                    param.getValuesString());
             return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
@@ -40,7 +41,8 @@ public class HouseDAO {
     public static boolean update(House data) {
         try {
             Mapping.Param param = new Mapping().updateQuery(data);
-            String SQL = String.format("UPDATE %s SET %s WHERE houseNumber=%s", table, param.getFieldString(), data.getId());
+            String SQL = String.format("UPDATE %s SET %s WHERE houseNumber=%s", table, param.getFieldString(),
+                    data.getId());
             return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
@@ -49,9 +51,8 @@ public class HouseDAO {
     }
 
     public static boolean delete(String pk) {
-        String SQL = String.format("DELETE FROM %s WHERE houseNumber=%s",table, pk);
+        String SQL = String.format("DELETE FROM %s WHERE houseNumber=%s", table, pk);
         Map<Integer, String> params = new HashMap<>();
         return QueryRunner.update(SQL, params);
     }
 }
-

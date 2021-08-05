@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 public class StudentDAO {
 
@@ -35,7 +35,9 @@ public class StudentDAO {
     }
 
     public static List<Student> get(String searchText, String other) {
-        String SQL = String.format("SELECT * FROM %s  WHERE Student_ID LIKE ? OR Student_name LIKE ? ORDER BY (Student_id + 0) ASC", table);
+        String SQL = String.format(
+                "SELECT * FROM %s  WHERE Student_ID LIKE ? OR Student_name LIKE ? ORDER BY (Student_id + 0) ASC",
+                table);
         Map<Integer, String> params = new HashMap<>();
         params.put(1, "%" + searchText + "%");
         params.put(2, "%" + searchText + "%");
@@ -52,7 +54,8 @@ public class StudentDAO {
     public static boolean add(Student data) {
         try {
             Mapping.Param param = new Mapping().insertQuery(data);
-            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(), param.getValuesString());
+            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(),
+                    param.getValuesString());
             return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);

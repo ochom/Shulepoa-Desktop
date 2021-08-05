@@ -8,7 +8,11 @@ import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.io.InputStream;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
@@ -28,8 +32,9 @@ public class ReportsFrm extends javax.swing.JFrame {
     ResultSet rs = null;
 
     String sql = null, report_bg = null, reportTitle = "";
-    String Form, Year, Term, Exam, ExamFormLevel, NumberOfChamps, Report_Request = "";
+    String Form, Year, Term, Exam, ExamFormLevel, NumberOfChamps, requestedReport = "";
     String reportName;
+    Map<String, Runnable[]> reportsMap;
 
     public ReportsFrm() {
         initComponents();
@@ -37,6 +42,46 @@ public class ReportsFrm extends javax.swing.JFrame {
         GetAcedmicYears();
         getFormNames();
 
+        reportsMap = new HashMap<String, Runnable[]>();
+
+        reportsMap.put("ms", new Runnable[] { () -> printMarksSheet(Form) });
+
+        reportsMap.put("mcs", new Runnable[] { () -> printMarksConfirmationSheet(Form, Year, Term, Exam) });
+
+        reportsMap.put("rs", new Runnable[] { () -> printResultSlips(Form, Year, Term, Exam) });
+
+        reportsMap.put("exsr", new Runnable[] { () -> printExamStreamRankingList(Form, Year, Term, Exam) });
+
+        reportsMap.put("exor",
+                new Runnable[] { () -> printExamOverallRankingList(Form, Year, Term, Exam, ExamFormLevel) });
+
+        reportsMap.put("ensr", new Runnable[] { () -> printTermStreamRankingList(Form, Year, Term) });
+
+        reportsMap.put("enor", new Runnable[] { () -> printTermOverallRankingList(Form, Year, Term, ExamFormLevel) });
+
+        reportsMap.put("rf", new Runnable[] { () -> printReportForms(Form, Year, Term) });
+
+        reportsMap.put("exsubper", new Runnable[] { () -> AnalyseSubjectPerformance(Form, Year, Term, Exam),
+                () -> setTheSubjectPosition(), () -> printExamSubjectperformance(Form, Year, Term, Exam) });
+
+        reportsMap.put("ensubper", new Runnable[] { () -> AnalyseSubjectPerformance(Form, Year, Term, Exam),
+                () -> setTheSubjectPosition(), () -> printExamSubjectperformance(Form, Year, Term, Exam) });
+
+        reportsMap.put("exclassper",
+                new Runnable[] { () -> AnalyzeClassesperformance(Form, Year, Term, Exam, ExamFormLevel),
+                        () -> setTheClassPosition(ExamFormLevel),
+                        () -> printClassPerformance(ExamFormLevel, Year, Term, Exam) });
+
+        reportsMap.put("enclassper",
+                new Runnable[] { () -> AnalyzeClassesperformance(Form, Year, Term, Exam, ExamFormLevel),
+                        () -> setTheClassPosition(ExamFormLevel),
+                        () -> printClassPerformance(ExamFormLevel, Year, Term, Exam) });
+
+        reportsMap.put("extop", new Runnable[] { () -> AnalyzeSubjectChampions(Form, Year, Term, Exam, NumberOfChamps),
+                () -> printSubjectChamps(Form, Year, Term, Exam, NumberOfChamps) });
+
+        reportsMap.put("entop", new Runnable[] { () -> AnalyzeSubjectChampions(Form, Year, Term, Exam, NumberOfChamps),
+                () -> printSubjectChamps(Form, Year, Term, Exam, NumberOfChamps) });
     }
 
     private void GetAcedmicYears() {
@@ -55,7 +100,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         });
     }
 
-    private void showReport(HashMap params) {
+    private void showReport(HashMap<String, Object> params) {
         try {
             String fileName = String.format("reports/%s.jrxml", reportName);
             InputStream report = getClass().getClassLoader().getResourceAsStream(fileName);
@@ -67,7 +112,8 @@ public class ReportsFrm extends javax.swing.JFrame {
 
             JFrame jf = new JFrame(reportTitle);
             jf.getContentPane().add(jv);
-            jf.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
+            jf.setIconImage(Toolkit.getDefaultToolkit()
+                    .getImage(getClass().getClassLoader().getResource("images/Print_16x16.png")));
             jf.setType(Type.NORMAL);
             jf.validate();
             jf.setSize(new Dimension(900, 650));
@@ -81,10 +127,10 @@ public class ReportsFrm extends javax.swing.JFrame {
 
     private void printMarksSheet(String Form) {
         reportName = "MarkSheet";
-        HashMap param = new HashMap();
+        HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("ExamForm", Form);
         param.put("bgImage", null);
-        reportTitle = "Form " + Form + " Marksheet";
+        reportTitle = "Form " + Form + " MarkSheet";
         showReport(param);
     }
 
@@ -96,7 +142,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         } else if (Exam.equalsIgnoreCase("Exam 3")) {
             reportName = "Exam3ConfirmationSheet";
         }
-        HashMap param = new HashMap();
+        HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
@@ -114,7 +160,7 @@ public class ReportsFrm extends javax.swing.JFrame {
         } else if (Exam.equalsIgnoreCase("Exam 3")) {
             reportName = "Exam3ResultSlip";
         }
-        HashMap param = new HashMap();
+        HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
@@ -138,7 +184,7 @@ public class ReportsFrm extends javax.swing.JFrame {
             default:
                 break;
         }
-        HashMap param = new HashMap();
+        HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
@@ -163,7 +209,7 @@ public class ReportsFrm extends javax.swing.JFrame {
             default:
                 break;
         }
-        HashMap param = new HashMap();
+        HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
@@ -177,7 +223,7 @@ public class ReportsFrm extends javax.swing.JFrame {
     private void printTermStreamRankingList(String Form, String Year, String Term) {
         reportName = "EndTermStreamRankingList";
 
-        HashMap param = new HashMap();
+        HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
@@ -190,7 +236,7 @@ public class ReportsFrm extends javax.swing.JFrame {
     private void printTermOverallRankingList(String Form, String Year, String Term, String ExamFormLevel) {
         reportName = "EndTermOverallRankingList";
 
-        HashMap param = new HashMap();
+        HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
@@ -204,7 +250,7 @@ public class ReportsFrm extends javax.swing.JFrame {
     private void printReportForms(String Form, String Year, String Term) {
         reportName = "ReportForm";
 
-        HashMap param = new HashMap();
+        HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
@@ -215,14 +261,14 @@ public class ReportsFrm extends javax.swing.JFrame {
 
     private void AnalyseSubjectPerformance(String Form, String Year, String Term, String Exam) {
         try {
-            sql = "DELETE  FROM ClassSubjectPerfomance";
+            sql = "DELETE  FROM ClassSubjectperformance";
             pst = conn.prepareStatement(sql);
             pst.executeUpdate();
-            System.out.println("Space created for subject perfomance");
+            System.out.println("Space created for subject performance");
 
             InsertSubjectsToSubjectAnalysisTable(Form, Year, Term);
 
-            sql = "SELECT * FROM ClassSubjectPerfomance";
+            sql = "SELECT * FROM ClassSubjectperformance";
             pst = conn.prepareStatement(sql);
             rs = pst.executeQuery();
             String GradeCol = null;
@@ -232,7 +278,7 @@ public class ReportsFrm extends javax.swing.JFrame {
             String SubjectName;
             switch (Exam) {
                 case "EXAM 1":
-                    //<editor-fold defaultstate="collapsed" desc="comment">
+                    // <editor-fold defaultstate="collapsed" desc="comment">
                     while (rs.next()) {
                         SubjectNO = rs.getString("SubjectNO");
                         SubjectName = rs.getString("SubjectName");
@@ -294,13 +340,14 @@ public class ReportsFrm extends javax.swing.JFrame {
                             PointsCol = "S14E1Points";
                         }
 
-                        getDefiningSubjectAnalysisQueries(Form, Year, Term, MarksCol, PointsCol, GradeCol, SubjectNO, SubjectName);
+                        getDefiningSubjectAnalysisQueries(Form, Year, Term, MarksCol, PointsCol, GradeCol, SubjectNO,
+                                SubjectName);
                     }
 
                     break;
-                //</editor-fold>
+                // </editor-fold>
                 case "EXAM 2":
-                    //<editor-fold defaultstate="collapsed" desc="comment">
+                    // <editor-fold defaultstate="collapsed" desc="comment">
                     while (rs.next()) {
                         SubjectNO = rs.getString("SubjectNO");
                         SubjectName = rs.getString("SubjectName");
@@ -361,13 +408,14 @@ public class ReportsFrm extends javax.swing.JFrame {
                             MarksCol = "S14E2Marks";
                             PointsCol = "S14E2Points";
                         }
-                        getDefiningSubjectAnalysisQueries(Form, Year, Term, MarksCol, PointsCol, GradeCol, SubjectNO, SubjectName);
+                        getDefiningSubjectAnalysisQueries(Form, Year, Term, MarksCol, PointsCol, GradeCol, SubjectNO,
+                                SubjectName);
                     }
 
                     break;
-                //</editor-fold>
+                // </editor-fold>
                 case "EXAM 3":
-                    //<editor-fold defaultstate="collapsed" desc="comment">
+                    // <editor-fold defaultstate="collapsed" desc="comment">
                     while (rs.next()) {
                         SubjectNO = rs.getString("SubjectNO");
                         SubjectName = rs.getString("SubjectName");
@@ -428,12 +476,13 @@ public class ReportsFrm extends javax.swing.JFrame {
                             MarksCol = "S14E3Marks";
                             PointsCol = "S14E3Points";
                         }
-                        getDefiningSubjectAnalysisQueries(Form, Year, Term, MarksCol, PointsCol, GradeCol, SubjectNO, SubjectName);
+                        getDefiningSubjectAnalysisQueries(Form, Year, Term, MarksCol, PointsCol, GradeCol, SubjectNO,
+                                SubjectName);
                     }
                     break;
-                //</editor-fold>
+                // </editor-fold>
                 case "END TERM":
-                    //<editor-fold defaultstate="collapsed" desc="comment">
+                    // <editor-fold defaultstate="collapsed" desc="comment">
                     while (rs.next()) {
                         SubjectNO = rs.getString("SubjectNO");
                         SubjectName = rs.getString("SubjectName");
@@ -495,10 +544,11 @@ public class ReportsFrm extends javax.swing.JFrame {
                             PointsCol = "S14AVGPoints";
                         }
 
-                        getDefiningSubjectAnalysisQueries(Form, Year, Term, MarksCol, PointsCol, GradeCol, SubjectNO, SubjectName);
+                        getDefiningSubjectAnalysisQueries(Form, Year, Term, MarksCol, PointsCol, GradeCol, SubjectNO,
+                                SubjectName);
                     }
                     break;
-                //</editor-fold>
+                // </editor-fold>
             }
 
         } catch (SQLException e) {
@@ -510,12 +560,13 @@ public class ReportsFrm extends javax.swing.JFrame {
         try {
             sql = "SELECT * FROM Subjects";
             pst = conn.prepareStatement(sql);
-            rs = rs = pst.executeQuery();
-            //Add subjects to the table
+            rs = pst.executeQuery();
+            // Add subjects to the table
             while (rs.next()) {
                 String SubjectNO = rs.getString("S_NO");
                 String SubjectName = rs.getString("Subject_name");
-                sql = "INSERT INTO ClassSubjectPerfomance (Form,Year,Term,SubjectNO,SubjectName) values ('" + Form + "','" + Year + "','" + Term + "','" + SubjectNO + "','" + SubjectName + "')";
+                sql = "INSERT INTO ClassSubjectperformance (Form,Year,Term,SubjectNO,SubjectName) values ('" + Form
+                        + "','" + Year + "','" + Term + "','" + SubjectNO + "','" + SubjectName + "')";
                 pst = conn.prepareStatement(sql);
                 pst.executeUpdate();
             }
@@ -525,26 +576,46 @@ public class ReportsFrm extends javax.swing.JFrame {
 
     }
 
-    private void getDefiningSubjectAnalysisQueries(String Form, String Year, String Term, String MarksCol, String PointsCol, String GradeCol, String SubjectNumber, String SubjectName) {
-        String Ap = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='A' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Amns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='A-' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Bpls = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='B+' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Bp = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='B' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Bmns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='B-' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Cpls = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='C+' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Cp = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='C' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Cmns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='C-' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Dpls = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='D+' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Dp = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='D' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Dmns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='D-' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-        String Ep = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='E' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+    private void getDefiningSubjectAnalysisQueries(String Form, String Year, String Term, String MarksCol,
+            String PointsCol, String GradeCol, String SubjectNumber, String SubjectName) {
+        String Ap = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='A' AND SE_StudentClass='" + Form
+                + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+        String Amns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='A-' AND SE_StudentClass='" + Form
+                + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+        String Bpls = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='B+' AND SE_StudentClass='" + Form
+                + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+        String Bp = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='B' AND SE_StudentClass='" + Form
+                + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+        String Bmns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='B-' AND SE_StudentClass='" + Form
+                + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+        String Cpls = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='C+' AND SE_StudentClass='" + Form
+                + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+        String Cp = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='C' AND SE_StudentClass='" + Form
+                + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+        String Cmns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='C-' AND SE_StudentClass='" + Form
+                + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+        String Dpls = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='D+' AND SE_StudentClass='" + Form
+                + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+        String Dp = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='D' AND SE_StudentClass='" + Form
+                + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+        String Dmns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='D-' AND SE_StudentClass='" + Form
+                + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+        String Ep = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='E' AND SE_StudentClass='" + Form
+                + "' AND Year='" + Year + "' AND Term='" + Term + "')";
 
-        String SubjectEntry = "SELECT count(*) FROM student_details where (Student_id IN (select SS_Student_id from tblstudents_subjects where SS_subject_Name='" + SubjectName + "') AND Student_class='" + Form + "')";
-        String SubjectMarks = "SELECT Avg(" + MarksCol + ") FROM Students_exams WHERE (SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "' AND " + MarksCol + "+0>0)";
-        String SubjectMean = "SELECT Avg(" + PointsCol + ") FROM Students_exams WHERE (SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "' AND " + MarksCol + "+0>0)";
+        String SubjectEntry = "SELECT count(*) FROM student_details where (Student_id IN (select SS_Student_id from tblstudents_subjects where SS_subject_Name='"
+                + SubjectName + "') AND Student_class='" + Form + "')";
+        String SubjectMarks = "SELECT Avg(" + MarksCol + ") FROM Students_exams WHERE (SE_StudentClass='" + Form
+                + "' AND Year='" + Year + "' AND Term='" + Term + "' AND " + MarksCol + "+0>0)";
+        String SubjectMean = "SELECT Avg(" + PointsCol + ") FROM Students_exams WHERE (SE_StudentClass='" + Form
+                + "' AND Year='" + Year + "' AND Term='" + Term + "' AND " + MarksCol + "+0>0)";
 
         try {
-            sql = "UPDATE ClassSubjectPerfomance set SubjectMeanMarks=(" + SubjectMarks + "),SubjectMeanPoints=(" + SubjectMean + "), SubjectEntry = (" + SubjectEntry + "), AP = (" + Ap + "), 'Amns' = (" + Amns + "), 'Bpls' = (" + Bpls + "),BP = (" + Bp + "), 'Bmns' = (" + Bmns + "), 'Cpls' = (" + Cpls + "), 'CP' = (" + Cp + "), 'Cmns' = (" + Cmns + "), 'Dpls' = (" + Dpls + "), 'DP' = (" + Dp + "), 'Dmns' = (" + Dmns + "), 'EP' = (" + Ep + ") WHERE SubjectNO = '" + SubjectNumber + "'";
+            sql = "UPDATE ClassSubjectperformance set SubjectMeanMarks=(" + SubjectMarks + "),SubjectMeanPoints=("
+                    + SubjectMean + "), SubjectEntry = (" + SubjectEntry + "), AP = (" + Ap + "), 'Amns' = (" + Amns
+                    + "), 'Bpls' = (" + Bpls + "),BP = (" + Bp + "), 'Bmns' = (" + Bmns + "), 'Cpls' = (" + Cpls
+                    + "), 'CP' = (" + Cp + "), 'Cmns' = (" + Cmns + "), 'Dpls' = (" + Dpls + "), 'DP' = (" + Dp
+                    + "), 'Dmns' = (" + Dmns + "), 'EP' = (" + Ep + ") WHERE SubjectNO = '" + SubjectNumber + "'";
             pst = conn.prepareStatement(sql);
             pst.executeUpdate();
         } catch (SQLException e) {
@@ -555,7 +626,7 @@ public class ReportsFrm extends javax.swing.JFrame {
 
     private void setTheSubjectPosition() {
         try {
-            sql = "UPDATE ClassSubjectPerfomance set SubjectPosition=(1+(SELECT Count(*) From ClassSubjectPerfomance as t2 WHERE ((t2.SubjectMeanPoints+0)>(ClassSubjectPerfomance.SubjectMeanPoints+0)))) WHERE(SubjectMeanPoints+0>0)";
+            sql = "UPDATE ClassSubjectperformance set SubjectPosition=(1+(SELECT Count(*) From ClassSubjectperformance as t2 WHERE ((t2.SubjectMeanPoints+0)>(ClassSubjectperformance.SubjectMeanPoints+0)))) WHERE(SubjectMeanPoints+0>0)";
             pst = conn.prepareStatement(sql);
             pst.executeUpdate();
         } catch (SQLException e) {
@@ -563,20 +634,20 @@ public class ReportsFrm extends javax.swing.JFrame {
         }
     }
 
-    private void printExamSubjectPerfomance(String Form, String Year, String Term, String Exam) {
+    private void printExamSubjectperformance(String Form, String Year, String Term, String Exam) {
         reportName = "SubjectMeans";
 
-        HashMap param = new HashMap();
+        HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
         param.put("ExamName", Exam);
         param.put("bgImage", null);
-        reportTitle = "Form " + Form + " Marksheet";
+        reportTitle = "Form " + Form + " MarkSheet";
         showReport(param);
     }
 
-    private void AnalyzeClassesPerfomance(String Form, String Year, String Term, String Exam, String ExamFormLevel) {
+    private void AnalyzeClassesperformance(String Form, String Year, String Term, String Exam, String ExamFormLevel) {
         String MarksCol = null;
         String PointsCol = null;
         String GradeCol = null;
@@ -604,30 +675,48 @@ public class ReportsFrm extends javax.swing.JFrame {
 
         }
         try {
-            PreparedStatement ps = conn.prepareStatement("Select * from tblClasses WHERE substr(Class_name,1,1) = '" + ExamFormLevel + "'");
+            PreparedStatement ps = conn.prepareStatement(
+                    "Select * from tblClasses WHERE substr(Class_name,1,1) = '" + ExamFormLevel + "'");
             ResultSet rst = ps.executeQuery();
             while (rst.next()) {
                 Form = rst.getString("Class_name");
-                String Ap = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='A' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Amns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='A-' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Bpls = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='B+' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Bp = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='B' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Bmns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='B-' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Cpls = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='C+' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Cp = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='C' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Cmns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='C-' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Dpls = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='D+' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Dp = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='D' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Dmns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='D-' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
-                String Ep = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='E' AND SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+                String Ap = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='A' AND SE_StudentClass='"
+                        + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+                String Amns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='A-' AND SE_StudentClass='"
+                        + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+                String Bpls = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='B+' AND SE_StudentClass='"
+                        + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+                String Bp = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='B' AND SE_StudentClass='"
+                        + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+                String Bmns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='B-' AND SE_StudentClass='"
+                        + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+                String Cpls = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='C+' AND SE_StudentClass='"
+                        + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+                String Cp = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='C' AND SE_StudentClass='"
+                        + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+                String Cmns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='C-' AND SE_StudentClass='"
+                        + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+                String Dpls = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='D+' AND SE_StudentClass='"
+                        + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+                String Dp = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='D' AND SE_StudentClass='"
+                        + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+                String Dmns = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='D-' AND SE_StudentClass='"
+                        + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
+                String Ep = "SELECT Count(*) FROM Students_exams WHERE (" + GradeCol + "='E' AND SE_StudentClass='"
+                        + Form + "' AND Year='" + Year + "' AND Term='" + Term + "')";
 
                 String ClassEntry = "SELECT count(*) FROM student_details where (Student_class='" + Form + "')";
-                String ClassMarks = "SELECT Avg(" + MarksCol + ") FROM Students_exams WHERE (SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "' AND " + MarksCol + "+0>0)";
-                String ClassMean = "SELECT Avg(" + PointsCol + ") FROM Students_exams WHERE (SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "' AND " + PointsCol + "+0>0)";
+                String ClassMarks = "SELECT Avg(" + MarksCol + ") FROM Students_exams WHERE (SE_StudentClass='" + Form
+                        + "' AND Year='" + Year + "' AND Term='" + Term + "' AND " + MarksCol + "+0>0)";
+                String ClassMean = "SELECT Avg(" + PointsCol + ") FROM Students_exams WHERE (SE_StudentClass='" + Form
+                        + "' AND Year='" + Year + "' AND Term='" + Term + "' AND " + PointsCol + "+0>0)";
 
                 try {
-                    sql = "UPDATE tblClasses set Entry=(" + ClassEntry + "),AverageMarks=(" + ClassMarks + "),MeanPoints=(" + ClassMean + "),"
-                            + " Ap = (" + Ap + "), 'Amns' = (" + Amns + "), 'Bpls' = (" + Bpls + "),BP = (" + Bp + "), 'Bmns' = (" + Bmns + "), 'Cpls' = (" + Cpls + "), 'CP' = (" + Cp + "), 'Cmns' = (" + Cmns + "), 'Dpls' = (" + Dpls + "), 'DP' = (" + Dp + "), 'Dmns' = (" + Dmns + "), 'EP' = (" + Ep + ") WHERE Class_name = '" + Form + "'";
+                    sql = "UPDATE tblClasses set Entry=(" + ClassEntry + "),AverageMarks=(" + ClassMarks
+                            + "),MeanPoints=(" + ClassMean + ")," + " Ap = (" + Ap + "), 'Amns' = (" + Amns
+                            + "), 'Bpls' = (" + Bpls + "),BP = (" + Bp + "), 'Bmns' = (" + Bmns + "), 'Cpls' = (" + Cpls
+                            + "), 'CP' = (" + Cp + "), 'Cmns' = (" + Cmns + "), 'Dpls' = (" + Dpls + "), 'DP' = (" + Dp
+                            + "), 'Dmns' = (" + Dmns + "), 'EP' = (" + Ep + ") WHERE Class_name = '" + Form + "'";
                     pst = conn.prepareStatement(sql);
                     pst.executeUpdate();
                     System.out.println("Classes Ranked, Form: " + Form);
@@ -643,7 +732,8 @@ public class ReportsFrm extends javax.swing.JFrame {
 
     private void setTheClassPosition(String ExamFormLevel) {
         try {
-            sql = "UPDATE tblClasses set Position=(1+(SELECT Count(*) From tblClasses as t2 WHERE ((t2.MeanPoints+0)>(tblClasses.MeanPoints+0) AND substr(Class_name,1,1)='" + ExamFormLevel + "') )) WHERE(MeanPoints+0>0)";
+            sql = "UPDATE tblClasses set Position=(1+(SELECT Count(*) From tblClasses as t2 WHERE ((t2.MeanPoints+0)>(tblClasses.MeanPoints+0) AND substr(Class_name,1,1)='"
+                    + ExamFormLevel + "') )) WHERE(MeanPoints+0>0)";
             pst = conn.prepareStatement(sql);
             pst.executeUpdate();
         } catch (SQLException e) {
@@ -654,13 +744,13 @@ public class ReportsFrm extends javax.swing.JFrame {
     private void printClassPerformance(String ExamFormLevel, String Year, String Term, String Exam) {
         reportName = "ClassMeans";
 
-        HashMap param = new HashMap();
+        HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("ExamForm", ExamFormLevel);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
         param.put("ExamName", Exam);
         param.put("bgImage", null);
-        reportTitle = "Form " + ExamFormLevel + " Marksheet";
+        reportTitle = "Form " + ExamFormLevel + " MarkSheet";
         showReport(param);
     }
 
@@ -671,13 +761,13 @@ public class ReportsFrm extends javax.swing.JFrame {
             sql = "DELETE  FROM SubjectChampions";
             pst = conn.prepareStatement(sql);
             pst.executeUpdate();
-            System.out.println("Space created for subject perfomance");
+            System.out.println("Space created for subject performance");
 
             sql = "SELECT * FROM Subjects";
             pst = conn.prepareStatement(sql);
             rs = pst.executeQuery();
             switch (Exam) {
-                case "EXAM 1"://<editor-fold defaultstate="collapsed" desc="comment">
+                case "EXAM 1":// <editor-fold defaultstate="collapsed" desc="comment">
 
                     while (rs.next()) {
                         String SubjectName = rs.getString("Subject_name");
@@ -739,11 +829,12 @@ public class ReportsFrm extends javax.swing.JFrame {
                             MarksCol = "S14E1Marks";
                             GradeCol = "S14E1Grade";
                         }
-                        getSubjectChampionsForThisSubject(Form, Year, Term, SubjectName, NumberOfChamps, MarksCol, GradeCol);
+                        getSubjectChampionsForThisSubject(Form, Year, Term, SubjectName, NumberOfChamps, MarksCol,
+                                GradeCol);
                     }
                     break;
-//</editor-fold>
-                case "EXAM 2"://<editor-fold defaultstate="collapsed" desc="comment">
+                // </editor-fold>
+                case "EXAM 2":// <editor-fold defaultstate="collapsed" desc="comment">
 
                     while (rs.next()) {
                         String SubjectName = rs.getString("Subject_name");
@@ -805,11 +896,12 @@ public class ReportsFrm extends javax.swing.JFrame {
                             MarksCol = "S14E2Marks";
                             GradeCol = "S14E2Grade";
                         }
-                        getSubjectChampionsForThisSubject(Form, Year, Term, SubjectName, NumberOfChamps, MarksCol, GradeCol);
+                        getSubjectChampionsForThisSubject(Form, Year, Term, SubjectName, NumberOfChamps, MarksCol,
+                                GradeCol);
                     }
                     break;
-//</editor-fold>
-                case "EXAM 3"://<editor-fold defaultstate="collapsed" desc="comment">
+                // </editor-fold>
+                case "EXAM 3":// <editor-fold defaultstate="collapsed" desc="comment">
 
                     while (rs.next()) {
                         String SubjectName = rs.getString("Subject_name");
@@ -871,11 +963,12 @@ public class ReportsFrm extends javax.swing.JFrame {
                             MarksCol = "S14E3Marks";
                             GradeCol = "S14E3Grade";
                         }
-                        getSubjectChampionsForThisSubject(Form, Year, Term, SubjectName, NumberOfChamps, MarksCol, GradeCol);
+                        getSubjectChampionsForThisSubject(Form, Year, Term, SubjectName, NumberOfChamps, MarksCol,
+                                GradeCol);
                     }
                     break;
-//</editor-fold>
-                case "END TERM"://<editor-fold defaultstate="collapsed" desc="comment">
+                // </editor-fold>
+                case "END TERM":// <editor-fold defaultstate="collapsed" desc="comment">
                     while (rs.next()) {
                         String SubjectName = rs.getString("Subject_name");
                         String SubjectNumber = rs.getString("S_NO");
@@ -936,19 +1029,23 @@ public class ReportsFrm extends javax.swing.JFrame {
                             MarksCol = "S14AVGMarks";
                             GradeCol = "S14AVGGrade";
                         }
-                        getSubjectChampionsForThisSubject(Form, Year, Term, SubjectName, NumberOfChamps, MarksCol, GradeCol);
+                        getSubjectChampionsForThisSubject(Form, Year, Term, SubjectName, NumberOfChamps, MarksCol,
+                                GradeCol);
                     }
                     break;
-//</editor-fold>
+                // </editor-fold>
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "System Err : " + e, "Error", 0);
         }
     }
 
-    private void getSubjectChampionsForThisSubject(String Form, String Year, String Term, String SubjectName, String NumberOfChamps, String MarksCol, String GradeCol) {
+    private void getSubjectChampionsForThisSubject(String Form, String Year, String Term, String SubjectName,
+            String NumberOfChamps, String MarksCol, String GradeCol) {
         try {
-            sql = "Select students_exams.*,Student_details.* from students_exams INNER JOIN Student_details ON (Student_id=SE_Student_id) Where(SE_StudentClass='" + Form + "' AND Year='" + Year + "' AND Term='" + Term + "' AND " + MarksCol + "+0>0) ORDER BY " + MarksCol + "+0 DESC LIMIT " + NumberOfChamps + "";
+            sql = "Select students_exams.*,Student_details.* from students_exams INNER JOIN Student_details ON (Student_id=SE_Student_id) Where(SE_StudentClass='"
+                    + Form + "' AND Year='" + Year + "' AND Term='" + Term + "' AND " + MarksCol + "+0>0) ORDER BY "
+                    + MarksCol + "+0 DESC LIMIT " + NumberOfChamps + "";
             pst = conn.prepareStatement(sql);
             ResultSet rst = pst.executeQuery();
             while (rst.next()) {
@@ -957,8 +1054,9 @@ public class ReportsFrm extends javax.swing.JFrame {
                 String StudentName = rst.getString("Student_name");
                 String Marks = rst.getString(MarksCol);
                 String Grade = rst.getString(GradeCol);
-                sql = "INSERT INTO SubjectChampions (SubjectName,StudentID,StudentName,StudentClass,Marks,Grade) Values ('" + SubjectName + "',"
-                        + "'" + StudentId + "','" + StudentName + "','" + StudentClass + "','" + Marks + "','" + Grade + "')";
+                sql = "INSERT INTO SubjectChampions (SubjectName,StudentID,StudentName,StudentClass,Marks,Grade) Values ('"
+                        + SubjectName + "'," + "'" + StudentId + "','" + StudentName + "','" + StudentClass + "','"
+                        + Marks + "','" + Grade + "')";
                 pst = conn.prepareStatement(sql);
                 pst.executeUpdate();
             }
@@ -968,10 +1066,10 @@ public class ReportsFrm extends javax.swing.JFrame {
 
     }
 
-    private void printSubjectCHamps(String Form, String Year, String Term, String Exam, String NumberOfChamps) {
+    private void printSubjectChamps(String Form, String Year, String Term, String Exam, String NumberOfChamps) {
         reportName = "SubjectTopStudents";
 
-        HashMap param = new HashMap();
+        HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("ExamForm", Form);
         param.put("ExamYear", Year);
         param.put("ExamTerm", Term);
@@ -984,7 +1082,8 @@ public class ReportsFrm extends javax.swing.JFrame {
     }
 
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated
+    // Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         ReportDlg = new javax.swing.JDialog();
@@ -1024,6 +1123,7 @@ public class ReportsFrm extends javax.swing.JFrame {
             public void windowGainedFocus(java.awt.event.WindowEvent evt) {
                 ReportDlgWindowGainedFocus(evt);
             }
+
             public void windowLostFocus(java.awt.event.WindowEvent evt) {
             }
         });
@@ -1034,24 +1134,24 @@ public class ReportsFrm extends javax.swing.JFrame {
 
         javax.swing.GroupLayout ReportDlgLayout = new javax.swing.GroupLayout(ReportDlg.getContentPane());
         ReportDlg.getContentPane().setLayout(ReportDlgLayout);
-        ReportDlgLayout.setHorizontalGroup(
-            ReportDlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(ReportDlgLayout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addGroup(ReportDlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
-                    .addComponent(lblStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(27, Short.MAX_VALUE))
-        );
-        ReportDlgLayout.setVerticalGroup(
-            ReportDlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ReportDlgLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lblStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20))
-        );
+        ReportDlgLayout.setHorizontalGroup(ReportDlgLayout
+                .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(ReportDlgLayout.createSequentialGroup().addGap(24, 24, 24)
+                        .addGroup(ReportDlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
+                                .addComponent(lblStatus, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap(27, Short.MAX_VALUE)));
+        ReportDlgLayout.setVerticalGroup(ReportDlgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+                        ReportDlgLayout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(lblStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 19,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 14,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(20, 20, 20)));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Print Reports");
@@ -1065,7 +1165,9 @@ public class ReportsFrm extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Print the Following System Reports", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14), new java.awt.Color(0, 0, 153))); // NOI18N
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Print the Following System Reports",
+                javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
+                new java.awt.Font("Tahoma", 1, 14), new java.awt.Color(0, 0, 153))); // NOI18N
 
         jLabel18.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel18.setText("FORM");
@@ -1080,14 +1182,16 @@ public class ReportsFrm extends javax.swing.JFrame {
         jLabel20.setText("TERM");
 
         comboTerm.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        comboTerm.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SELECT", "TERM 1", "TERM 2", "TERM 3" }));
+        comboTerm.setModel(
+                new javax.swing.DefaultComboBoxModel<>(new String[] { "SELECT", "TERM 1", "TERM 2", "TERM 3" }));
         comboTerm.setToolTipText("");
 
         jLabel21.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel21.setText("EXAM");
 
         comboExam.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        comboExam.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SELECT", "EXAM 1", "EXAM 2", "EXAM 3" }));
+        comboExam.setModel(
+                new javax.swing.DefaultComboBoxModel<>(new String[] { "SELECT", "EXAM 1", "EXAM 2", "EXAM 3" }));
 
         jButton1.setBackground(new java.awt.Color(255, 255, 255));
         jButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -1217,7 +1321,7 @@ public class ReportsFrm extends javax.swing.JFrame {
 
         jButton10.setBackground(new java.awt.Color(255, 255, 255));
         jButton10.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton10.setText("10. Endterm Subject Perfomance");
+        jButton10.setText("10. Endterm Subject performance");
         jButton10.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton10.setContentAreaFilled(false);
         jButton10.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -1258,12 +1362,15 @@ public class ReportsFrm extends javax.swing.JFrame {
         });
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Subject Champions", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12), new java.awt.Color(0, 0, 204))); // NOI18N
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Subject Champions",
+                javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
+                new java.awt.Font("Tahoma", 1, 12), new java.awt.Color(0, 0, 204))); // NOI18N
 
         jLabel3.setText("Number of Champions");
 
         cmbNumberOfChamps.setEditable(true);
-        cmbNumberOfChamps.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }));
+        cmbNumberOfChamps.setModel(new javax.swing.DefaultComboBoxModel<>(
+                new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }));
 
         jButton13.setBackground(new java.awt.Color(255, 255, 255));
         jButton13.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -1293,156 +1400,164 @@ public class ReportsFrm extends javax.swing.JFrame {
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(62, 62, 62)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(31, 31, 31)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cmbNumberOfChamps, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton14, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cmbNumberOfChamps, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
+        jPanel4Layout.setHorizontalGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel4Layout.createSequentialGroup().addGap(62, 62, 62)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 144,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 187,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(31, 31, 31)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(cmbNumberOfChamps, javax.swing.GroupLayout.PREFERRED_SIZE, 92,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jButton14, javax.swing.GroupLayout.PREFERRED_SIZE, 156,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+        jPanel4Layout.setVerticalGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(cmbNumberOfChamps, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel3))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jButton13, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton14, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap()));
 
         cmbYear.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         cmbYear.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SELECT" }));
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(54, 54, 54))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+        jPanel3Layout.setHorizontalGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createSequentialGroup().addContainerGap().addGroup(jPanel3Layout
+                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addContainerGap())
+                        .addGroup(jPanel3Layout.createSequentialGroup().addGap(0, 0, Short.MAX_VALUE)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 236,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 236,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 236,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 236,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 236,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 236,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 236,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 236,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 236,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 236,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 236,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 236,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(54, 54, 54))
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 45,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(comboForm, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 45,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cmbYear, javax.swing.GroupLayout.PREFERRED_SIZE, 94,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 41,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(comboTerm, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel21)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(comboExam, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 31, Short.MAX_VALUE)))));
+        jPanel3Layout.setVerticalGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createSequentialGroup().addContainerGap()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(comboForm, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 20,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 20,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel20)
+                                .addComponent(comboTerm, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel21)
+                                .addComponent(comboExam, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(cmbYear, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(19, 19, 19)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jButton7).addComponent(jButton1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(comboForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jButton8).addComponent(jButton2))
+                        .addGap(7, 7, 7)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jButton3).addComponent(jButton9))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jButton10).addComponent(jButton4))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cmbYear, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(comboTerm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jButton5).addComponent(jButton11))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel21)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(comboExam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 31, Short.MAX_VALUE))))
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(comboForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel20)
-                    .addComponent(comboTerm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel21)
-                    .addComponent(comboExam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cmbYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(19, 19, 19)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton7)
-                    .addComponent(jButton1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton8)
-                    .addComponent(jButton2))
-                .addGap(7, 7, 7)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton3)
-                    .addComponent(jButton9))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton10)
-                    .addComponent(jButton4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton5)
-                    .addComponent(jButton11))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton12)
-                    .addComponent(jButton6))
-                .addGap(24, 24, 24)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jButton12).addComponent(jButton6))
+                        .addGap(24, 24, 24)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(29, 29, 29))
-        );
+        jPanel1Layout.setHorizontalGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup().addContainerGap()
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+        jPanel1Layout.setVerticalGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup().addGap(24, 24, 24).addComponent(jPanel3,
+                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(29, 29, 29)));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
+        layout.setHorizontalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(
+                jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
+        layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(
+                jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE,
+                javax.swing.GroupLayout.PREFERRED_SIZE));
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton10ActionPerformed
         Form = comboForm.getSelectedItem().toString();
         Year = cmbYear.getSelectedItem().toString();
         Term = comboTerm.getSelectedItem().toString();
@@ -1450,30 +1565,31 @@ public class ReportsFrm extends javax.swing.JFrame {
         if (Form.equalsIgnoreCase("Select Form")) {
             JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
         } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else {
-            lblStatus.setText("Preparing the Endterm subject perfomance...");
-            Report_Request = "ensubper";
+            lblStatus.setText("Preparing the Endterm subject performance...");
+            requestedReport = "ensubper";
             ReportDlg.pack();
             ReportDlg.setLocationRelativeTo(this);
             ReportDlg.setVisible(true);
         }
-    }//GEN-LAST:event_jButton10ActionPerformed
+    }// GEN-LAST:event_jButton10ActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton1ActionPerformed
         Form = comboForm.getSelectedItem().toString();
         if (Form.equalsIgnoreCase("Select Form")) {
             JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
         } else {
             lblStatus.setText("Preparing the marks sheet...");
-            Report_Request = "ms";
+            requestedReport = "ms";
             ReportDlg.pack();
             ReportDlg.setLocationRelativeTo(this);
             ReportDlg.setVisible(true);
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }// GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton2ActionPerformed
         Form = comboForm.getSelectedItem().toString();
         Year = cmbYear.getSelectedItem().toString();
         Term = comboTerm.getSelectedItem().toString();
@@ -1481,21 +1597,24 @@ public class ReportsFrm extends javax.swing.JFrame {
         if (Form.equalsIgnoreCase("Select Form")) {
             JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
         } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else if (Exam.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Level of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Level of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else {
-            Report_Request = "mcs";
+            requestedReport = "mcs";
             lblStatus.setText("Preparing the marks confirmation sheets...");
             ReportDlg.pack();
             ReportDlg.setLocationRelativeTo(this);
             ReportDlg.setVisible(true);
         }
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }// GEN-LAST:event_jButton2ActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton3ActionPerformed
         Form = comboForm.getSelectedItem().toString();
         Year = cmbYear.getSelectedItem().toString();
         Term = comboTerm.getSelectedItem().toString();
@@ -1503,21 +1622,24 @@ public class ReportsFrm extends javax.swing.JFrame {
         if (Form.equalsIgnoreCase("Select Form")) {
             JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
         } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else if (Exam.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Level of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Level of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else {
             lblStatus.setText("Preparing the result slip...");
-            Report_Request = "rs";
+            requestedReport = "rs";
             ReportDlg.pack();
             ReportDlg.setLocationRelativeTo(this);
             ReportDlg.setVisible(true);
         }
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }// GEN-LAST:event_jButton3ActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton4ActionPerformed
         Form = comboForm.getSelectedItem().toString();
         Year = cmbYear.getSelectedItem().toString();
         Term = comboTerm.getSelectedItem().toString();
@@ -1525,21 +1647,24 @@ public class ReportsFrm extends javax.swing.JFrame {
         if (Form.equalsIgnoreCase("Select Form")) {
             JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
         } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else if (Exam.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Level of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Level of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else {
             lblStatus.setText("Preparing the Exam stream ranking list...");
-            Report_Request = "exsr";
+            requestedReport = "exsr";
             ReportDlg.pack();
             ReportDlg.setLocationRelativeTo(this);
             ReportDlg.setVisible(true);
         }
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }// GEN-LAST:event_jButton4ActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton5ActionPerformed
         Form = comboForm.getSelectedItem().toString();
         Year = cmbYear.getSelectedItem().toString();
         Term = comboTerm.getSelectedItem().toString();
@@ -1548,40 +1673,45 @@ public class ReportsFrm extends javax.swing.JFrame {
         if (Form.equalsIgnoreCase("Select Form")) {
             JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
         } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else if (Exam.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Level of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Level of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else {
             lblStatus.setText("Preparing the exam overall ranking list...");
-            Report_Request = "exor";
+            requestedReport = "exor";
             ReportDlg.pack();
             ReportDlg.setLocationRelativeTo(this);
             ReportDlg.setVisible(true);
         }
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }// GEN-LAST:event_jButton5ActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton6ActionPerformed
         Form = comboForm.getSelectedItem().toString();
         Year = cmbYear.getSelectedItem().toString();
         Term = comboTerm.getSelectedItem().toString();
         if (Form.equalsIgnoreCase("Select Form")) {
             JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
         } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else {
             lblStatus.setText("Preparing the endterm ranking list...");
-            Report_Request = "ensr";
+            requestedReport = "ensr";
             ReportDlg.pack();
             ReportDlg.setLocationRelativeTo(this);
             ReportDlg.setVisible(true);
         }
-    }//GEN-LAST:event_jButton6ActionPerformed
+    }// GEN-LAST:event_jButton6ActionPerformed
 
-    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
+    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton12ActionPerformed
         Form = comboForm.getSelectedItem().toString();
         Year = cmbYear.getSelectedItem().toString();
         Term = comboTerm.getSelectedItem().toString();
@@ -1590,19 +1720,21 @@ public class ReportsFrm extends javax.swing.JFrame {
         if (Form.equalsIgnoreCase("Select Form")) {
             JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
         } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else {
             lblStatus.setText("Preparing the Endterm class ranking...");
-            Report_Request = "enclassper";
+            requestedReport = "enclassper";
             ReportDlg.pack();
             ReportDlg.setLocationRelativeTo(this);
             ReportDlg.setVisible(true);
         }
-    }//GEN-LAST:event_jButton12ActionPerformed
+    }// GEN-LAST:event_jButton12ActionPerformed
 
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton7ActionPerformed
         Form = comboForm.getSelectedItem().toString();
         Year = cmbYear.getSelectedItem().toString();
         Term = comboTerm.getSelectedItem().toString();
@@ -1610,38 +1742,42 @@ public class ReportsFrm extends javax.swing.JFrame {
         if (Form.equalsIgnoreCase("Select Form")) {
             JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
         } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else {
             lblStatus.setText("Preparing the Endterm Overall ranking...");
-            Report_Request = "enor";
+            requestedReport = "enor";
             ReportDlg.pack();
             ReportDlg.setLocationRelativeTo(this);
             ReportDlg.setVisible(true);
         }
-    }//GEN-LAST:event_jButton7ActionPerformed
+    }// GEN-LAST:event_jButton7ActionPerformed
 
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton8ActionPerformed
         Form = comboForm.getSelectedItem().toString();
         Year = cmbYear.getSelectedItem().toString();
         Term = comboTerm.getSelectedItem().toString();
         if (Form.equalsIgnoreCase("Select Form")) {
             JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
         } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else {
             lblStatus.setText("Preparing the report Forms...");
-            Report_Request = "rf";
+            requestedReport = "rf";
             ReportDlg.pack();
             ReportDlg.setLocationRelativeTo(this);
             ReportDlg.setVisible(true);
         }
-    }//GEN-LAST:event_jButton8ActionPerformed
+    }// GEN-LAST:event_jButton8ActionPerformed
 
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton9ActionPerformed
         Form = comboForm.getSelectedItem().toString();
         Year = cmbYear.getSelectedItem().toString();
         Term = comboTerm.getSelectedItem().toString();
@@ -1649,19 +1785,21 @@ public class ReportsFrm extends javax.swing.JFrame {
         if (Form.equalsIgnoreCase("Select Form")) {
             JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
         } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else {
-            lblStatus.setText("Preparing the exam Subject perfomance");
-            Report_Request = "exsubper";
+            lblStatus.setText("Preparing the exam Subject performance");
+            requestedReport = "exsubper";
             ReportDlg.pack();
             ReportDlg.setLocationRelativeTo(this);
             ReportDlg.setVisible(true);
         }
-    }//GEN-LAST:event_jButton9ActionPerformed
+    }// GEN-LAST:event_jButton9ActionPerformed
 
-    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton11ActionPerformed
         Form = comboForm.getSelectedItem().toString();
         Year = cmbYear.getSelectedItem().toString();
         Term = comboTerm.getSelectedItem().toString();
@@ -1670,19 +1808,21 @@ public class ReportsFrm extends javax.swing.JFrame {
         if (Form.equalsIgnoreCase("Select Form")) {
             JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
         } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else {
             lblStatus.setText("Preparing the Exam class ranking...");
-            Report_Request = "exclassper";
+            requestedReport = "exclassper";
             ReportDlg.pack();
             ReportDlg.setLocationRelativeTo(this);
             ReportDlg.setVisible(true);
         }
-    }//GEN-LAST:event_jButton11ActionPerformed
+    }// GEN-LAST:event_jButton11ActionPerformed
 
-    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
+    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton13ActionPerformed
         Form = comboForm.getSelectedItem().toString();
         Year = cmbYear.getSelectedItem().toString();
         Term = comboTerm.getSelectedItem().toString();
@@ -1691,19 +1831,21 @@ public class ReportsFrm extends javax.swing.JFrame {
         if (Form.equalsIgnoreCase("Select Form")) {
             JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
         } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else {
             lblStatus.setText("Preparing the Exam subject champions...");
-            Report_Request = "extop";
+            requestedReport = "extop";
             ReportDlg.pack();
             ReportDlg.setLocationRelativeTo(this);
             ReportDlg.setVisible(true);
         }
-    }//GEN-LAST:event_jButton13ActionPerformed
+    }// GEN-LAST:event_jButton13ActionPerformed
 
-    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
+    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton14ActionPerformed
         Form = comboForm.getSelectedItem().toString();
         Year = cmbYear.getSelectedItem().toString();
         Term = comboTerm.getSelectedItem().toString();
@@ -1712,19 +1854,21 @@ public class ReportsFrm extends javax.swing.JFrame {
         if (Form.equalsIgnoreCase("Select Form")) {
             JOptionPane.showMessageDialog(null, "Select the Class", "acme", JOptionPane.INFORMATION_MESSAGE);
         } else if (Year.equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Year of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else if (Term.equalsIgnoreCase("SELECT")) {
-            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Select the Term of examination", "acme",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else {
             lblStatus.setText("Preparing the Endterm subject champions...");
-            Report_Request = "entop";
+            requestedReport = "entop";
             ReportDlg.pack();
             ReportDlg.setLocationRelativeTo(this);
             ReportDlg.setVisible(true);
         }
-    }//GEN-LAST:event_jButton14ActionPerformed
+    }// GEN-LAST:event_jButton14ActionPerformed
 
-    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {// GEN-FIRST:event_formWindowClosing
         try {
             if (!conn.isClosed()) {
                 conn.close();
@@ -1734,68 +1878,18 @@ public class ReportsFrm extends javax.swing.JFrame {
         }
         this.dispose();
         new AdminPanelFrm().setVisible(true);
-    }//GEN-LAST:event_formWindowClosing
+    }// GEN-LAST:event_formWindowClosing
 
-    private void ReportDlgWindowGainedFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_ReportDlgWindowGainedFocus
+    private void ReportDlgWindowGainedFocus(java.awt.event.WindowEvent evt) {// GEN-FIRST:event_ReportDlgWindowGainedFocus
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                switch (Report_Request) {
-                    case "ms":
-                        printMarksSheet(Form);
-                        break;
-                    case "mcs":
-                        printMarksConfirmationSheet(Form, Year, Term, Exam);
-                        break;
-                    case "rs":
-                        printResultSlips(Form, Year, Term, Exam);
-                        break;
-                    case "exsr":
-                        printExamStreamRankingList(Form, Year, Term, Exam);
-                        break;
-                    case "exor":
-                        printExamOverallRankingList(Form, Year, Term, Exam, ExamFormLevel);
-                        break;
-                    case "ensr":
-                        printTermStreamRankingList(Form, Year, Term);
-                        break;
-                    case "enor":
-                        printTermOverallRankingList(Form, Year, Term, ExamFormLevel);
-                        break;
-                    case "rf":
-                        printReportForms(Form, Year, Term);
-                        break;
-                    case "exsubper":
-                        AnalyseSubjectPerformance(Form, Year, Term, Exam);
-                        setTheSubjectPosition();
-                        printExamSubjectPerfomance(Form, Year, Term, Exam);
-                        break;
-                    case "ensubper":
-                        AnalyseSubjectPerformance(Form, Year, Term, Exam);
-                        setTheSubjectPosition();
-                        printExamSubjectPerfomance(Form, Year, Term, Exam);
-                        break;
-                    case "exclassper":
-                        AnalyzeClassesPerfomance(Form, Year, Term, Exam, ExamFormLevel);
-                        setTheClassPosition(ExamFormLevel);
-                        printClassPerformance(ExamFormLevel, Year, Term, Exam);
-                        break;
-                    case "enclassper":
-                        AnalyzeClassesPerfomance(Form, Year, Term, Exam, ExamFormLevel);
-                        setTheClassPosition(ExamFormLevel);
-                        printClassPerformance(ExamFormLevel, Year, Term, Exam);
-                        break;
-                    case "extop":
-                        AnalyzeSubjectChampions(Form, Year, Term, Exam, NumberOfChamps);
-                        printSubjectCHamps(Form, Year, Term, Exam, NumberOfChamps);
-                        break;
-                    case "entop":
-                        AnalyzeSubjectChampions(Form, Year, Term, Exam, NumberOfChamps);
-                        printSubjectCHamps(Form, Year, Term, Exam, NumberOfChamps);
-                        break;
-                    default:
-                        JOptionPane.showMessageDialog(null, "Selected report CODE does not exits", "Error", 1);
-                        break;
+                if (reportsMap.get(requestedReport) != null) {
+                    for (Runnable runnable : reportsMap.get(requestedReport)) {
+                        runnable.run();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Selected report CODE does not exits", "Error", 1);
                 }
                 return null;
             }
@@ -1806,16 +1900,19 @@ public class ReportsFrm extends javax.swing.JFrame {
             }
         };
         worker.execute();
-    }//GEN-LAST:event_ReportDlgWindowGainedFocus
+    }// GEN-LAST:event_ReportDlgWindowGainedFocus
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+        // <editor-fold defaultstate="collapsed" desc=" Look and feel setting code
+        // (optional) ">
+        /*
+         * If Nimbus (introduced in Java SE 6) is not available, stay with the default
+         * look and feel. For details see
+         * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -1824,12 +1921,14 @@ public class ReportsFrm extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ReportsFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(ReportsFrm.class.getName()).log(java.util.logging.Level.SEVERE, null,
+                    ex);
         }
-        //</editor-fold>
+        // </editor-fold>
 
-        //</editor-fold>
+        // </editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {

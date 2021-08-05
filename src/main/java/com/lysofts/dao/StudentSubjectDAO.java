@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 public class StudentSubjectDAO {
 
@@ -40,7 +40,8 @@ public class StudentSubjectDAO {
     public static boolean add(StudentSubject data) {
         try {
             Mapping.Param param = new Mapping().insertQuery(data);
-            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(), param.getValuesString());
+            String SQL = String.format("INSERT INTO %s (%s) VALUES (%s)", table, param.getFieldString(),
+                    param.getValuesString());
             return QueryRunner.update(SQL, param.getDatMap());
         } catch (Exception ex) {
             ConnClass.printError(ex);
@@ -49,14 +50,14 @@ public class StudentSubjectDAO {
     }
 
     public static boolean delete(StudentSubject data) {
-        return delete(data.getStudentId(),data.getSubjectCode());
+        return delete(data.getStudentId(), data.getSubjectCode());
     }
 
     public static boolean delete(String studentId, String subjectCode) {
         String SQL = String.format("DELETE FROM %s WHERE SS_Student_id=? AND SS_Subject_code=?", table);
         Map<Integer, String> params = new HashMap<>();
         params.put(1, studentId);
-        params.put(2,subjectCode);
+        params.put(2, subjectCode);
         return QueryRunner.update(SQL, params);
     }
 }

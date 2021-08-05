@@ -10,16 +10,16 @@ import com.lysofts.annotations.Table;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 @Table(name = "students_exams")
 public class StudentExam {
-    
+
     private String id;
-    
+
     @Column(name = "SE_Student_id")
     private String studentId;
-    
+
     @Column(name = "SE_StudentClass")
     private String Form;
     private String Year;
@@ -2425,7 +2425,5 @@ public class StudentExam {
     public void setOverallOutOf(String OverallOutOf) {
         this.OverallOutOf = OverallOutOf;
     }
-    
-    
 
 }

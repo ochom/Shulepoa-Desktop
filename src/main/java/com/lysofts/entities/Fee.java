@@ -11,42 +11,41 @@ import java.io.Serializable;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 @Table(name = "tbl_fee_register")
 public class Fee implements Serializable {
-    
+
     private String id;
-    
-    @Column(name = "adm") 
+
+    @Column(name = "adm")
     private String regNumber;
-    
-    
-    @Column(name = "code") 
+
+    @Column(name = "code")
     private String transCode;
-    
-    @Column(name = "academic_year") 
+
+    @Column(name = "academic_year")
     private String year;
-    
+
     private String debit, credit;
-    
-    @Column(name = "mode_of_payment") 
+
+    @Column(name = "mode_of_payment")
     private String mode;
-    
-    @Column(name = "amount_in_words") 
+
+    @Column(name = "amount_in_words")
     private String inWords;
-    
-    @Column(name = "receipt_no")    
-    private String receiptNumber;   
-    
-    @Column(name = "register_date") 
+
+    @Column(name = "receipt_no")
+    private String receiptNumber;
+
+    @Column(name = "register_date")
     private String created;
-    
-    @Column(name = "served_by")     
+
+    @Column(name = "served_by")
     private String createdBy;
-    
-    public Fee(){
-        
+
+    public Fee() {
+
     }
 
     public String getId() {

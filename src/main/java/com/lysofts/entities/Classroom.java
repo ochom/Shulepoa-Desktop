@@ -10,12 +10,12 @@ import com.lysofts.annotations.Table;
 
 /**
  *
- * @author mspace-dev
+ * @author Rick
  */
 
 @Table(name = "tblclasses")
 public class Classroom {
-    
+
     private String id;
 
     @Column(name = "Class_name")
