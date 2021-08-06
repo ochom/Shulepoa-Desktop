@@ -92,8 +92,8 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
     }
 
     private void GetStudentsInExamsTable() {
-        int subjct_count = ConnClass.CountRows("SELECT count(*) as total FROM subjects");
-        String[] column_names = new String[3 + subjct_count];
+        int subjectCount = ConnClass.CountRows("SELECT count(*) as total FROM subjects");
+        String[] column_names = new String[3 + subjectCount];
         column_names[0] = "Adm No.";
         column_names[1] = "Index";
         column_names[2] = "Student Name";
@@ -113,12 +113,12 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
             rs = pst.executeQuery();
             String[] row_data = null;
             while (rs.next()) {
-                row_data = new String[3 + subjct_count];
+                row_data = new String[3 + subjectCount];
                 row_data[0] = rs.getString("adm");
                 row_data[1] = rs.getString("index_no");
                 row_data[2] = rs.getString("name");
 
-                for (int i = 3; i < subjct_count + 3; i++) {
+                for (int i = 3; i < subjectCount + 3; i++) {
                     row_data[i] = rs.getString("sub_" + (i - 2) + "_G");
                 }
 
@@ -1445,7 +1445,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
                 jLabel5.setVisible(true);
                 jProgressBar1.setVisible(true);
                 ProgressNo.setVisible(true);
-                ArrayList<String[]> subjects = new ArrayList();
+                ArrayList<String[]> subjects = new ArrayList<>();
                 try {
                     pst = Conn.prepareStatement("SELECT * FROM subjects");
                     rs = pst.executeQuery();
@@ -1792,7 +1792,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         InputStream Report = null;
         try {
             Report = getClass().getClassLoader().getResourceAsStream("reports/kcse/School_Mean.jrxml");
-            HashMap param = new HashMap();
+            HashMap<String, Object> param = new HashMap<>();
             param.put("project_title", project_title);
             JasperDesign jd = JRXmlLoader.load(Report);
             JasperReport jr = JasperCompileManager.compileReport(jd);
@@ -1819,7 +1819,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         InputStream Report = null;
         try {
             Report = getClass().getClassLoader().getResourceAsStream("reports/kcse/Subject_gender.jrxml");
-            HashMap param = new HashMap();
+            HashMap<String, Object> param = new HashMap<>();
             param.put("project_title", project_title);
             JasperDesign jd = JRXmlLoader.load(Report);
             JasperReport jr = JasperCompileManager.compileReport(jd);
@@ -1846,7 +1846,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         InputStream Report = null;
         try {
             Report = getClass().getClassLoader().getResourceAsStream("reports/kcse/TopGender.jrxml");
-            HashMap param = new HashMap();
+            HashMap<String, Object> param = new HashMap<>();
             param.put("project_title", project_title);
             param.put("gender_name", "Boys");
             param.put("gender", "Male");
@@ -1875,7 +1875,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         InputStream Report = null;
         try {
             Report = getClass().getClassLoader().getResourceAsStream("reports/kcse/TopGender.jrxml");
-            HashMap param = new HashMap();
+            HashMap<String, Object> param = new HashMap<>();
             param.put("project_title", project_title);
             param.put("gender_name", "Girls");
             param.put("gender", "Female");
@@ -1904,7 +1904,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         InputStream Report = null;
         try {
             Report = getClass().getClassLoader().getResourceAsStream("reports/kcse/TopOverall.jrxml");
-            HashMap param = new HashMap();
+            HashMap<String, Object> param = new HashMap<>();
             param.put("project_title", project_title);
             JasperDesign jd = JRXmlLoader.load(Report);
             JasperReport jr = JasperCompileManager.compileReport(jd);
@@ -1931,7 +1931,7 @@ public class KCSE_AnalysisFrm extends javax.swing.JFrame {
         InputStream Report = null;
         try {
             Report = getClass().getClassLoader().getResourceAsStream("reports/kcse/Subject_Ranking.jrxml");
-            HashMap param = new HashMap();
+            HashMap<String, Object> param = new HashMap<>();
             param.put("project_title", project_title);
             JasperDesign jd = JRXmlLoader.load(Report);
             JasperReport jr = JasperCompileManager.compileReport(jd);

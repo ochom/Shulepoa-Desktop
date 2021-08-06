@@ -571,7 +571,7 @@ public class MarksAnalysisFrm extends javax.swing.JFrame {
                     int totalPoints = calculateTotalPoints(S);
 
                     double avgPoints = totalPoints / 7.0;
-                    String avgGrade = getMyGrade(avgPoints);
+                    String avgGrade = getMyGrade2(avgPoints);
 
                     exam.setTOTALMarks(String.valueOf((int) totalPoints));
                     exam.setMeanPoints(String.format("%.2f", avgPoints));
